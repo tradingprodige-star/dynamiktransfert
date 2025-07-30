@@ -6,64 +6,138 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Calculator = () => {
   const [amount, setAmount] = useState("");
+  const [direction, setDirection] = useState("");
   const [destination, setDestination] = useState("");
+  const [deliveryTime, setDeliveryTime] = useState("");
   const [promoCode, setPromoCode] = useState("");
   const [result, setResult] = useState<{
     totalToPay: number;
     amountReceived: number;
     fees: number;
+    cashback: number;
+    promoEffect: string;
   } | null>(null);
 
-  // Taux de change et frais (à ajuster selon vos besoins)
-  const exchangeRates = {
-    gabon: 0.98, // Exemple : 1 FCFA = 0.98 FCFA Gabon
-    togo: 0.97,
-    cemac: 0.99
+  // Configuration des frais selon direction et destination
+  const feeRates = {
+    "beceao-cemac": {
+      gabon: 0.045, // 4.5% pour le Gabon
+      cameroun: 0.035, // 3.5% pour autres pays CEMAC
+      "centrafrique": 0.035,
+      "congo": 0.035,
+      "guinee-equatoriale": 0.035,
+      "tchad": 0.035
+    },
+    "cemac-beceao": {
+      standard: 0.08, // 8% frais standard
+      threedays: 0.04 // 4% si délai 3 jours
+    }
   };
 
-  const baseFeeRate = 0.03; // 3% de frais de base
-  const promoCodes = {
-    BIENVENUE: 1.0, // 100% de réduction (0% de frais)
-    JONAS: 0.5, // 50% de réduction
-    MARIE: 0.3, // 30% de réduction
+  // Réductions selon délai de livraison
+  const deliveryDiscounts = {
+    instant: 0,
+    "1day": 0.01, // -1%
+    "2days": 0.02, // -2%
+    "3days": 0.03 // -3%
+  };
+
+  // Codes promo ambassadeurs
+  const ambassadorCodes = {
+    BIENVENUE: { type: "free", effect: "0% de frais" },
+    JONAS: { type: "reduction", value: 0.02, effect: "Réduction 2%" },
+    MARIE: { type: "reduction", value: 0.02, effect: "Réduction 2%" },
+    PAUL: { type: "cashback", value: 500, effect: "Cashback 500 FCFA" },
+    LINDA: { type: "cashback", value: 500, effect: "Cashback 500 FCFA" }
+  } as const;
+
+  type PromoCode = {
+    type: "free" | "reduction" | "cashback";
+    value?: number;
+    effect: string;
   };
 
   const calculateTransfer = () => {
-    if (!amount || !destination) return;
+    if (!amount || !direction || !destination || !deliveryTime) return;
 
     const amountNum = parseFloat(amount);
-    const rate = exchangeRates[destination as keyof typeof exchangeRates] || 1;
-    
-    // Calcul des frais avec code promo
-    let feeReduction = 1;
-    if (promoCode && promoCodes[promoCode.toUpperCase() as keyof typeof promoCodes]) {
-      feeReduction = 1 - promoCodes[promoCode.toUpperCase() as keyof typeof promoCodes];
+    let baseFeeRate = 0;
+    let cashback = 0;
+    let promoEffect = "";
+
+    // Détermination du taux de base selon direction
+    if (direction === "beceao-cemac") {
+      baseFeeRate = feeRates["beceao-cemac"][destination as keyof typeof feeRates["beceao-cemac"]] || 0.035;
+    } else if (direction === "cemac-beceao") {
+      baseFeeRate = deliveryTime === "3days" ? feeRates["cemac-beceao"].threedays : feeRates["cemac-beceao"].standard;
     }
-    
-    const fees = amountNum * baseFeeRate * feeReduction;
+
+    // Application des réductions de délai (seulement pour BECEAO → CEMAC)
+    if (direction === "beceao-cemac") {
+      const deliveryDiscount = deliveryDiscounts[deliveryTime as keyof typeof deliveryDiscounts] || 0;
+      baseFeeRate = Math.max(0, baseFeeRate - deliveryDiscount);
+    }
+
+    // Application des codes promo ambassadeurs
+    if (promoCode && ambassadorCodes[promoCode.toUpperCase() as keyof typeof ambassadorCodes]) {
+      const promoData = ambassadorCodes[promoCode.toUpperCase() as keyof typeof ambassadorCodes];
+      
+      if (promoData.type === "free") {
+        baseFeeRate = 0;
+        promoEffect = promoData.effect;
+      } else if (promoData.type === "reduction" && promoData.value) {
+        if (direction === "beceao-cemac") {
+          baseFeeRate = Math.max(0, baseFeeRate - promoData.value);
+        } else {
+          // Pour CEMAC → BECEAO, réduction de 1%
+          baseFeeRate = Math.max(0, baseFeeRate - 0.01);
+        }
+        promoEffect = promoData.effect;
+      } else if (promoData.type === "cashback" && promoData.value) {
+        cashback = promoData.value;
+        promoEffect = promoData.effect;
+      }
+    }
+
+    const fees = amountNum * baseFeeRate;
     const totalToPay = amountNum + fees;
-    const amountReceived = amountNum * rate;
+    const amountReceived = amountNum; // Même devise FCFA
 
     setResult({
       totalToPay,
       amountReceived,
-      fees
+      fees,
+      cashback,
+      promoEffect
     });
   };
 
   const sendToWhatsApp = () => {
     if (!result) return;
     
-    const message = `Bonjour, je souhaite envoyer ${amount} FCFA vers ${destination.toUpperCase()}. ${promoCode ? `Voici mon code promo : ${promoCode}` : ''}
+    const directionText = direction === "beceao-cemac" ? `depuis le Togo vers ${destination.toUpperCase()}` : `depuis ${destination.toUpperCase()} vers le Togo`;
+    const deliveryText = deliveryTime === "instant" ? "instantané" : deliveryTime === "1day" ? "24h" : deliveryTime === "2days" ? "2 jours" : "3 jours";
     
-Détails du transfert :
-- Montant à envoyer : ${amount} FCFA
-- Destination : ${destination.toUpperCase()}
+    let message = `🏦 DYNAMIK Exchange - Demande de transfert
+
+💰 DÉTAILS DU TRANSFERT :
+- Montant : ${amount} FCFA
+- Direction : ${directionText}
+- Délai : ${deliveryText}
 - Total à payer : ${result.totalToPay.toFixed(0)} FCFA
 - Montant reçu : ${result.amountReceived.toFixed(0)} FCFA
-- Frais : ${result.fees.toFixed(0)} FCFA
+- Frais appliqués : ${result.fees.toFixed(0)} FCFA`;
 
-Je souhaite procéder à ce transfert.`;
+    if (promoCode) {
+      message += `\n- Code promo : ${promoCode.toUpperCase()} (${result.promoEffect})`;
+    }
+
+    if (result.cashback > 0) {
+      message += `\n- Cashback prévu : +${result.cashback} FCFA`;
+    }
+
+    message += `\n\n✅ Je confirme vouloir procéder à ce transfert.
+📱 Merci de me contacter pour finaliser la transaction.`;
 
     const whatsappUrl = `https://wa.me/YOUR_WHATSAPP_NUMBER?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -99,23 +173,78 @@ Je souhaite procéder à ce transfert.`;
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Destination</label>
-                  <Select value={destination} onValueChange={setDestination}>
+                  <label className="block text-sm font-medium mb-2">Direction du transfert</label>
+                  <Select value={direction} onValueChange={setDirection}>
                     <SelectTrigger className="h-12">
-                      <SelectValue placeholder="Choisissez la destination" />
+                      <SelectValue placeholder="Choisissez la direction" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="gabon">Gabon</SelectItem>
-                      <SelectItem value="togo">Togo</SelectItem>
-                      <SelectItem value="cemac">Zone CEMAC</SelectItem>
+                      <SelectItem value="beceao-cemac">BECEAO → CEMAC (Depuis le Togo)</SelectItem>
+                      <SelectItem value="cemac-beceao">CEMAC → BECEAO (Vers le Togo)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Code promo (optionnel)</label>
+                  <label className="block text-sm font-medium mb-2">
+                    {direction === "beceao-cemac" ? "Pays de destination" : "Pays d'origine"}
+                  </label>
+                  <Select value={destination} onValueChange={setDestination}>
+                    <SelectTrigger className="h-12">
+                      <SelectValue placeholder={direction === "beceao-cemac" ? "Vers quel pays ?" : "Depuis quel pays ?"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {direction === "beceao-cemac" ? (
+                        <>
+                          <SelectItem value="gabon">Gabon</SelectItem>
+                          <SelectItem value="cameroun">Cameroun</SelectItem>
+                          <SelectItem value="centrafrique">République Centrafricaine</SelectItem>
+                          <SelectItem value="congo">Congo-Brazzaville</SelectItem>
+                          <SelectItem value="guinee-equatoriale">Guinée Équatoriale</SelectItem>
+                          <SelectItem value="tchad">Tchad</SelectItem>
+                        </>
+                      ) : (
+                        <>
+                          <SelectItem value="gabon">Gabon</SelectItem>
+                          <SelectItem value="cameroun">Cameroun</SelectItem>
+                          <SelectItem value="centrafrique">République Centrafricaine</SelectItem>
+                          <SelectItem value="congo">Congo-Brazzaville</SelectItem>
+                          <SelectItem value="guinee-equatoriale">Guinée Équatoriale</SelectItem>
+                          <SelectItem value="tchad">Tchad</SelectItem>
+                        </>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Délai de réception</label>
+                  <Select value={deliveryTime} onValueChange={setDeliveryTime}>
+                    <SelectTrigger className="h-12">
+                      <SelectValue placeholder="Choisissez le délai" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {direction === "beceao-cemac" ? (
+                        <>
+                          <SelectItem value="instant">Instantané (frais standards)</SelectItem>
+                          <SelectItem value="1day">24h (-1% sur frais)</SelectItem>
+                          <SelectItem value="2days">2 jours (-2% sur frais)</SelectItem>
+                          <SelectItem value="3days">3 jours (-3% sur frais)</SelectItem>
+                        </>
+                      ) : (
+                        <>
+                          <SelectItem value="instant">Instantané (8% frais)</SelectItem>
+                          <SelectItem value="3days">3 jours (4% frais)</SelectItem>
+                        </>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Code promo ambassadeur (optionnel)</label>
                   <Input
-                    placeholder="Ex: BIENVENUE"
+                    placeholder="Ex: JONAS, MARIE, PAUL..."
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
                     className="h-12"
@@ -158,12 +287,30 @@ Je souhaite procéder à ce transfert.`;
                         </span>
                       </div>
                       
-                      <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
+                       <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
                         <span className="text-muted-foreground">Frais appliqués</span>
                         <span className="text-lg font-bold">
                           {result.fees.toFixed(0)} FCFA
                         </span>
                       </div>
+
+                      {result.promoEffect && (
+                        <div className="flex justify-between items-center p-4 bg-accent/10 rounded-lg border border-accent/20">
+                          <span className="text-muted-foreground">Code promo appliqué</span>
+                          <span className="text-sm font-bold text-accent">
+                            {result.promoEffect}
+                          </span>
+                        </div>
+                      )}
+
+                      {result.cashback > 0 && (
+                        <div className="flex justify-between items-center p-4 bg-primary/10 rounded-lg border border-primary/20">
+                          <span className="text-muted-foreground">Cashback à recevoir</span>
+                          <span className="text-lg font-bold text-primary">
+                            +{result.cashback} FCFA
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     <Button 
@@ -171,7 +318,7 @@ Je souhaite procéder à ce transfert.`;
                       className="w-full h-12 text-lg"
                       variant="whatsapp"
                     >
-                      Envoyer cette demande à un agent !
+                      Finaliser sur WhatsApp 🚀
                     </Button>
                   </div>
                 ) : (
