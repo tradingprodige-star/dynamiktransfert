@@ -49,6 +49,14 @@ export default {
 				violet: {
 					digital: 'hsl(var(--violet-digital))'
 				},
+				navy: {
+					blue: 'hsl(var(--navy-blue))'
+				},
+				charcoal: {
+					gray: 'hsl(var(--charcoal-gray))'
+				},
+				'off-white': 'hsl(var(--off-white))',
+				'matte-black': 'hsl(var(--matte-black))',
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
 					foreground: 'hsl(var(--popover-foreground))'
@@ -71,11 +79,13 @@ export default {
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-accent': 'var(--gradient-accent)',
-				'gradient-hero': 'var(--gradient-hero)'
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-dark': 'var(--gradient-dark)'
 			},
 			boxShadow: {
 				'glow': 'var(--shadow-glow)',
-				'card': 'var(--shadow-card)'
+				'card': 'var(--shadow-card)',
+				'financial': 'var(--shadow-financial)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
