@@ -17,8 +17,8 @@ All colors MUST be HSL.
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 142 76% 36%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 48 100% 62%;
+    --primary-foreground: 240 10% 3.9%;
 
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
@@ -26,7 +26,7 @@ All colors MUST be HSL.
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
 
-    --accent: 217 76% 47%;
+    --accent: 320 100% 71%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84.2% 60.2%;
@@ -34,20 +34,21 @@ All colors MUST be HSL.
 
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 142 76% 36%;
+    --ring: 48 100% 62%;
 
-    /* Custom DYNAMIK colors */
-    --primary-glow: 142 86% 45%;
-    --accent-glow: 217 86% 55%;
+    /* Custom DYNAMIK colors - Nouveau gradient */
+    --primary-glow: 45 100% 70%;
+    --accent-glow: 325 100% 80%;
+    --violet-digital: 267 63% 46%;
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-glow)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+    /* Gradients avec les nouvelles couleurs */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--violet-digital)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 50%, hsl(var(--violet-digital)) 100%);
     
-    /* Shadows */
-    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.3);
-    --shadow-card: 0 10px 30px -10px hsl(var(--primary) / 0.3);
+    /* Shadows avec les nouvelles couleurs */
+    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.4);
+    --shadow-card: 0 10px 30px -10px hsl(var(--accent) / 0.3);
 
     --radius: 0.5rem;
 
