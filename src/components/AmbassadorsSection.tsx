@@ -72,7 +72,7 @@ const AmbassadorsSection = () => {
 
           {/* Carrousel des ambassadeurs */}
           <div className="relative mb-12 overflow-hidden">
-            <div className="flex gap-6 animate-[slide-infinite_15s_linear_infinite] hover:[animation-play-state:paused]">
+            <div className="flex gap-6 animate-[slide-infinite_5s_linear_infinite] hover:[animation-play-state:paused]">
               {[...ambassadors, ...ambassadors].map((ambassador, index) => (
                 <Card key={`${ambassador.code}-${index}`} className="min-w-[280px] text-center shadow-card hover:shadow-glow transition-all duration-300 hover:scale-105 group">
                   <CardContent className="p-6">
