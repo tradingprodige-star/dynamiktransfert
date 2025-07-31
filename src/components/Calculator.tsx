@@ -81,8 +81,8 @@ const Calculator = () => {
       baseFeeRate = feeRates["togo-france"].standard;
     }
 
-    // Application des réductions de délai (seulement pour BECEAO → CEMAC)
-    if (direction === "beceao-cemac") {
+    // Application des réductions de délai (pour BECEAO → CEMAC et TOGO → FRANCE)
+    if (direction === "beceao-cemac" || direction === "togo-france") {
       const deliveryDiscount = deliveryDiscounts[deliveryTime as keyof typeof deliveryDiscounts] || 0;
       baseFeeRate = Math.max(0, baseFeeRate - deliveryDiscount);
     }
@@ -248,12 +248,14 @@ const Calculator = () => {
                           <SelectItem value="instant">Instantané (8% frais)</SelectItem>
                           <SelectItem value="3days">3 jours (4% frais)</SelectItem>
                         </>
-                      ) : (
-                        <>
-                          <SelectItem value="instant">Instantané (5% frais)</SelectItem>
-                          <SelectItem value="1day">24h (5% frais)</SelectItem>
-                        </>
-                      )}
+                       ) : (
+                         <>
+                           <SelectItem value="instant">Instantané (5% frais)</SelectItem>
+                           <SelectItem value="1day">24h (-1% sur frais)</SelectItem>
+                           <SelectItem value="2days">2 jours (-2% sur frais)</SelectItem>
+                           <SelectItem value="3days">3 jours (-3% sur frais)</SelectItem>
+                         </>
+                       )}
                     </SelectContent>
                   </Select>
                 </div>
