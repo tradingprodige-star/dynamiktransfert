@@ -31,6 +31,9 @@ const Calculator = () => {
     "cemac-beceao": {
       standard: 0.08, // 8% frais standard
       threedays: 0.04 // 4% si délai 3 jours
+    },
+    "togo-france": {
+      standard: 0.05 // 5% pour Togo vers France
     }
   };
 
@@ -45,10 +48,14 @@ const Calculator = () => {
   // Codes promo ambassadeurs
   const ambassadorCodes = {
     BIENVENUE: { type: "free", effect: "0% de frais" },
-    JONAS: { type: "reduction", value: 0.02, effect: "Réduction 2%" },
-    MARIE: { type: "reduction", value: 0.02, effect: "Réduction 2%" },
-    PAUL: { type: "cashback", value: 500, effect: "Cashback 500 FCFA" },
-    LINDA: { type: "cashback", value: 500, effect: "Cashback 500 FCFA" }
+    CORSKO: { type: "reduction", value: 0.02, effect: "Réduction 2%" },
+    MR_BOURSES: { type: "reduction", value: 0.02, effect: "Réduction 2%" },
+    JONES: { type: "cashback", value: 500, effect: "Cashback 500 FCFA" },
+    KRISSROY: { type: "cashback", value: 500, effect: "Cashback 500 FCFA" },
+    TURBO: { type: "reduction", value: 0.02, effect: "Réduction 2%" },
+    TONY: { type: "cashback", value: 500, effect: "Cashback 500 FCFA" },
+    "J-ZENITH": { type: "reduction", value: 0.02, effect: "Réduction 2%" },
+    "COM-MASTER": { type: "cashback", value: 500, effect: "Cashback 500 FCFA" }
   } as const;
 
   type PromoCode = {
@@ -70,6 +77,8 @@ const Calculator = () => {
       baseFeeRate = feeRates["beceao-cemac"][destination as keyof typeof feeRates["beceao-cemac"]] || 0.035;
     } else if (direction === "cemac-beceao") {
       baseFeeRate = deliveryTime === "3days" ? feeRates["cemac-beceao"].threedays : feeRates["cemac-beceao"].standard;
+    } else if (direction === "togo-france") {
+      baseFeeRate = feeRates["togo-france"].standard;
     }
 
     // Application des réductions de délai (seulement pour BECEAO → CEMAC)
@@ -139,7 +148,7 @@ const Calculator = () => {
     message += `\n\n✅ Je confirme vouloir procéder à ce transfert.
 📱 Merci de me contacter pour finaliser la transaction.`;
 
-    const whatsappUrl = `https://wa.me/YOUR_WHATSAPP_NUMBER?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/99771419?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -181,6 +190,7 @@ const Calculator = () => {
                     <SelectContent>
                       <SelectItem value="beceao-cemac">BECEAO → CEMAC (Depuis le Togo)</SelectItem>
                       <SelectItem value="cemac-beceao">CEMAC → BECEAO (Vers le Togo)</SelectItem>
+                      <SelectItem value="togo-france">TOGO → FRANCE</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -203,7 +213,7 @@ const Calculator = () => {
                           <SelectItem value="guinee-equatoriale">Guinée Équatoriale</SelectItem>
                           <SelectItem value="tchad">Tchad</SelectItem>
                         </>
-                      ) : (
+                      ) : direction === "cemac-beceao" ? (
                         <>
                           <SelectItem value="gabon">Gabon</SelectItem>
                           <SelectItem value="cameroun">Cameroun</SelectItem>
@@ -212,6 +222,8 @@ const Calculator = () => {
                           <SelectItem value="guinee-equatoriale">Guinée Équatoriale</SelectItem>
                           <SelectItem value="tchad">Tchad</SelectItem>
                         </>
+                      ) : (
+                        <SelectItem value="france">France</SelectItem>
                       )}
                     </SelectContent>
                   </Select>
@@ -231,10 +243,15 @@ const Calculator = () => {
                           <SelectItem value="2days">2 jours (-2% sur frais)</SelectItem>
                           <SelectItem value="3days">3 jours (-3% sur frais)</SelectItem>
                         </>
-                      ) : (
+                      ) : direction === "cemac-beceao" ? (
                         <>
                           <SelectItem value="instant">Instantané (8% frais)</SelectItem>
                           <SelectItem value="3days">3 jours (4% frais)</SelectItem>
+                        </>
+                      ) : (
+                        <>
+                          <SelectItem value="instant">Instantané (5% frais)</SelectItem>
+                          <SelectItem value="1day">24h (5% frais)</SelectItem>
                         </>
                       )}
                     </SelectContent>
@@ -243,8 +260,8 @@ const Calculator = () => {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">Code promo ambassadeur (optionnel)</label>
-                  <Input
-                    placeholder="Ex: JONAS, MARIE, PAUL..."
+                   <Input
+                    placeholder="Ex: CORSKO, MR_BOURSES, JONES..."
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
                     className="h-12"

@@ -6,7 +6,7 @@ const Header = () => {
   };
 
   const openWhatsApp = () => {
-    window.open('https://wa.me/message/YOUR_WHATSAPP_NUMBER', '_blank');
+    window.open('https://wa.me/99771419', '_blank');
   };
 
   return (
