@@ -55,7 +55,7 @@ const AmbassadorsSection = () => {
 
   const requestPromoCode = () => {
     const message = "Bonjour ! Je souhaiterais devenir ambassadeur DYNAMIK Exchange et obtenir mon propre code promo. Pouvez-vous me donner plus d'informations ?";
-    const whatsappUrl = `https://wa.me/99771419?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/22899771419?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 

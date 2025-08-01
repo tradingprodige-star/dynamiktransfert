@@ -148,7 +148,7 @@ const Calculator = () => {
     message += `\n\n✅ Je confirme vouloir procéder à ce transfert.
 📱 Merci de me contacter pour finaliser la transaction.`;
 
-    const whatsappUrl = `https://wa.me/99771419?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/22899771419?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
