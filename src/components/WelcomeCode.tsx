@@ -59,6 +59,22 @@ const WelcomeCode = () => {
             <p>* Offre valable une seule fois par client</p>
             <p>* Applicable sur tous les transferts vers le Gabon, Togo et zone CEMAC</p>
           </div>
+          
+          {/* Services USDT */}
+          <div className="mt-12 bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+            <h3 className="text-xl font-bold mb-3">💰 Services USDT</h3>
+            <p className="text-lg mb-4">
+              Nous rachetons et vendons vos USDT dans toutes les zones BECEAO et CEMAC.
+            </p>
+            <div className="bg-white/20 rounded-lg p-4 mb-4">
+              <p className="text-2xl font-bold text-primary-glow">
+                Taux de rachat actuel : 565 F/USDT
+              </p>
+            </div>
+            <p className="text-sm opacity-80">
+              Taux mis à jour quotidiennement • Service disponible 24/7
+            </p>
+          </div>
         </div>
       </div>
     </section>

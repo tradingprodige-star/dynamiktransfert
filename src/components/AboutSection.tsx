@@ -14,16 +14,10 @@ const AboutSection = () => {
           {/* Storytelling */}
           <div className="text-center mb-16 animate-fade-in">
             <div className="max-w-4xl mx-auto">
-              <h3 className="text-2xl md:text-3xl font-bold mb-6 text-foreground">
-                🌍 Tout a commencé dans une chambre à Lomé…
-              </h3>
-              
               <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
                 <p>
                   En 2020, le monde était figé par la crise du Covid.
-                  Mais pendant que la planète tournait au ralenti, deux jeunes amis de Lomé — 
-                  <span className="font-semibold text-primary">Prodige Komlanvi ADJOTE</span> et 
-                  <span className="font-semibold text-primary"> Corneille Kokou D'Almeida</span> — 
+                  Mais pendant que la planète tournait au ralenti, deux jeunes amis de Lomé 
                   décidaient de créer leur propre dynamique :
                 </p>
                 
@@ -57,17 +51,9 @@ const AboutSection = () => {
                 <ul className="list-disc list-inside space-y-2 max-w-2xl mx-auto">
                   <li>Envoyer de l'argent en ligne en moins de 10 minutes</li>
                   <li>Acheter et revendre du USDT partout dans le monde</li>
-                  <li>Et surtout, démocratiser l'accès à la finance numérique en Afrique Centrale</li>
+                  <li>Et surtout, démocratiser l'accès à la finance en Afrique</li>
                 </ul>
               </div>
-            </div>
-            
-            <div className="mt-12 bg-gradient-primary text-white p-6 rounded-2xl shadow-card">
-              <h3 className="text-lg font-bold mb-2">💰 Services USDT</h3>
-              <p className="text-sm opacity-90">
-                Nous rachetons et vendons vos USDT dans toutes les zones BECEAO et CEMAC. 
-                Taux du jour mis à jour quotidiennement sur notre site.
-              </p>
             </div>
           </div>
 
@@ -112,8 +98,7 @@ const AboutSection = () => {
                 <p className="text-accent font-semibold mb-2">Business Developer & Analyste Boursier</p>
                 <p className="text-sm text-muted-foreground mb-3">Togolais</p>
                 <p className="text-muted-foreground leading-relaxed mb-4">
-                  Co-fondateur de DYNAMIK SHOP et DYNAMIK Exchange. Expert en développement commercial 
-                  et analyse boursière, architecte de la stratégie business.
+                  Co-fondateur de DYNAMIK SHOP et DYNAMIK Exchange. Entrepreneur committed to Blockchain /web3 and financial Market.
                 </p>
                 <button
                   onClick={() => openInstagram('https://www.instagram.com/le_prodigieu?igsh=MXE1eTV4bXY3eTMxdw%3D%3D&utm_source=qr')}
@@ -160,16 +145,16 @@ const AboutSection = () => {
             <div className="text-center p-8 rounded-2xl bg-background border border-border">
               <h4 className="text-xl font-bold mb-4 text-primary">Notre Mission</h4>
               <p className="text-muted-foreground">
-                Démocratiser les transferts d'argent en Afrique centrale en offrant 
-                une solution accessible, transparente et économique.
+                Démocratiser les transferts d'argent en Afrique plus précisément entre l'Afrique de l'Ouest 
+                Et L'Afrique centrale en offrant une solution accessible, transparente et économique.
               </p>
             </div>
             
             <div className="text-center p-8 rounded-2xl bg-background border border-border">
               <h4 className="text-xl font-bold mb-4 text-accent">Notre Vision</h4>
               <p className="text-muted-foreground">
-                Devenir la référence des échanges financiers au Gabon, Togo et 
-                dans toute la zone CEMAC.
+                Devenir la référence des échanges financiers entre le Gabon, Togo et 
+                dans toute la zone BECEAO.
               </p>
             </div>
           </div>

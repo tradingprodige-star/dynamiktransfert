@@ -27,7 +27,7 @@ const Header = () => {
             Envoyez. Recevez. Multipliez.
           </h2>
           <p className="text-xl md:text-2xl mb-8 text-white/90 slide-in-right">
-            En moins de 10 minutes. Sans vous ruiner.
+            La solution de transfert d'argent la plus simple et économique d'Afrique.
           </p>
 
           {/* CTA Buttons */}
