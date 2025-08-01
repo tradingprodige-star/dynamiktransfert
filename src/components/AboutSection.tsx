@@ -1,4 +1,8 @@
 const AboutSection = () => {
+  const openInstagram = (url: string) => {
+    window.open(url, '_blank');
+  };
+
   return (
     <section className="py-20 bg-card">
       <div className="container mx-auto px-4">
@@ -7,13 +11,58 @@ const AboutSection = () => {
             À propos de <span className="text-primary">DYNAMIK Exchange</span>
           </h2>
           
-          {/* Description principale */}
+          {/* Storytelling */}
           <div className="text-center mb-16 animate-fade-in">
-            <p className="text-xl text-muted-foreground mb-6 max-w-4xl mx-auto leading-relaxed">
-              DYNAMIK Exchange facilite les transferts d'argent entre l'Afrique de l'Ouest et l'Afrique centrale. 
-              Des frais réduits, des délais rapides, une solution moderne pour vos besoins financiers.
-            </p>
-            <div className="bg-gradient-primary text-white p-6 rounded-2xl shadow-card">
+            <div className="max-w-4xl mx-auto">
+              <h3 className="text-2xl md:text-3xl font-bold mb-6 text-foreground">
+                🌍 Tout a commencé dans une chambre à Lomé…
+              </h3>
+              
+              <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
+                <p>
+                  En 2020, le monde était figé par la crise du Covid.
+                  Mais pendant que la planète tournait au ralenti, deux jeunes amis de Lomé — 
+                  <span className="font-semibold text-primary">Prodige Komlanvi ADJOTE</span> et 
+                  <span className="font-semibold text-primary"> Corneille Kokou D'Almeida</span> — 
+                  décidaient de créer leur propre dynamique :
+                </p>
+                
+                <p>
+                  💼 Une petite boutique de vente de vêtements en ligne, qu'ils baptisent 
+                  <span className="font-bold text-accent"> DYNAMIK SHOP</span>.
+                </p>
+                
+                <p>
+                  Contre toute attente, le concept séduit. Les commandes affluent. Les amis se découvrent 
+                  un vrai potentiel entrepreneurial. Le feu est lancé.
+                </p>
+                
+                <div className="my-8">
+                  <div className="w-20 h-1 bg-gradient-primary mx-auto rounded-full"></div>
+                </div>
+                
+                <p className="text-xl font-semibold">
+                  💥 5 ans plus tard, ils reviennent avec un projet 10 fois plus grand.
+                </p>
+                
+                <p>
+                  Toujours unis. Toujours connectés. Toujours déterminés.
+                </p>
+                
+                <p>
+                  Cette fois, <span className="font-bold text-primary">DYNAMIK Exchange</span> n'est pas une boutique.
+                  C'est une infrastructure complète pour :
+                </p>
+                
+                <ul className="list-disc list-inside space-y-2 max-w-2xl mx-auto">
+                  <li>Envoyer de l'argent en ligne en moins de 10 minutes</li>
+                  <li>Acheter et revendre du USDT partout dans le monde</li>
+                  <li>Et surtout, démocratiser l'accès à la finance numérique en Afrique Centrale</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="mt-12 bg-gradient-primary text-white p-6 rounded-2xl shadow-card">
               <h3 className="text-lg font-bold mb-2">💰 Services USDT</h3>
               <p className="text-sm opacity-90">
                 Nous rachetons et vendons vos USDT dans toutes les zones BECEAO et CEMAC. 
@@ -24,7 +73,14 @@ const AboutSection = () => {
 
           {/* Fondateurs */}
           <div className="mb-16">
-            <h3 className="text-2xl font-bold text-center mb-12 text-foreground">Nos Co-Fondateurs</h3>
+            <h3 className="text-2xl font-bold text-center mb-12 text-foreground">
+              👬 Corneille & Prodige
+            </h3>
+            <p className="text-center text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Plus que des amis. Des frères de vision.
+              Ils ont grandi ensemble. Travaillé ensemble. Rêvé ensemble.
+              Aujourd'hui, ils vous invitent à entrer dans leur dynamique.
+            </p>
             <div className="grid md:grid-cols-2 gap-12">
               
               {/* Corneille */}
@@ -33,11 +89,18 @@ const AboutSection = () => {
                   CK
                 </div>
                 <h4 className="text-xl font-bold mb-2 text-foreground">Corneille Kokou D'Almeida</h4>
-                <p className="text-accent font-semibold mb-3">Co-Fondateur & Développeur</p>
-                <p className="text-muted-foreground leading-relaxed">
-                  Jeune entrepreneur togolais-français, co-fondateur de DYNAMIKSHOP et aujourd'hui 
+                <p className="text-accent font-semibold mb-2">Co-Fondateur & Développeur</p>
+                <p className="text-sm text-muted-foreground mb-3">Français</p>
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  Jeune entrepreneur français, co-fondateur de DYNAMIKSHOP et aujourd'hui 
                   développeur et co-fondateur de DYNAMIK Exchange. Vision technologique et innovation.
                 </p>
+                <button
+                  onClick={() => openInstagram('https://www.instagram.com/corneille_dald?igsh=Y2UyNnE3a3EyeHN3')}
+                  className="text-primary hover:text-accent transition-colors text-sm font-medium"
+                >
+                  Suivre sur Instagram →
+                </button>
               </div>
 
               {/* Prodige */}
@@ -46,12 +109,25 @@ const AboutSection = () => {
                   PK
                 </div>
                 <h4 className="text-xl font-bold mb-2 text-foreground">Prodige K. ADJOTE</h4>
-                <p className="text-accent font-semibold mb-3">Business Developer & Analyste Boursier</p>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-accent font-semibold mb-2">Business Developer & Analyste Boursier</p>
+                <p className="text-sm text-muted-foreground mb-3">Togolais</p>
+                <p className="text-muted-foreground leading-relaxed mb-4">
                   Co-fondateur de DYNAMIK SHOP et DYNAMIK Exchange. Expert en développement commercial 
                   et analyse boursière, architecte de la stratégie business.
                 </p>
+                <button
+                  onClick={() => openInstagram('https://www.instagram.com/le_prodigieu?igsh=MXE1eTV4bXY3eTMxdw%3D%3D&utm_source=qr')}
+                  className="text-primary hover:text-accent transition-colors text-sm font-medium"
+                >
+                  Suivre sur Instagram →
+                </button>
               </div>
+            </div>
+            
+            <div className="text-center mt-12">
+              <p className="text-lg font-semibold text-primary">
+                Bienvenue dans DYNAMIK Exchange.
+              </p>
             </div>
           </div>
 
