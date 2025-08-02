@@ -22,7 +22,7 @@ const AboutSection = () => {
                 </p>
                 
                 <p>
-                  💼 Une petite boutique de vente de vêtements en ligne, qu'ils baptisent 
+                  💼 Une boutique de vêtements en ligne qui connaît un succès, qu'ils baptisent 
                   <span className="font-bold text-accent"> DYNAMIK SHOP</span>.
                 </p>
                 

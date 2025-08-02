@@ -40,7 +40,7 @@ const Footer = () => {
             </button>
             
             <button
-              onClick={() => openLink('chrome://external-file/DYNAMIK_TRANSFERT_Termes_Politique.pdf')}
+              onClick={() => openLink('https://publuu.com/flip-book/939638/_0_')}
               className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
             >
               <FileText size={20} />
@@ -48,7 +48,7 @@ const Footer = () => {
             </button>
             
             <button
-              onClick={() => openLink('chrome://external-file/DYNAMIK_TRANSFERT_Terms_Privacy_EN.pdf')}
+              onClick={() => openLink('https://publuu.com/flip-book/939638/2062188')}
               className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
             >
               <FileText size={20} />

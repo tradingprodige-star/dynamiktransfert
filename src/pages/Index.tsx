@@ -3,6 +3,8 @@ import AboutSection from "@/components/AboutSection";
 import Calculator from "@/components/Calculator";
 import AmbassadorsSection from "@/components/AmbassadorsSection";
 import WelcomeCode from "@/components/WelcomeCode";
+import FAQ from "@/components/FAQ";
+import ComplaintForm from "@/components/ComplaintForm";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -13,6 +15,8 @@ const Index = () => {
       <AmbassadorsSection />
       <WelcomeCode />
       <AboutSection />
+      <FAQ />
+      <ComplaintForm />
       <Footer />
     </div>
   );
