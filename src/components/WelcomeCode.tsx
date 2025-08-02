@@ -68,8 +68,14 @@ const WelcomeCode = () => {
             </p>
             <div className="bg-white/20 rounded-lg p-4 mb-4">
               <p className="text-2xl font-bold text-primary-glow">
-                Taux de rachat actuel : 565 F/USDT
+                Rachat : 565 F/USDT
               </p>
+            </div>
+            <div className="flex justify-center gap-4 text-sm opacity-70 mb-2">
+              <span>Partenaires officiels :</span>
+              <span>Turbo-Exchange</span>
+              <span>•</span>
+              <span>Jones Exchange</span>
             </div>
             <p className="text-sm opacity-80">
               Taux mis à jour quotidiennement • Service disponible 24/7

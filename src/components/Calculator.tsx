@@ -33,7 +33,8 @@ const Calculator = () => {
       threedays: 0.04 // 4% si délai 3 jours
     },
     "togo-france": {
-      standard: 0.05 // 5% pour Togo vers France
+      standard: 0.05, // 5% pour Togo vers France 
+      depreciation: 0.01 // +1% de dépréciation jusqu'à 3 jours
     }
   };
 
@@ -79,6 +80,10 @@ const Calculator = () => {
       baseFeeRate = deliveryTime === "3days" ? feeRates["cemac-beceao"].threedays : feeRates["cemac-beceao"].standard;
     } else if (direction === "togo-france") {
       baseFeeRate = feeRates["togo-france"].standard;
+      // Ajout de 1% de dépréciation pour jusqu'à 3 jours
+      if (deliveryTime === "1day" || deliveryTime === "2days" || deliveryTime === "3days") {
+        baseFeeRate += feeRates["togo-france"].depreciation;
+      }
     }
 
     // Application des réductions de délai (pour BECEAO → CEMAC et TOGO → FRANCE)
@@ -127,7 +132,7 @@ const Calculator = () => {
     const directionText = direction === "beceao-cemac" ? `depuis le Togo vers ${destination.toUpperCase()}` : `depuis ${destination.toUpperCase()} vers le Togo`;
     const deliveryText = deliveryTime === "instant" ? "instantané" : deliveryTime === "1day" ? "24h" : deliveryTime === "2days" ? "2 jours" : "3 jours";
     
-    let message = `🏦 DYNAMIK Exchange - Demande de transfert
+    let message = `🏦 DYNAMIK Transfert - Demande de transfert
 
 💰 DÉTAILS DU TRANSFERT :
 - Montant : ${amount} FCFA
@@ -160,7 +165,7 @@ const Calculator = () => {
             Calculez vos <span className="text-primary">frais de transfert</span>
           </h2>
           <p className="text-center text-muted-foreground mb-12 text-lg">
-            Découvrez combien vous économisez avec DYNAMIK Exchange
+            Découvrez combien vous économisez avec DYNAMIK Transfert
           </p>
 
           <div className="grid lg:grid-cols-2 gap-8">
@@ -190,7 +195,7 @@ const Calculator = () => {
                     <SelectContent>
                       <SelectItem value="beceao-cemac">BECEAO → CEMAC (Depuis le Togo)</SelectItem>
                       <SelectItem value="cemac-beceao">CEMAC → BECEAO (Vers le Togo)</SelectItem>
-                      <SelectItem value="togo-france">TOGO → FRANCE</SelectItem>
+                      <SelectItem value="togo-france">TOGO → FRANCE (pays d'origine Togo)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

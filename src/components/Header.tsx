@@ -17,7 +17,7 @@ const Header = () => {
           {/* Logo */}
           <div className="mb-8 animate-fade-in">
             <h1 className="text-4xl md:text-6xl font-bold mb-2 float-animation">
-              DYNAMIK <span className="text-primary-glow">EXCHANGE</span>
+              DYNAMIK <span className="text-primary-glow">TRANSFERT</span>
             </h1>
             <div className="w-20 h-1 bg-primary-glow mx-auto rounded-full animate-glow-pulse" />
           </div>

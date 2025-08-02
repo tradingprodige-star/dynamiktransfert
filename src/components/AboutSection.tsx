@@ -8,7 +8,7 @@ const AboutSection = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 text-foreground animate-fade-in">
-            À propos de <span className="text-primary">DYNAMIK Exchange</span>
+            À propos de <span className="text-primary">DYNAMIK Transfert</span>
           </h2>
           
           {/* Storytelling */}
@@ -44,7 +44,7 @@ const AboutSection = () => {
                 </p>
                 
                 <p>
-                  Cette fois, <span className="font-bold text-primary">DYNAMIK Exchange</span> n'est pas une boutique.
+                  Cette fois, <span className="font-bold text-primary">DYNAMIK Transfert</span> n'est pas une boutique.
                   C'est une infrastructure complète pour :
                 </p>
                 
@@ -79,7 +79,7 @@ const AboutSection = () => {
                 <p className="text-sm text-muted-foreground mb-3">Français</p>
                 <p className="text-muted-foreground leading-relaxed mb-4">
                   Jeune entrepreneur français, co-fondateur de DYNAMIKSHOP et aujourd'hui 
-                  développeur et co-fondateur de DYNAMIK Exchange. Vision technologique et innovation.
+                  développeur et co-fondateur de DYNAMIK Transfert. Vision technologique et innovation.
                 </p>
                 <button
                   onClick={() => openInstagram('https://www.instagram.com/corneille_dald?igsh=Y2UyNnE3a3EyeHN3')}
@@ -98,7 +98,7 @@ const AboutSection = () => {
                 <p className="text-accent font-semibold mb-2">Business Developer & Analyste Boursier</p>
                 <p className="text-sm text-muted-foreground mb-3">Togolais</p>
                 <p className="text-muted-foreground leading-relaxed mb-4">
-                  Co-fondateur de DYNAMIK SHOP et DYNAMIK Exchange. Entrepreneur committed to Blockchain /web3 and financial Market.
+                  Co-fondateur de DYNAMIK SHOP et DYNAMIK Transfert. Entrepreneur committed to Blockchain /web3 and financial Market.
                 </p>
                 <button
                   onClick={() => openInstagram('https://www.instagram.com/le_prodigieu?igsh=MXE1eTV4bXY3eTMxdw%3D%3D&utm_source=qr')}
@@ -111,7 +111,7 @@ const AboutSection = () => {
             
             <div className="text-center mt-12">
               <p className="text-lg font-semibold text-primary">
-                Bienvenue dans DYNAMIK Exchange.
+                Bienvenue dans DYNAMIK Transfert.
               </p>
             </div>
           </div>
@@ -134,7 +134,7 @@ const AboutSection = () => {
                 <div className="w-20 h-20 bg-gradient-accent rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 mx-auto">
                   2025
                 </div>
-                <h4 className="font-bold text-lg mb-2">DYNAMIK Exchange</h4>
+                <h4 className="font-bold text-lg mb-2">DYNAMIK Transfert</h4>
                 <p className="text-muted-foreground">Révolution des transferts d'argent</p>
               </div>
             </div>

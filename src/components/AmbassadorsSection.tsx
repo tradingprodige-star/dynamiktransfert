@@ -4,6 +4,12 @@ import { Card, CardContent } from "@/components/ui/card";
 const AmbassadorsSection = () => {
   const ambassadors = [
     {
+      name: "Bienvenue",
+      code: "BIENVENUE",
+      message: "Premier transfert gratuit !",
+      color: "from-gold-500 to-yellow-500"
+    },
+    {
       name: "Corsko",
       code: "CORSKO",
       message: "Avec Corsko, transfert en force !",
@@ -70,11 +76,10 @@ const AmbassadorsSection = () => {
             Profitez de codes promo exclusifs avec nos ambassadeurs de confiance
           </p>
 
-          {/* Carrousel des ambassadeurs */}
-          <div className="relative mb-12 overflow-hidden">
-            <div className="flex gap-6 animate-[slide-infinite_5s_linear_infinite] hover:[animation-play-state:paused]">
-              {[...ambassadors, ...ambassadors].map((ambassador, index) => (
-                <Card key={`${ambassador.code}-${index}`} className="min-w-[280px] text-center shadow-card hover:shadow-glow transition-all duration-300 hover:scale-105 group">
+          {/* Grille des codes promos */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {ambassadors.map((ambassador, index) => (
+                <Card key={ambassador.code} className="text-center shadow-card hover:shadow-glow transition-all duration-300 hover:scale-105 group">
                   <CardContent className="p-6">
                     {/* Avatar généré avec gradient */}
                     <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${ambassador.color} mx-auto mb-4 flex items-center justify-center text-white text-xl font-bold shadow-lg group-hover:animate-pulse`}>
@@ -103,7 +108,6 @@ const AmbassadorsSection = () => {
                   </CardContent>
                 </Card>
               ))}
-            </div>
           </div>
 
           {/* CTA pour devenir ambassadeur */}

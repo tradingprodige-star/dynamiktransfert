@@ -14,7 +14,7 @@ const Footer = () => {
           {/* Logo et description */}
           <div className="text-center mb-8">
             <h3 className="text-2xl font-bold mb-2">
-              DYNAMIK <span className="text-primary">EXCHANGE</span>
+              DYNAMIK <span className="text-primary">TRANSFERT</span>
             </h3>
             <p className="text-muted-foreground max-w-md mx-auto">
               La solution de transfert d'argent la plus simple et économique d'Afrique centrale.
@@ -24,7 +24,7 @@ const Footer = () => {
           {/* Liens principaux */}
           <div className="flex flex-wrap justify-center gap-6 mb-8">
             <button
-              onClick={() => openLink('https://instagram.com/dynamikexchange')}
+              onClick={() => openLink('https://www.instagram.com/dynamik_shop?igsh=MXU0NnFxMWllb3N0')}
               className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
             >
               <Instagram size={20} />
@@ -40,11 +40,19 @@ const Footer = () => {
             </button>
             
             <button
-              onClick={() => openLink('#conditions')}
+              onClick={() => openLink('chrome://external-file/DYNAMIK_TRANSFERT_Termes_Politique.pdf')}
               className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
             >
               <FileText size={20} />
-              <span>Conditions</span>
+              <span>Termes (FR)</span>
+            </button>
+            
+            <button
+              onClick={() => openLink('chrome://external-file/DYNAMIK_TRANSFERT_Terms_Privacy_EN.pdf')}
+              className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+            >
+              <FileText size={20} />
+              <span>Terms (EN)</span>
             </button>
             
             <button
