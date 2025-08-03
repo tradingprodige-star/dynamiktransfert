@@ -2,7 +2,6 @@ import Header from "@/components/Header";
 import AboutSection from "@/components/AboutSection";
 import Calculator from "@/components/Calculator";
 import AmbassadorsSection from "@/components/AmbassadorsSection";
-import AmbassadorSlider from "@/components/AmbassadorSlider";
 import WelcomeCode from "@/components/WelcomeCode";
 import FAQ from "@/components/FAQ";
 import ComplaintForm from "@/components/ComplaintForm";
@@ -13,9 +12,8 @@ const Index = () => {
     <div className="min-h-screen">
       <Header />
       <Calculator />
-      <WelcomeCode />
-      <AmbassadorSlider />
       <AmbassadorsSection />
+      <WelcomeCode />
       <AboutSection />
       <FAQ />
       <ComplaintForm />

@@ -17,17 +17,17 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 15%;
 
-    --primary: 47 96% 59%; /* Jaune #FDCB2D */
+    --primary: 48 100% 62%;
     --primary-foreground: 220 15% 15%;
 
-    --secondary: 323 87% 64%; /* Rose #FF5FA2 */
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 210 20% 95%;
+    --secondary-foreground: 220 15% 15%;
 
     --muted: 210 15% 90%;
     --muted-foreground: 220 10% 45%;
 
-    --accent: 258 86% 66%; /* Violet #8A4FFF */
-    --accent-foreground: 0 0% 100%;
+    --accent: 320 100% 71%;
+    --accent-foreground: 210 20% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 20% 98%;
@@ -47,25 +47,16 @@ All colors MUST be HSL.
     --off-white: 210 20% 98%;
     --matte-black: 220 15% 10%;
     
-    /* Gradients modernes avec nouvelles couleurs */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--accent)));
-    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--secondary) / 0.1), hsl(var(--accent) / 0.1));
+    /* Gradients avec les nouvelles couleurs */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--violet-digital)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 50%, hsl(var(--violet-digital)) 100%);
     --gradient-dark: linear-gradient(135deg, hsl(var(--navy-blue)), hsl(var(--charcoal-gray)));
     
-    /* Shadows élégantes */
-    --shadow-primary: 0 10px 30px -10px hsl(var(--primary) / 0.3);
-    --shadow-secondary: 0 10px 30px -10px hsl(var(--secondary) / 0.3);
-    --shadow-accent: 0 10px 30px -10px hsl(var(--accent) / 0.3);
+    /* Shadows avec les nouvelles couleurs */
     --shadow-glow: 0 0 40px hsl(var(--primary) / 0.4);
     --shadow-card: 0 10px 30px -10px hsl(var(--charcoal-gray) / 0.15);
-    --shadow-elegant: 0 20px 60px -10px hsl(220 15% 15% / 0.1);
     --shadow-financial: 0 5px 25px -5px hsl(var(--navy-blue) / 0.3);
-    
-    /* Transitions fluides */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-spring: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 
     --radius: 0.5rem;
 

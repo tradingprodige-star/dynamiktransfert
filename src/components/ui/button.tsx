@@ -5,29 +5,29 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 transform hover:scale-105 active:scale-95",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-primary to-secondary text-white shadow-primary hover:shadow-lg hover:shadow-primary/25",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground hover:border-primary/50",
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
-          "bg-gradient-to-r from-secondary to-accent text-white shadow-secondary hover:shadow-lg hover:shadow-secondary/25",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        hero: "bg-gradient-primary text-white hover:shadow-glow hover:scale-105 transition-all duration-300",
+        hero: "bg-gradient-primary text-matte-black hover:shadow-glow hover:scale-105 transition-all duration-300",
         whatsapp: "bg-[#25D366] text-white hover:bg-[#1da851] hover:shadow-glow hover:scale-105 transition-all duration-300",
-        accent: "bg-gradient-to-r from-accent to-primary text-white shadow-accent hover:shadow-lg hover:shadow-accent/25",
+        accent: "bg-gradient-accent text-off-white hover:shadow-glow hover:scale-105 transition-all duration-300",
         financial: "bg-navy-blue text-off-white hover:bg-charcoal-gray hover:shadow-financial transition-all duration-300",
-        premium: "bg-gradient-to-r from-accent to-primary text-white shadow-accent hover:shadow-lg hover:shadow-accent/25",
+        premium: "bg-gradient-dark text-off-white hover:shadow-financial hover:scale-105 transition-all duration-300",
       },
       size: {
         default: "h-10 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-12 rounded-lg px-8 text-base",
+        sm: "h-9 rounded-md px-3",
+        lg: "h-11 rounded-md px-8",
         xl: "h-14 rounded-lg px-10 text-lg",
         icon: "h-10 w-10",
       },
