@@ -62,11 +62,6 @@ const AboutSection = () => {
             <h3 className="text-2xl font-bold text-center mb-12 text-foreground">
               👬 Corneille & Prodige
             </h3>
-            <p className="text-center text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Plus que des amis. Des frères de vision.
-              Ils ont grandi ensemble. Travaillé ensemble. Rêvé ensemble.
-              Aujourd'hui, ils vous invitent à entrer dans leur dynamique.
-            </p>
             <div className="grid md:grid-cols-2 gap-12">
               
               {/* Corneille */}

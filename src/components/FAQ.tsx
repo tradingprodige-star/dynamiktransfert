@@ -87,7 +87,7 @@ const FAQ = () => {
               Vous ne trouvez pas la réponse à votre question ?
             </p>
             <button
-              onClick={() => window.open('https://wa.me/22899771419?text=Bonjour, j\'ai une question qui n\'est pas dans la FAQ...', '_blank')}
+              onClick={() => window.open('https://wa.me/22899771419?text=Bonjour%20DYNAMIK%20TRANSFERT,%20j\'ai%20une%20question%20qui%20n\'est%20pas%20dans%20la%20FAQ...', '_blank')}
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
             >
               Contactez-nous sur WhatsApp

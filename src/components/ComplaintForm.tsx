@@ -45,7 +45,8 @@ ${formData.description}
 ---
 Merci de traiter cette réclamation dans les plus brefs délais.`;
 
-    const encodedMessage = encodeURIComponent(message);
+    const finalMessage = `Bonjour DYNAMIK TRANSFERT, ${message}`;
+    const encodedMessage = encodeURIComponent(finalMessage);
     window.open(`https://wa.me/22899771419?text=${encodedMessage}`, '_blank');
   };
 

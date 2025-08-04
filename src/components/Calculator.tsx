@@ -163,7 +163,8 @@ const Calculator = () => {
     message += `\n\n✅ Je confirme vouloir procéder à ce transfert.
 📱 Merci de me contacter pour finaliser la transaction.`;
 
-    const whatsappUrl = `https://wa.me/22899771419?text=${encodeURIComponent(message)}`;
+    const finalMessage = `Bonjour DYNAMIK TRANSFERT, ${message}`;
+    const whatsappUrl = `https://wa.me/22899771419?text=${encodeURIComponent(finalMessage)}`;
     window.open(whatsappUrl, '_blank');
   };
 

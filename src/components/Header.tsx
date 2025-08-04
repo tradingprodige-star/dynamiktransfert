@@ -6,7 +6,7 @@ const Header = () => {
   };
 
   const openWhatsApp = () => {
-    window.open('https://wa.me/22899771419', '_blank');
+    window.open('https://wa.me/22899771419?text=Bonjour%20DYNAMIK%20TRANSFERT', '_blank');
   };
 
   return (
