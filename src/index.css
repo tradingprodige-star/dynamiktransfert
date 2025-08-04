@@ -139,9 +139,56 @@ All colors MUST be HSL.
     @apply transition-all duration-300 hover:shadow-glow hover:-translate-y-1;
   }
 
-  /* Parallax and scroll animations */
+  /* Advanced Motion Design & Anticipatory UX */
   .parallax-scroll {
     will-change: transform;
+  }
+
+  /* Magnetic cursor effect */
+  .cursor-magnetic {
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  /* Anticipatory hover states */
+  .hover-anticipate {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+  }
+
+  .hover-anticipate:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Scroll reveal animation */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  .scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Micro-interactions */
+  .micro-interaction {
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .micro-interaction:active {
+    transform: scale(0.98);
+  }
+
+  /* Responsive motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   .float-animation {

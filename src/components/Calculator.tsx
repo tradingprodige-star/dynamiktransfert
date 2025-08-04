@@ -3,8 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const Calculator = () => {
+  const scrollRevealRef = useScrollReveal();
   const [amount, setAmount] = useState("");
   const [direction, setDirection] = useState("");
   const [destination, setDestination] = useState("");
@@ -169,23 +172,41 @@ const Calculator = () => {
   };
 
   return (
-    <section id="calculator" className="py-20 bg-background">
+    <section id="calculator" className="py-20 bg-background scroll-reveal" ref={scrollRevealRef}>
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground">
+          <motion.h2 
+            className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
             Calculez vos <span className="text-primary">frais de transfert</span>
-          </h2>
-          <p className="text-center text-muted-foreground mb-12 text-lg">
+          </motion.h2>
+          <motion.p 
+            className="text-center text-muted-foreground mb-12 text-lg"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          >
             Découvrez combien vous économisez avec DYNAMIK Transfert
-          </p>
+          </motion.p>
 
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Formulaire */}
-            <Card className="shadow-card">
-              <CardHeader>
-                <CardTitle className="text-2xl text-center">Votre transfert</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
+              <Card className="shadow-card hover-anticipate">
+                <CardHeader>
+                  <CardTitle className="text-2xl text-center">Votre transfert</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium mb-2">Montant à envoyer (FCFA)</label>
                   <Input
@@ -322,10 +343,17 @@ const Calculator = () => {
                   Calculer
                 </Button>
               </CardContent>
-            </Card>
+              </Card>
+            </motion.div>
 
             {/* Résultats */}
-            <Card className="shadow-card">
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+            >
+              <Card className="shadow-card hover-anticipate">
               <CardHeader>
                 <CardTitle className="text-2xl text-center">Votre devis</CardTitle>
               </CardHeader>
@@ -389,7 +417,8 @@ const Calculator = () => {
                   </div>
                 )}
               </CardContent>
-            </Card>
+              </Card>
+            </motion.div>
           </div>
         </div>
       </div>

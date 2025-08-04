@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const AmbassadorsSection = () => {
+  const scrollRevealRef = useScrollReveal();
+  
   const ambassadors = [
     {
       name: "Bienvenue",
@@ -67,20 +71,40 @@ const AmbassadorsSection = () => {
   };
 
   return (
-    <section className="py-20 bg-card">
+    <section className="py-20 bg-card scroll-reveal" ref={scrollRevealRef}>
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground animate-fade-in">
+          <motion.h2 
+            className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
             Nos <span className="text-primary">Ambassadeurs</span>
-          </h2>
-          <p className="text-center text-muted-foreground mb-12 text-lg animate-fade-in">
+          </motion.h2>
+          <motion.p 
+            className="text-center text-muted-foreground mb-12 text-lg"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          >
             Profitez de codes promo exclusifs avec nos ambassadeurs de confiance
-          </p>
+          </motion.p>
 
           {/* Grille des codes promos */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {ambassadors.map((ambassador, index) => (
-                <Card key={ambassador.code} className="text-center shadow-card hover:shadow-glow transition-all duration-300 hover:scale-105 group">
+              <motion.div
+                key={ambassador.code}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+              >
+                <Card className="text-center shadow-card hover:shadow-glow transition-all duration-300 hover:scale-105 group hover-anticipate micro-interaction">
                   <CardContent className="p-6">
                     {/* Avatar généré avec gradient */}
                     <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${ambassador.color} mx-auto mb-4 flex items-center justify-center text-white text-xl font-bold shadow-lg group-hover:animate-pulse`}>
@@ -108,7 +132,8 @@ const AmbassadorsSection = () => {
                     </Button>
                   </CardContent>
                 </Card>
-              ))}
+              </motion.div>
+            ))}
           </div>
 
           {/* CTA pour devenir ambassadeur */}
