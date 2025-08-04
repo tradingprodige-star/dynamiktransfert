@@ -88,7 +88,7 @@ const Header = () => {
                 size="xl" 
                 variant="hero"
                 onClick={scrollToCalculator}
-                className="w-full sm:w-auto hover-anticipate micro-interaction"
+                className="w-full sm:w-auto hover-anticipate micro-interaction button-pulse animate-glow-pulse"
               >
                 Calculer mes frais
               </Button>
@@ -103,7 +103,7 @@ const Header = () => {
                 size="xl" 
                 variant="whatsapp"
                 onClick={openWhatsApp}
-                className="w-full sm:w-auto hover-anticipate micro-interaction"
+                className="w-full sm:w-auto hover-anticipate micro-interaction button-pulse animate-glow-pulse"
               >
                 Commencer sur WhatsApp
               </Button>
@@ -126,9 +126,8 @@ const Header = () => {
                 transition={{ delay: 1.2 + index * 0.1, duration: 0.6 }}
               >
                 <motion.div 
-                  className="w-3 h-3 bg-primary-glow rounded-full"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  className="w-3 h-3 bg-primary-glow rounded-full trust-light-sequence"
+                  style={{ animationDelay: `${index * 0.5}s` }}
                 />
                 <span>{text}</span>
               </motion.div>
