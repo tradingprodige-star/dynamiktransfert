@@ -32,7 +32,7 @@ const Footer = () => {
             </button>
             
             <button
-              onClick={() => openLink('https://wa.me/22899771419?text=Bonjour%20DYNAMIK%20TRANSFERT,%20je%20souhaite%20obtenir%20plus%20d%27informations')}
+              onClick={() => openLink('https://wa.me/22899771419?text=Bonjour%20DYNAMIK%20TRANSFERT')}
               className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
             >
               <MessageCircle size={20} />
@@ -82,7 +82,7 @@ const Footer = () => {
             <div className="inline-block bg-card border border-border rounded-lg p-4">
               <p className="text-sm text-muted-foreground mb-1">Support client 24/7</p>
               <button
-                onClick={() => openLink('https://wa.me/22899771419?text=Bonjour%20DYNAMIK%20TRANSFERT,%20je%20souhaite%20vous%20contacter')}
+                onClick={() => openLink('https://wa.me/22899771419?text=Bonjour%20DYNAMIK%20TRANSFERT')}
                 className="text-primary font-bold hover:underline"
               >
                 Contactez-nous sur WhatsApp
