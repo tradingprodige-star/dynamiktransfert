@@ -10,7 +10,7 @@ const WelcomeCode = () => {
   };
 
   return (
-    <section className="py-16 bg-gradient-primary">
+    <section className="py-16 bg-gradient-primary slow-blink">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center text-white">
           <div className="mb-8">
@@ -47,7 +47,7 @@ const WelcomeCode = () => {
                 variant="outline"
                 size="lg"
                 onClick={useCodeNow}
-                className="border-white text-white hover:bg-white/10"
+                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground bg-primary/10"
               >
                 Utiliser maintenant
               </Button>
