@@ -57,59 +57,6 @@ const AboutSection = () => {
             </div>
           </div>
 
-          {/* Fondateurs */}
-          <div className="mb-16">
-            <h3 className="text-2xl font-bold text-center mb-12 text-foreground">
-              👬 Corneille & Prodige
-            </h3>
-            <div className="grid md:grid-cols-2 gap-12">
-              
-              {/* Corneille */}
-              <div className="text-center group hover-scale">
-                <div className="w-32 h-32 rounded-full bg-gradient-primary mx-auto mb-6 flex items-center justify-center text-white text-4xl font-bold shadow-glow">
-                  CK
-                </div>
-                <h4 className="text-xl font-bold mb-2 text-foreground">Corneille Kokou D'Almeida</h4>
-                <p className="text-accent font-semibold mb-2">Co-Fondateur & Développeur</p>
-                <p className="text-sm text-muted-foreground mb-3">Français</p>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  Jeune entrepreneur français, co-fondateur de DYNAMIKSHOP et aujourd'hui 
-                  développeur et co-fondateur de DYNAMIK Transfert. Vision technologique et innovation.
-                </p>
-                <button
-                  onClick={() => openInstagram('https://www.instagram.com/corneille_dald?igsh=Y2UyNnE3a3EyeHN3')}
-                  className="text-primary hover:text-accent transition-colors text-sm font-medium"
-                >
-                  Suivre sur Instagram →
-                </button>
-              </div>
-
-              {/* Prodige */}
-              <div className="text-center group hover-scale">
-                <div className="w-32 h-32 rounded-full bg-gradient-accent mx-auto mb-6 flex items-center justify-center text-white text-4xl font-bold shadow-glow">
-                  PK
-                </div>
-                <h4 className="text-xl font-bold mb-2 text-foreground">Prodige K. ADJOTE</h4>
-                <p className="text-accent font-semibold mb-2">Business Developer & Analyste Boursier</p>
-                <p className="text-sm text-muted-foreground mb-3">Togolais</p>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  Co-fondateur de DYNAMIK SHOP et DYNAMIK Transfert. Entrepreneur committed to Blockchain /web3 and financial Market.
-                </p>
-                <button
-                  onClick={() => openInstagram('https://www.instagram.com/le_prodigieu?igsh=MXE1eTV4bXY3eTMxdw%3D%3D&utm_source=qr')}
-                  className="text-primary hover:text-accent transition-colors text-sm font-medium"
-                >
-                  Suivre sur Instagram →
-                </button>
-              </div>
-            </div>
-            
-            <div className="text-center mt-12">
-              <p className="text-lg font-semibold text-primary">
-                Bienvenue dans DYNAMIK Transfert.
-              </p>
-            </div>
-          </div>
 
           {/* Timeline */}
           <div className="mb-16">
