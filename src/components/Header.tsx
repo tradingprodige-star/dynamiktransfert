@@ -2,11 +2,23 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useCursorMagnetic } from "@/hooks/useCursorMagnetic";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 const Header = () => {
   const scrollRevealRef = useScrollReveal();
   const magneticRef1 = useCursorMagnetic(0.3);
   const magneticRef2 = useCursorMagnetic(0.3);
+  const magneticRef3 = useCursorMagnetic(0.3);
+  const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('dynamik_user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
 
   const scrollToCalculator = () => {
     document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' });
@@ -107,6 +119,32 @@ const Header = () => {
               >
                 Commencer sur WhatsApp
               </Button>
+            </motion.div>
+            <motion.div
+              ref={magneticRef3}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="cursor-magnetic"
+            >
+              {user ? (
+                <Button 
+                  size="xl" 
+                  variant="outline"
+                  onClick={() => navigate('/promo')}
+                  className="w-full sm:w-auto hover-anticipate micro-interaction button-pulse text-white border-white hover:bg-white hover:text-primary"
+                >
+                  Mes codes promo
+                </Button>
+              ) : (
+                <Button 
+                  size="xl" 
+                  variant="secondary"
+                  onClick={() => navigate('/auth')}
+                  className="w-full sm:w-auto hover-anticipate micro-interaction button-pulse"
+                >
+                  Se connecter
+                </Button>
+              )}
             </motion.div>
           </motion.div>
 
