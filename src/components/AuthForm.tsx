@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { PhoneInput } from 'react-international-phone';
+import 'react-international-phone/style.css';
 
 interface AuthFormProps {
   onSuccess: () => void;
@@ -18,23 +19,23 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
   const { toast } = useToast();
 
   const validatePhoneNumber = (phone: string) => {
-    const phoneRegex = /^(\+228|228|00228)?[7-9]\d{7}$/;
+    // Validation basique pour numéro international avec indicatif pays
+    const phoneRegex = /^\+\d{7,15}$/;
     return phoneRegex.test(phone.replace(/\s/g, ''));
   };
 
   const formatPhoneNumber = (phone: string) => {
+    // Nettoyer et s'assurer que le numéro commence par +
     const cleaned = phone.replace(/\s/g, '');
-    if (cleaned.startsWith('+228')) return cleaned;
-    if (cleaned.startsWith('228')) return '+' + cleaned;
-    if (cleaned.startsWith('00228')) return '+' + cleaned.substring(2);
-    return '+228' + cleaned;
+    if (cleaned.startsWith('+')) return cleaned;
+    return '+' + cleaned;
   };
 
   const handleSignUp = async () => {
     if (!validatePhoneNumber(phoneNumber)) {
       toast({
         title: "Numéro invalide",
-        description: "Veuillez entrer un numéro de téléphone togolais valide",
+        description: "Veuillez entrer un numéro de téléphone valide avec l'indicatif pays",
         variant: "destructive"
       });
       return;
@@ -110,7 +111,7 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
     if (!validatePhoneNumber(phoneNumber)) {
       toast({
         title: "Numéro invalide",
-        description: "Veuillez entrer un numéro de téléphone togolais valide",
+        description: "Veuillez entrer un numéro de téléphone valide avec l'indicatif pays",
         variant: "destructive"
       });
       return;
@@ -157,9 +158,11 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="text-2xl text-center">Accès DYNAMIK</CardTitle>
+    <Card className="w-full max-w-md mx-auto shadow-card hover-anticipate">
+      <CardHeader className="pb-6">
+        <CardTitle className="text-2xl text-center bg-gradient-primary bg-clip-text text-transparent font-bold">
+          Accès DYNAMIK
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="signin" className="w-full">
@@ -170,19 +173,24 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
           
           <TabsContent value="signin" className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Numéro de téléphone</label>
-              <Input
-                type="tel"
-                placeholder="+228 XX XX XX XX"
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Numéro de téléphone
+              </label>
+              <PhoneInput
+                defaultCountry="tg"
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                className="h-12"
+                onChange={(phone) => setPhoneNumber(phone)}
+                inputClassName="!h-12 !border-input !bg-background !text-foreground"
+                countrySelectorStyleProps={{
+                  className: "!border-input !bg-background"
+                }}
+                className="w-full"
               />
             </div>
             
             <Button 
               onClick={handleSignIn}
-              className="w-full h-12"
+              className="w-full h-12 bg-gradient-primary hover:opacity-90 text-primary-foreground font-semibold micro-interaction"
               disabled={loading}
             >
               {loading ? "Connexion..." : "Se connecter"}
@@ -191,41 +199,50 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
           
           <TabsContent value="signup" className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Numéro de téléphone</label>
-              <Input
-                type="tel"
-                placeholder="+228 XX XX XX XX"
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Numéro de téléphone
+              </label>
+              <PhoneInput
+                defaultCountry="tg"
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                className="h-12"
+                onChange={(phone) => setPhoneNumber(phone)}
+                inputClassName="!h-12 !border-input !bg-background !text-foreground"
+                countrySelectorStyleProps={{
+                  className: "!border-input !bg-background"
+                }}
+                className="w-full"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-2">Mot de passe</label>
-              <Input
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Mot de passe
+              </label>
+              <input
                 type="password"
                 placeholder="Au moins 6 caractères"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-12"
+                className="h-12 w-full px-3 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-2">Confirmer le mot de passe</label>
-              <Input
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Confirmer le mot de passe
+              </label>
+              <input
                 type="password"
                 placeholder="Répétez votre mot de passe"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="h-12"
+                className="h-12 w-full px-3 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
             
             <Button 
               onClick={handleSignUp}
-              className="w-full h-12"
+              className="w-full h-12 bg-gradient-primary hover:opacity-90 text-primary-foreground font-semibold micro-interaction"
               disabled={loading}
             >
               {loading ? "Inscription..." : "S'inscrire"}
@@ -236,6 +253,7 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
         <p className="text-xs text-muted-foreground mt-4 text-center">
           En vous inscrivant, vous acceptez nos conditions d'utilisation.
           Votre numéro de téléphone servira d'identifiant unique.
+          Compatible avec tous les pays.
         </p>
       </CardContent>
     </Card>
