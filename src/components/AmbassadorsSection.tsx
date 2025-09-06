@@ -38,10 +38,12 @@ const AmbassadorsSection = () => {
       color: "from-purple-500 to-violet-500"
     },
     {
-      name: "Turbo",
+      name: "Turboexchange",
       code: "TURBO",
-      message: "Avec Turbo, vitesse maximum !",
-      color: "from-red-500 to-pink-500"
+      message: "Avec Turboexchange, échange ultra-rapide !",
+      color: "from-red-500 to-pink-500",
+      isWhatsAppContact: true,
+      phone: "+22899060652"
     },
     {
       name: "Tony",
@@ -67,6 +69,12 @@ const AmbassadorsSection = () => {
     const message = "Bonjour ! Je souhaiterais devenir ambassadeur DYNAMIK Exchange et obtenir mon propre code promo. Pouvez-vous me donner plus d'informations ?";
     const finalMessage = `Bonjour DYNAMIK TRANSFERT, ${message}`;
     const whatsappUrl = `https://wa.me/22899771419?text=${encodeURIComponent(finalMessage)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const contactTurboexchange = () => {
+    const message = "Bonjour Turboexchange ! Je viens de la part de DYNAMIK TRANSFERT. Votre service m'a été recommandé pour des échanges rapides, fiables et 100% sécurisés. J'aimerais en savoir plus sur vos services d'échange.";
+    const whatsappUrl = `https://wa.me/22899060652?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -120,16 +128,27 @@ const AmbassadorsSection = () => {
                       {ambassador.code}
                     </div>
                     
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => {
-                        navigator.clipboard.writeText(ambassador.code);
-                      }}
-                      className="w-full group-hover:border-primary group-hover:text-primary"
-                    >
-                      Copier
-                    </Button>
+                    {ambassador.isWhatsAppContact ? (
+                      <Button 
+                        variant="whatsapp" 
+                        size="sm"
+                        onClick={contactTurboexchange}
+                        className="w-full"
+                      >
+                        Contacter sur WhatsApp
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          navigator.clipboard.writeText(ambassador.code);
+                        }}
+                        className="w-full group-hover:border-primary group-hover:text-primary"
+                      >
+                        Copier
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>
