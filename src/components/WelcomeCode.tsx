@@ -88,17 +88,6 @@ const WelcomeCode = () => {
               </button>
             </div>
             
-            {/* Nouveau service Togo-Afrique de l'ouest */}
-            <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-lg p-4 mt-4 border border-amber-500/30">
-              <h4 className="text-lg font-bold mb-2 text-amber-300">🌍 Nouveau : Transferts Togo ↔ Afrique de l'Ouest</h4>
-              <p className="text-sm mb-2">
-                En partenariat avec <span className="font-semibold text-amber-200">Only Business (OB)</span> - Plateforme e-commerce spécialisée Chine → Afrique
-              </p>
-              <p className="text-xs opacity-80">
-                Initiative Com Master • Service de paiement pour expéditions de colis
-              </p>
-            </div>
-            
             <p className="text-sm opacity-80 mt-4">
               Taux mis à jour quotidiennement • Service disponible 24/7
             </p>

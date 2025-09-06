@@ -3,6 +3,10 @@ const AboutSection = () => {
     window.open(url, '_blank');
   };
 
+  const openSocialLink = (url: string) => {
+    window.open(url, '_blank');
+  };
+
   return (
     <section className="py-20 bg-card">
       <div className="container mx-auto px-4">
@@ -22,7 +26,7 @@ const AboutSection = () => {
                 </p>
                 
                 <p>
-                  💼 Une boutique de vêtements en ligne qui connaît un succès, qu'ils baptisent 
+                  Une boutique de vêtements en ligne qui connaît un succès, qu'ils baptisent 
                   <span className="font-bold text-accent"> DYNAMIK SHOP</span>.
                 </p>
                 
@@ -36,7 +40,7 @@ const AboutSection = () => {
                 </div>
                 
                 <p className="text-xl font-semibold">
-                  💥 5 ans plus tard, ils reviennent avec un projet 10 fois plus grand.
+                  5 ans plus tard, ils reviennent avec un projet 10 fois plus grand.
                 </p>
                 
                 <p>
@@ -60,7 +64,7 @@ const AboutSection = () => {
           {/* Fondateurs */}
           <div className="mb-16">
             <h3 className="text-2xl font-bold text-center mb-12 text-foreground">
-              👬 Corneille & Prodige
+              Corneille & Prodige
             </h3>
             <div className="grid md:grid-cols-2 gap-12">
               
@@ -95,19 +99,49 @@ const AboutSection = () => {
                 <p className="text-muted-foreground leading-relaxed mb-4">
                   Co-fondateur de DYNAMIK SHOP et DYNAMIK Transfert. Entrepreneur committed to Blockchain /web3 and financial Market.
                 </p>
-                <button
-                  onClick={() => openInstagram('https://www.instagram.com/le_prodigieu?igsh=MXE1eTV4bXY3eTMxdw%3D%3D&utm_source=qr')}
-                  className="text-primary hover:text-accent transition-colors text-sm font-medium"
-                >
-                  Suivre sur Instagram →
-                </button>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => openInstagram('https://www.instagram.com/le_prodigieu?igsh=MXE1eTV4bXY3eTMxdw%3D%3D&utm_source=qr')}
+                    className="block text-primary hover:text-accent transition-colors text-sm font-medium"
+                  >
+                    Suivre sur Instagram →
+                  </button>
+                  <button
+                    onClick={() => openSocialLink('https://x.com/prodigeadjote?s=21')}
+                    className="block text-primary hover:text-accent transition-colors text-sm font-medium"
+                  >
+                    Suivre sur Twitter →
+                  </button>
+                  <button
+                    onClick={() => openSocialLink('https://www.linkedin.com/in/prodige-adjote-052a151a0?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app')}
+                    className="block text-primary hover:text-accent transition-colors text-sm font-medium"
+                  >
+                    Suivre sur LinkedIn →
+                  </button>
+                </div>
               </div>
             </div>
             
             <div className="text-center mt-12">
-              <p className="text-lg font-semibold text-primary">
+              <p className="text-lg font-semibold text-primary mb-6">
                 Bienvenue dans DYNAMIK Transfert.
               </p>
+              
+              {/* Réseaux sociaux DYNAMIK TRANSFERT */}
+              <div className="flex justify-center gap-6">
+                <button
+                  onClick={() => openSocialLink('https://www.tiktok.com/@dynamik.transfert?_t=ZM-8zVF03dPtYb&_r=1')}
+                  className="text-primary hover:text-accent transition-colors text-sm font-medium"
+                >
+                  TikTok DYNAMIK Transfert →
+                </button>
+                <button
+                  onClick={() => openSocialLink('https://www.facebook.com/share/1B9etgN3Lr/?mibextid=wwXIfr')}
+                  className="text-primary hover:text-accent transition-colors text-sm font-medium"
+                >
+                  Facebook DYNAMIK Transfert →
+                </button>
+              </div>
             </div>
           </div>
 
