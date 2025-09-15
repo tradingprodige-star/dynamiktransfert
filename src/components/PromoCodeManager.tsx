@@ -41,11 +41,24 @@ const PromoCodeManager = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const userData = localStorage.getItem('dynamik_user');
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
-    
+    // Get current authenticated user
+    const getCurrentUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        // Get the user profile from our users table
+        const { data: profile } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (profile) {
+          setUser(profile);
+        }
+      }
+    };
+
+    getCurrentUser();
     loadPromoCodes();
   }, []);
 

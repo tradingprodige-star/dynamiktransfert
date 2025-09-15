@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { PhoneInput } from 'react-international-phone';
@@ -12,27 +13,41 @@ interface AuthFormProps {
 }
 
 const AuthForm = ({ onSuccess }: AuthFormProps) => {
+  const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email.trim());
+  };
+
   const validatePhoneNumber = (phone: string) => {
-    // Validation basique pour numéro international avec indicatif pays
     const phoneRegex = /^\+\d{7,15}$/;
     return phoneRegex.test(phone.replace(/\s/g, ''));
   };
 
-  const formatPhoneNumber = (phone: string) => {
-    // Nettoyer et s'assurer que le numéro commence par +
-    const cleaned = phone.replace(/\s/g, '');
-    if (cleaned.startsWith('+')) return cleaned;
-    return '+' + cleaned;
+  const sanitizeInput = (input: string) => {
+    return input.trim().replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
   };
 
   const handleSignUp = async () => {
-    if (!validatePhoneNumber(phoneNumber)) {
+    const sanitizedEmail = sanitizeInput(email);
+    const sanitizedPhone = sanitizeInput(phoneNumber);
+    
+    if (!validateEmail(sanitizedEmail)) {
+      toast({
+        title: "Email invalide",
+        description: "Veuillez entrer une adresse email valide",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!validatePhoneNumber(sanitizedPhone)) {
       toast({
         title: "Numéro invalide",
         description: "Veuillez entrer un numéro de téléphone valide avec l'indicatif pays",
@@ -61,40 +76,40 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
 
     setLoading(true);
     try {
-      const formattedPhone = formatPhoneNumber(phoneNumber);
-      
-      // Créer l'utilisateur dans notre table users
-      const { data: existingUser } = await supabase
-        .from('users')
-        .select('id')
-        .eq('phone_number', formattedPhone)
-        .single();
-
-      if (existingUser) {
-        toast({
-          title: "Numéro déjà utilisé",
-          description: "Ce numéro de téléphone est déjà enregistré",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('users')
-        .insert([{ phone_number: formattedPhone }])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      toast({
-        title: "Inscription réussie !",
-        description: "Votre compte a été créé avec succès",
+      // Use Supabase Auth for secure authentication
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: sanitizedEmail,
+        password: password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            phone_number: sanitizedPhone
+          }
+        }
       });
 
-      // Stocker les infos utilisateur localement
-      localStorage.setItem('dynamik_user', JSON.stringify(data));
-      onSuccess();
+      if (authError) throw authError;
+
+      if (authData.user) {
+        // Create user profile in our users table
+        const { error: profileError } = await supabase
+          .from('users')
+          .insert([{ 
+            id: authData.user.id,
+            phone_number: sanitizedPhone 
+          }]);
+
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+        }
+
+        toast({
+          title: "Inscription réussie !",
+          description: "Vérifiez votre email pour confirmer votre compte",
+        });
+
+        onSuccess();
+      }
 
     } catch (error: any) {
       toast({
@@ -108,10 +123,21 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
   };
 
   const handleSignIn = async () => {
-    if (!validatePhoneNumber(phoneNumber)) {
+    const sanitizedEmail = sanitizeInput(email);
+    
+    if (!validateEmail(sanitizedEmail)) {
       toast({
-        title: "Numéro invalide",
-        description: "Veuillez entrer un numéro de téléphone valide avec l'indicatif pays",
+        title: "Email invalide",
+        description: "Veuillez entrer une adresse email valide",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      toast({
+        title: "Mot de passe invalide",
+        description: "Le mot de passe doit contenir au moins 6 caractères",
         variant: "destructive"
       });
       return;
@@ -119,26 +145,13 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
 
     setLoading(true);
     try {
-      const formattedPhone = formatPhoneNumber(phoneNumber);
-      
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('phone_number', formattedPhone)
-        .single();
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: sanitizedEmail,
+        password: password
+      });
 
-      if (error || !data) {
-        toast({
-          title: "Utilisateur introuvable",
-          description: "Ce numéro n'est pas enregistré",
-          variant: "destructive"
-        });
-        return;
-      }
+      if (error) throw error;
 
-      // Stocker les infos utilisateur localement
-      localStorage.setItem('dynamik_user', JSON.stringify(data));
-      
       toast({
         title: "Connexion réussie !",
         description: "Bienvenue sur DYNAMIK Exchange",
@@ -149,7 +162,9 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
     } catch (error: any) {
       toast({
         title: "Erreur de connexion",
-        description: error.message || "Une erreur est survenue",
+        description: error.message === 'Invalid login credentials' 
+          ? "Email ou mot de passe incorrect" 
+          : error.message || "Une erreur est survenue",
         variant: "destructive"
       });
     } finally {
@@ -174,17 +189,27 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
           <TabsContent value="signin" className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                Numéro de téléphone
+                Email
               </label>
-              <PhoneInput
-                defaultCountry="tg"
-                value={phoneNumber}
-                onChange={(phone) => setPhoneNumber(phone)}
-                inputClassName="!h-12 !border-input !bg-background !text-foreground"
-                countrySelectorStyleProps={{
-                  className: "!border-input !bg-background"
-                }}
-                className="w-full"
+              <Input
+                type="email"
+                placeholder="votre.email@exemple.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-12"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Mot de passe
+              </label>
+              <Input
+                type="password"
+                placeholder="Votre mot de passe"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-12"
               />
             </div>
             
@@ -198,6 +223,19 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
           </TabsContent>
           
           <TabsContent value="signup" className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Email
+              </label>
+              <Input
+                type="email"
+                placeholder="votre.email@exemple.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-12"
+              />
+            </div>
+            
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 Numéro de téléphone
@@ -218,12 +256,12 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
               <label className="block text-sm font-medium text-foreground mb-2">
                 Mot de passe
               </label>
-              <input
+              <Input
                 type="password"
                 placeholder="Au moins 6 caractères"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-12 w-full px-3 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="h-12"
               />
             </div>
             
@@ -231,12 +269,12 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
               <label className="block text-sm font-medium text-foreground mb-2">
                 Confirmer le mot de passe
               </label>
-              <input
+              <Input
                 type="password"
                 placeholder="Répétez votre mot de passe"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="h-12 w-full px-3 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                className="h-12"
               />
             </div>
             
@@ -252,8 +290,8 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
         
         <p className="text-xs text-muted-foreground mt-4 text-center">
           En vous inscrivant, vous acceptez nos conditions d'utilisation.
-          Votre numéro de téléphone servira d'identifiant unique.
-          Compatible avec tous les pays.
+          Votre email servira d'identifiant et votre numéro de téléphone pour les services.
+          Vérifiez votre email après inscription.
         </p>
       </CardContent>
     </Card>

@@ -27,18 +27,36 @@ const ComplaintForm = () => {
     { value: "other", label: "Autre" }
   ];
 
+  const sanitizeInput = (input: string) => {
+    return input.trim()
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/[<>]/g, '')
+      .substring(0, 500); // Limit length
+  };
+
   const sendToWhatsApp = () => {
+    // Sanitize all form inputs
+    const sanitizedData = {
+      name: sanitizeInput(formData.name),
+      phone: sanitizeInput(formData.phone),
+      email: sanitizeInput(formData.email),
+      type: sanitizeInput(formData.type),
+      subject: sanitizeInput(formData.subject),
+      description: sanitizeInput(formData.description),
+      transferReference: sanitizeInput(formData.transferReference)
+    };
+
     const message = `🔴 RÉCLAMATION - DYNAMIK TRANSFERT
 
-👤 Nom: ${formData.name}
-📞 Téléphone: ${formData.phone}
-📧 Email: ${formData.email}
-🏷️ Type: ${complaintTypes.find(t => t.value === formData.type)?.label || formData.type}
-📄 Sujet: ${formData.subject}
-🔢 Référence transfert: ${formData.transferReference || "Non spécifiée"}
+👤 Nom: ${sanitizedData.name}
+📞 Téléphone: ${sanitizedData.phone}
+📧 Email: ${sanitizedData.email}
+🏷️ Type: ${complaintTypes.find(t => t.value === sanitizedData.type)?.label || sanitizedData.type}
+📄 Sujet: ${sanitizedData.subject}
+🔢 Référence transfert: ${sanitizedData.transferReference || "Non spécifiée"}
 
 📝 DESCRIPTION:
-${formData.description}
+${sanitizedData.description}
 
 ⏰ Date de réclamation: ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}
 

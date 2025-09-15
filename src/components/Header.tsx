@@ -4,6 +4,8 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useCursorMagnetic } from "@/hooks/useCursorMagnetic";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { User } from "@supabase/supabase-js";
 
 const Header = () => {
   const scrollRevealRef = useScrollReveal();
@@ -11,13 +13,22 @@ const Header = () => {
   const magneticRef2 = useCursorMagnetic(0.3);
   const magneticRef3 = useCursorMagnetic(0.3);
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const userData = localStorage.getItem('dynamik_user');
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
+    // Get current session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const scrollToCalculator = () => {
