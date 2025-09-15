@@ -33,8 +33,12 @@ const Calculator = () => {
       "tchad": 0.035
     },
     "cemac-beceao": {
-      standard: 0.08, // 8% frais standard
-      threedays: 0.04 // 4% si délai 3 jours
+      cameroun: 0.07, // 7% pour Cameroun vers Togo
+      gabon: 0.085, // 8.5% pour Gabon vers Togo
+      "centrafrique": 0.08, // 8% pour autres pays CEMAC
+      "congo": 0.08,
+      "guinee-equatoriale": 0.08,
+      "tchad": 0.08
     },
     "togo-france": {
       standard: 0.02, // 2% pour Togo vers France 
@@ -72,8 +76,20 @@ const Calculator = () => {
     effect: string;
   };
 
+  const openUSDTPrice = () => {
+    const searchQuery = "prix USDT en temps réel marché crypto";
+    const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+    window.open(googleUrl, '_blank');
+  };
+
   const calculateTransfer = () => {
-    if (!amount || !direction || !deliveryTime || (!destination && direction !== "france-togo")) return;
+    if (!amount || !direction || !deliveryTime || (!destination && direction !== "france-togo" && direction !== "usdt-rachat")) return;
+    
+    // Pour USDT, rediriger vers Google
+    if (direction === "usdt-rachat") {
+      openUSDTPrice();
+      return;
+    }
 
     const amountNum = parseFloat(amount);
     let baseFeeRate = 0;
@@ -84,7 +100,7 @@ const Calculator = () => {
     if (direction === "beceao-cemac") {
       baseFeeRate = feeRates["beceao-cemac"][destination as keyof typeof feeRates["beceao-cemac"]] || 0.035;
     } else if (direction === "cemac-beceao") {
-      baseFeeRate = deliveryTime === "3days" ? feeRates["cemac-beceao"].threedays : feeRates["cemac-beceao"].standard;
+      baseFeeRate = feeRates["cemac-beceao"][destination as keyof typeof feeRates["cemac-beceao"]] || 0.08;
     } else if (direction === "togo-france") {
       baseFeeRate = feeRates["togo-france"].standard;
       // Ajout de 1% de dépréciation pour jusqu'à 3 jours
@@ -101,25 +117,22 @@ const Calculator = () => {
       baseFeeRate = Math.max(0, baseFeeRate - deliveryDiscount);
     }
 
-    // Application des codes promo ambassadeurs
-    if (promoCode && ambassadorCodes[promoCode.toUpperCase() as keyof typeof ambassadorCodes]) {
+    // Application des codes promo ambassadeurs (sauf pour CEMAC → BECEAO)
+    if (promoCode && ambassadorCodes[promoCode.toUpperCase() as keyof typeof ambassadorCodes] && direction !== "cemac-beceao") {
       const promoData = ambassadorCodes[promoCode.toUpperCase() as keyof typeof ambassadorCodes];
       
       if (promoData.type === "free") {
         baseFeeRate = 0;
         promoEffect = promoData.effect;
       } else if (promoData.type === "reduction" && promoData.value) {
-        if (direction === "beceao-cemac") {
-          baseFeeRate = Math.max(0, baseFeeRate - promoData.value);
-        } else {
-          // Pour CEMAC → BECEAO, réduction de 1%
-          baseFeeRate = Math.max(0, baseFeeRate - 0.01);
-        }
+        baseFeeRate = Math.max(0, baseFeeRate - promoData.value);
         promoEffect = promoData.effect;
       } else if (promoData.type === "cashback" && promoData.value) {
         cashback = promoData.value;
         promoEffect = promoData.effect;
       }
+    } else if (promoCode && direction === "cemac-beceao") {
+      promoEffect = "Code promo non applicable pour CEMAC → BECEAO";
     }
 
     const fees = amountNum * baseFeeRate;
@@ -229,6 +242,7 @@ const Calculator = () => {
                       <SelectItem value="france-togo">France → Togo (1% fixe)</SelectItem>
                       <SelectItem value="beceao-cemac">BECEAO → CEMAC (Depuis le Togo)</SelectItem>
                       <SelectItem value="cemac-beceao">CEMAC → BECEAO (Vers le Togo)</SelectItem>
+                      <SelectItem value="usdt-rachat">Rachat USDT au prix du marché</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -253,41 +267,43 @@ const Calculator = () => {
                   </p>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    {direction === "beceao-cemac" ? "Pays de destination" : "Pays d'origine"}
-                  </label>
-                  <Select value={destination} onValueChange={setDestination}>
-                    <SelectTrigger className="h-12">
-                      <SelectValue placeholder={direction === "beceao-cemac" ? "Vers quel pays ?" : "Depuis quel pays ?"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {direction === "beceao-cemac" ? (
-                        <>
-                          <SelectItem value="gabon">Gabon</SelectItem>
-                          <SelectItem value="cameroun">Cameroun</SelectItem>
-                          <SelectItem value="centrafrique">République Centrafricaine</SelectItem>
-                          <SelectItem value="congo">Congo-Brazzaville</SelectItem>
-                          <SelectItem value="guinee-equatoriale">Guinée Équatoriale</SelectItem>
-                          <SelectItem value="tchad">Tchad</SelectItem>
-                        </>
-                      ) : direction === "cemac-beceao" ? (
-                        <>
-                          <SelectItem value="gabon">Gabon</SelectItem>
-                          <SelectItem value="cameroun">Cameroun</SelectItem>
-                          <SelectItem value="centrafrique">République Centrafricaine</SelectItem>
-                          <SelectItem value="congo">Congo-Brazzaville</SelectItem>
-                          <SelectItem value="guinee-equatoriale">Guinée Équatoriale</SelectItem>
-                          <SelectItem value="tchad">Tchad</SelectItem>
-                        </>
-                      ) : direction === "togo-france" ? (
-                        <SelectItem value="france">France</SelectItem>
-                      ) : direction === "france-togo" ? (
-                        <SelectItem value="togo">Togo</SelectItem>
-                      ) : null}
-                    </SelectContent>
-                  </Select>
-                </div>
+                {direction !== "usdt-rachat" && (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      {direction === "beceao-cemac" ? "Pays de destination" : "Pays d'origine"}
+                    </label>
+                    <Select value={destination} onValueChange={setDestination}>
+                      <SelectTrigger className="h-12">
+                        <SelectValue placeholder={direction === "beceao-cemac" ? "Vers quel pays ?" : "Depuis quel pays ?"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {direction === "beceao-cemac" ? (
+                          <>
+                            <SelectItem value="gabon">Gabon</SelectItem>
+                            <SelectItem value="cameroun">Cameroun</SelectItem>
+                            <SelectItem value="centrafrique">République Centrafricaine</SelectItem>
+                            <SelectItem value="congo">Congo-Brazzaville</SelectItem>
+                            <SelectItem value="guinee-equatoriale">Guinée Équatoriale</SelectItem>
+                            <SelectItem value="tchad">Tchad</SelectItem>
+                          </>
+                        ) : direction === "cemac-beceao" ? (
+                          <>
+                            <SelectItem value="gabon">Gabon (8.5% frais)</SelectItem>
+                            <SelectItem value="cameroun">Cameroun (7% frais)</SelectItem>
+                            <SelectItem value="centrafrique">République Centrafricaine (8% frais)</SelectItem>
+                            <SelectItem value="congo">Congo-Brazzaville (8% frais)</SelectItem>
+                            <SelectItem value="guinee-equatoriale">Guinée Équatoriale (8% frais)</SelectItem>
+                            <SelectItem value="tchad">Tchad (8% frais)</SelectItem>
+                          </>
+                        ) : direction === "togo-france" ? (
+                          <SelectItem value="france">France</SelectItem>
+                        ) : direction === "france-togo" ? (
+                          <SelectItem value="togo">Togo</SelectItem>
+                        ) : null}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium mb-2">Délai de réception</label>
@@ -303,21 +319,22 @@ const Calculator = () => {
                           <SelectItem value="2days">2 jours (-2% sur frais)</SelectItem>
                           <SelectItem value="3days">3 jours (-3% sur frais)</SelectItem>
                         </>
-                      ) : direction === "cemac-beceao" ? (
-                        <>
-                          <SelectItem value="instant">Instantané (8% frais)</SelectItem>
-                          <SelectItem value="3days">3 jours (4% frais)</SelectItem>
-                        </>
-                       ) : direction === "togo-france" ? (
+                       ) : direction === "cemac-beceao" ? (
+                         <>
+                           <SelectItem value="instant">Instantané (frais selon pays)</SelectItem>
+                         </>
+                        ) : direction === "togo-france" ? (
                           <>
                             <SelectItem value="instant">Instantané (2% frais)</SelectItem>
                             <SelectItem value="1day">24h (avec dépréciation 1%)</SelectItem>
                             <SelectItem value="2days">2 jours (avec dépréciation 1%)</SelectItem>
                             <SelectItem value="3days">3 jours (avec dépréciation 1%)</SelectItem>
                           </>
-                        ) : direction === "france-togo" ? (
-                          <SelectItem value="instant">Instantané (1% fixe)</SelectItem>
-                        ) : null}
+                         ) : direction === "france-togo" ? (
+                           <SelectItem value="instant">Instantané (1% fixe)</SelectItem>
+                         ) : direction === "usdt-rachat" ? (
+                           <SelectItem value="instant">Prix du marché en temps réel</SelectItem>
+                         ) : null}
                     </SelectContent>
                   </Select>
                 </div>
@@ -340,7 +357,7 @@ const Calculator = () => {
                   className="w-full h-12 text-lg"
                   variant="hero"
                 >
-                  Calculer
+                  {direction === "usdt-rachat" ? "Voir prix en temps réel" : "Calculer"}
                 </Button>
               </CardContent>
               </Card>
