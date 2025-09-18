@@ -33,8 +33,12 @@ const Calculator = () => {
       "tchad": 0.035
     },
     "cemac-beceao": {
-      standard: 0.08, // 8% frais standard
-      threedays: 0.04 // 4% si délai 3 jours
+      gabon: 0.095, // 9.5% pour le Gabon
+      cameroun: 0.08, // 8% pour le Cameroun  
+      "centrafrique": 0.08, // 8% pour autres pays CEMAC
+      "congo": 0.08,
+      "guinee-equatoriale": 0.08,
+      "tchad": 0.08
     },
     "togo-france": {
       standard: 0.02, // 2% pour Togo vers France 
@@ -84,7 +88,7 @@ const Calculator = () => {
     if (direction === "beceao-cemac") {
       baseFeeRate = feeRates["beceao-cemac"][destination as keyof typeof feeRates["beceao-cemac"]] || 0.035;
     } else if (direction === "cemac-beceao") {
-      baseFeeRate = deliveryTime === "3days" ? feeRates["cemac-beceao"].threedays : feeRates["cemac-beceao"].standard;
+      baseFeeRate = feeRates["cemac-beceao"][destination as keyof typeof feeRates["cemac-beceao"]] || 0.08;
     } else if (direction === "togo-france") {
       baseFeeRate = feeRates["togo-france"].standard;
       // Ajout de 1% de dépréciation pour jusqu'à 3 jours
@@ -101,20 +105,15 @@ const Calculator = () => {
       baseFeeRate = Math.max(0, baseFeeRate - deliveryDiscount);
     }
 
-    // Application des codes promo ambassadeurs
-    if (promoCode && ambassadorCodes[promoCode.toUpperCase() as keyof typeof ambassadorCodes]) {
+    // Application des codes promo ambassadeurs (inactifs pour CEMAC → BECEAO)
+    if (promoCode && ambassadorCodes[promoCode.toUpperCase() as keyof typeof ambassadorCodes] && direction !== "cemac-beceao") {
       const promoData = ambassadorCodes[promoCode.toUpperCase() as keyof typeof ambassadorCodes];
       
       if (promoData.type === "free") {
         baseFeeRate = 0;
         promoEffect = promoData.effect;
       } else if (promoData.type === "reduction" && promoData.value) {
-        if (direction === "beceao-cemac") {
-          baseFeeRate = Math.max(0, baseFeeRate - promoData.value);
-        } else {
-          // Pour CEMAC → BECEAO, réduction de 1%
-          baseFeeRate = Math.max(0, baseFeeRate - 0.01);
-        }
+        baseFeeRate = Math.max(0, baseFeeRate - promoData.value);
         promoEffect = promoData.effect;
       } else if (promoData.type === "cashback" && promoData.value) {
         cashback = promoData.value;
@@ -144,7 +143,16 @@ const Calculator = () => {
                           "depuis la FRANCE vers le Togo";
     const deliveryText = deliveryTime === "instant" ? "instantané" : deliveryTime === "1day" ? "24h" : deliveryTime === "2days" ? "2 jours" : "3 jours";
     
+    // Formatage de la date du jour
+    const today = new Date();
+    const transactionDate = today.toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long', 
+      day: 'numeric'
+    });
+    
     let message = `🏦 DYNAMIK Transfert - Demande de transfert
+📅 Date de la transaction : ${transactionDate}
 
 💰 DÉTAILS DU TRANSFERT :
 - Montant : ${amount} ${direction === 'togo-france' ? 'FCFA' : direction === 'france-togo' ? 'EUR' : 'FCFA'}
@@ -303,12 +311,11 @@ const Calculator = () => {
                           <SelectItem value="2days">2 jours (-2% sur frais)</SelectItem>
                           <SelectItem value="3days">3 jours (-3% sur frais)</SelectItem>
                         </>
-                      ) : direction === "cemac-beceao" ? (
-                        <>
-                          <SelectItem value="instant">Instantané (8% frais)</SelectItem>
-                          <SelectItem value="3days">3 jours (4% frais)</SelectItem>
-                        </>
-                       ) : direction === "togo-france" ? (
+                       ) : direction === "cemac-beceao" ? (
+                         <>
+                           <SelectItem value="instant">Instantané (frais selon pays)</SelectItem>
+                         </>
+                        ) : direction === "togo-france" ? (
                           <>
                             <SelectItem value="instant">Instantané (2% frais)</SelectItem>
                             <SelectItem value="1day">24h (avec dépréciation 1%)</SelectItem>
@@ -329,10 +336,17 @@ const Calculator = () => {
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
                     className="h-12"
+                    disabled={direction === "cemac-beceao"}
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Premier transfert ? Utilisez <span className="font-bold text-primary">BIENVENUE</span> pour 0% de frais !
-                  </p>
+                  {direction === "cemac-beceao" ? (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      ⚠️ Les codes promos ne s'appliquent pas aux transferts CEMAC → BECEAO
+                    </p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Premier transfert ? Utilisez <span className="font-bold text-primary">BIENVENUE</span> pour 0% de frais !
+                    </p>
+                  )}
                 </div>
 
                 <Button 
