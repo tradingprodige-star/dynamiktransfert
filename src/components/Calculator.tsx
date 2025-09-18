@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { supabase } from "@/integrations/supabase/client";
 
 const Calculator = () => {
   const scrollRevealRef = useScrollReveal();
@@ -14,6 +15,13 @@ const Calculator = () => {
   const [deliveryTime, setDeliveryTime] = useState("");
   const [promoCode, setPromoCode] = useState("");
   const [motif, setMotif] = useState("");
+  const [promoCodes, setPromoCodes] = useState<Array<{
+    id: string;
+    code: string;
+    type: string;
+    discount_percentage: number;
+    ambassador_name?: string;
+  }>>([]);
   const [result, setResult] = useState<{
     totalToPay: number;
     amountReceived: number;
@@ -21,6 +29,29 @@ const Calculator = () => {
     cashback: number;
     promoEffect: string;
   } | null>(null);
+
+  // Fetch promo codes from database on component mount
+  useEffect(() => {
+    const fetchPromoCodes = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('promo_codes')
+          .select('id, code, type, discount_percentage, ambassador_name')
+          .eq('is_active', true);
+        
+        if (error) {
+          console.error('Error fetching promo codes:', error);
+          return;
+        }
+        
+        setPromoCodes(data || []);
+      } catch (error) {
+        console.error('Error fetching promo codes:', error);
+      }
+    };
+
+    fetchPromoCodes();
+  }, []);
 
     // Configuration des frais selon direction et destination
   const feeRates = {
@@ -57,25 +88,6 @@ const Calculator = () => {
     "3days": 0.03 // -3%
   };
 
-  // Codes promo ambassadeurs
-  const ambassadorCodes = {
-    BIENVENUE: { type: "free", effect: "0% de frais" },
-    CORSKO: { type: "reduction", value: 0.02, effect: "Réduction 2%" },
-    MR_BOURSES: { type: "reduction", value: 0.02, effect: "Réduction 2%" },
-    JONES: { type: "cashback", value: 500, effect: "Cashback 500 FCFA" },
-    KRISSROY: { type: "cashback", value: 500, effect: "Cashback 500 FCFA" },
-    TURBO: { type: "reduction", value: 0.02, effect: "Réduction 2%" },
-    TONY: { type: "cashback", value: 500, effect: "Cashback 500 FCFA" },
-    "J-ZENITH": { type: "reduction", value: 0.02, effect: "Réduction 2%" },
-    "COM-MASTER": { type: "cashback", value: 500, effect: "Cashback 500 FCFA" }
-  } as const;
-
-  type PromoCode = {
-    type: "free" | "reduction" | "cashback";
-    value?: number;
-    effect: string;
-  };
-
   const calculateTransfer = () => {
     if (!amount || !direction || !deliveryTime || (!destination && direction !== "france-togo")) return;
 
@@ -106,18 +118,25 @@ const Calculator = () => {
     }
 
     // Application des codes promo ambassadeurs (inactifs pour CEMAC → BECEAO)
-    if (promoCode && ambassadorCodes[promoCode.toUpperCase() as keyof typeof ambassadorCodes] && direction !== "cemac-beceao") {
-      const promoData = ambassadorCodes[promoCode.toUpperCase() as keyof typeof ambassadorCodes];
+    if (promoCode && direction !== "cemac-beceao") {
+      const matchedPromo = promoCodes.find(p => p.code.toUpperCase() === promoCode.toUpperCase());
       
-      if (promoData.type === "free") {
-        baseFeeRate = 0;
-        promoEffect = promoData.effect;
-      } else if (promoData.type === "reduction" && promoData.value) {
-        baseFeeRate = Math.max(0, baseFeeRate - promoData.value);
-        promoEffect = promoData.effect;
-      } else if (promoData.type === "cashback" && promoData.value) {
-        cashback = promoData.value;
-        promoEffect = promoData.effect;
+      if (matchedPromo) {
+        if (matchedPromo.type === "welcome") {
+          baseFeeRate = 0;
+          promoEffect = `${matchedPromo.discount_percentage}% de réduction (0% de frais)`;
+        } else if (matchedPromo.type === "ambassador") {
+          const reduction = matchedPromo.discount_percentage / 100;
+          if (matchedPromo.discount_percentage >= 100) {
+            // Si c'est 100% ou plus, c'est un cashback fixe
+            cashback = 500; // Cashback standard pour les ambassadeurs
+            promoEffect = `Cashback 500 FCFA`;
+          } else {
+            // Sinon c'est une réduction
+            baseFeeRate = Math.max(0, baseFeeRate - reduction);
+            promoEffect = `Réduction ${matchedPromo.discount_percentage}%`;
+          }
+        }
       }
     }
 
@@ -332,7 +351,7 @@ const Calculator = () => {
                 <div>
                   <label className="block text-sm font-medium mb-2">Code promo ambassadeur (optionnel)</label>
                    <Input
-                    placeholder="Ex: CORSKO, MR_BOURSES, JONES..."
+                    placeholder="Entrez votre code promo"
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
                     className="h-12"
@@ -344,7 +363,7 @@ const Calculator = () => {
                     </p>
                   ) : (
                     <p className="text-xs text-muted-foreground mt-1">
-                      Premier transfert ? Utilisez <span className="font-bold text-primary">BIENVENUE</span> pour 0% de frais !
+                      Premier transfert ? Utilisez <span className="font-bold text-primary">WELCOME10</span> pour une réduction !
                     </p>
                   )}
                 </div>
