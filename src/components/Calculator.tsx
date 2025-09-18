@@ -30,7 +30,7 @@ const Calculator = () => {
     promoEffect: string;
   } | null>(null);
 
-  // Fetch promo codes from database on component mount
+  // Fetch available promo codes from database on component mount
   useEffect(() => {
     const fetchPromoCodes = async () => {
       try {
@@ -41,12 +41,15 @@ const Calculator = () => {
         
         if (error) {
           console.error('Error fetching promo codes:', error);
+          // Set empty array if fetch fails
+          setPromoCodes([]);
           return;
         }
         
         setPromoCodes(data || []);
       } catch (error) {
         console.error('Error fetching promo codes:', error);
+        setPromoCodes([]);
       }
     };
 
