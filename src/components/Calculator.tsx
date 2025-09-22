@@ -59,7 +59,7 @@ const Calculator = () => {
     // Configuration des frais selon direction et destination
   const feeRates = {
     "beceao-cemac": {
-      gabon: 0.045, // 4.5% pour le Gabon
+      gabon: 0.11, // 11% pour le Gabon
       cameroun: 0.035, // 3.5% pour autres pays CEMAC
       "centrafrique": 0.035,
       "congo": 0.035,
@@ -67,7 +67,7 @@ const Calculator = () => {
       "tchad": 0.035
     },
     "cemac-beceao": {
-      gabon: 0.095, // 9.5% pour le Gabon
+      gabon: 0.11, // 11% pour le Gabon
       cameroun: 0.08, // 8% pour le Cameroun  
       "centrafrique": 0.08, // 8% pour autres pays CEMAC
       "congo": 0.08,
