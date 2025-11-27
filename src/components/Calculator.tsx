@@ -80,6 +80,11 @@ const Calculator = () => {
     },
     "france-togo": {
       standard: 0.01 // 1% fixe pour France vers Togo
+    },
+    "togo-europe": {
+      france: 0.089, // 8.9% promo fêtes de fin d'année
+      allemagne: 0.089,
+      autres: 0.089
     }
   };
 
@@ -112,6 +117,8 @@ const Calculator = () => {
       }
     } else if (direction === "france-togo") {
       baseFeeRate = feeRates["france-togo"].standard; // 1% fixe
+    } else if (direction === "togo-europe") {
+      baseFeeRate = feeRates["togo-europe"][destination as keyof typeof feeRates["togo-europe"]] || 0.089;
     }
 
     // Application des réductions de délai (pour BECEAO → CEMAC et TOGO → FRANCE)
@@ -162,6 +169,7 @@ const Calculator = () => {
     const directionText = direction === "beceao-cemac" ? `depuis le Togo vers ${destination.toUpperCase()}` : 
                           direction === "cemac-beceao" ? `depuis ${destination.toUpperCase()} vers le Togo` :
                           direction === "togo-france" ? "depuis le Togo vers la FRANCE" :
+                          direction === "togo-europe" ? `depuis le Togo vers ${destination === "autres" ? "l'EUROPE" : destination.toUpperCase()}` :
                           "depuis la FRANCE vers le Togo";
     const deliveryText = deliveryTime === "instant" ? "instantané" : deliveryTime === "1day" ? "24h" : deliveryTime === "2days" ? "2 jours" : "3 jours";
     
@@ -255,6 +263,7 @@ const Calculator = () => {
                       <SelectValue placeholder="Choisissez la direction" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="togo-europe">🎄 Togo → Europe (Promo Fêtes 8.9%)</SelectItem>
                       <SelectItem value="togo-france">Togo → France (depuis le Togo)</SelectItem>
                       <SelectItem value="france-togo">France → Togo (1% fixe)</SelectItem>
                       <SelectItem value="beceao-cemac">BECEAO → CEMAC (Depuis le Togo)</SelectItem>
@@ -312,6 +321,12 @@ const Calculator = () => {
                         </>
                       ) : direction === "togo-france" ? (
                         <SelectItem value="france">France</SelectItem>
+                      ) : direction === "togo-europe" ? (
+                        <>
+                          <SelectItem value="france">France</SelectItem>
+                          <SelectItem value="allemagne">Allemagne</SelectItem>
+                          <SelectItem value="autres">Autres pays européens</SelectItem>
+                        </>
                       ) : direction === "france-togo" ? (
                         <SelectItem value="togo">Togo</SelectItem>
                       ) : null}
@@ -344,6 +359,8 @@ const Calculator = () => {
                             <SelectItem value="2days">2 jours (avec dépréciation 1%)</SelectItem>
                             <SelectItem value="3days">3 jours (avec dépréciation 1%)</SelectItem>
                           </>
+                        ) : direction === "togo-europe" ? (
+                          <SelectItem value="instant">Instantané (8.9% promo fêtes)</SelectItem>
                         ) : direction === "france-togo" ? (
                           <SelectItem value="instant">Instantané (1% fixe)</SelectItem>
                         ) : null}
