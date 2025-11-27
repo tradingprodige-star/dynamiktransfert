@@ -74,10 +74,6 @@ const Calculator = () => {
       "guinee-equatoriale": 0.08,
       "tchad": 0.08
     },
-    "togo-france": {
-      standard: 0.02, // 2% pour Togo vers France 
-      depreciation: 0.01 // +1% de dépréciation jusqu'à 3 jours
-    },
     "france-togo": {
       standard: 0.01 // 1% fixe pour France vers Togo
     },
@@ -85,6 +81,14 @@ const Calculator = () => {
       france: 0.089, // 8.9% promo fêtes de fin d'année
       allemagne: 0.089,
       autres: 0.089
+    },
+    "cemac-europe": {
+      gabon: 0.089, // 8.9% pour le Gabon vers Europe
+      cameroun: 0.089,
+      "centrafrique": 0.089,
+      "congo": 0.089,
+      "guinee-equatoriale": 0.089,
+      "tchad": 0.089
     }
   };
 
@@ -109,43 +113,36 @@ const Calculator = () => {
       baseFeeRate = feeRates["beceao-cemac"][destination as keyof typeof feeRates["beceao-cemac"]] || 0.035;
     } else if (direction === "cemac-beceao") {
       baseFeeRate = feeRates["cemac-beceao"][destination as keyof typeof feeRates["cemac-beceao"]] || 0.08;
-    } else if (direction === "togo-france") {
-      baseFeeRate = feeRates["togo-france"].standard;
-      // Ajout de 1% de dépréciation pour jusqu'à 3 jours
-      if (deliveryTime === "1day" || deliveryTime === "2days" || deliveryTime === "3days") {
-        baseFeeRate += feeRates["togo-france"].depreciation;
-      }
     } else if (direction === "france-togo") {
       baseFeeRate = feeRates["france-togo"].standard; // 1% fixe
     } else if (direction === "togo-europe") {
       baseFeeRate = feeRates["togo-europe"][destination as keyof typeof feeRates["togo-europe"]] || 0.089;
+    } else if (direction === "cemac-europe") {
+      baseFeeRate = feeRates["cemac-europe"][destination as keyof typeof feeRates["cemac-europe"]] || 0.089;
     }
 
-    // Application des réductions de délai (pour BECEAO → CEMAC et TOGO → FRANCE)
-    if (direction === "beceao-cemac" || direction === "togo-france") {
+    // Application des réductions de délai (pour BECEAO → CEMAC uniquement)
+    if (direction === "beceao-cemac") {
       const deliveryDiscount = deliveryDiscounts[deliveryTime as keyof typeof deliveryDiscounts] || 0;
       baseFeeRate = Math.max(0, baseFeeRate - deliveryDiscount);
     }
 
-    // Application des codes promo ambassadeurs (inactifs pour CEMAC → BECEAO)
+    // Application des codes promo ambassadeurs - CASHBACK uniquement (pas de réduction supplémentaire)
+    // Les réductions de fêtes sont déjà appliquées pour les clients
     if (promoCode && direction !== "cemac-beceao") {
       const matchedPromo = promoCodes.find(p => p.code.toUpperCase() === promoCode.toUpperCase());
       
       if (matchedPromo) {
         if (matchedPromo.type === "welcome") {
+          // Code bienvenue : 0% de frais pour le premier transfert
           baseFeeRate = 0;
-          promoEffect = `${matchedPromo.discount_percentage}% de réduction (0% de frais)`;
+          promoEffect = `Code BIENVENUE : 0% de frais`;
         } else if (matchedPromo.type === "ambassador") {
-          const reduction = matchedPromo.discount_percentage / 100;
-          if (matchedPromo.discount_percentage >= 100) {
-            // Si c'est 100% ou plus, c'est un cashback fixe
-            cashback = 500; // Cashback standard pour les ambassadeurs
-            promoEffect = `Cashback 500 FCFA`;
-          } else {
-            // Sinon c'est une réduction
-            baseFeeRate = Math.max(0, baseFeeRate - reduction);
-            promoEffect = `Réduction ${matchedPromo.discount_percentage}%`;
-          }
+          // Codes ambassadeurs : uniquement cashback pour le détenteur du code
+          // Calcul du cashback basé sur le pourcentage des frais
+          const feesAmount = amountNum * baseFeeRate;
+          cashback = Math.round(feesAmount * (matchedPromo.discount_percentage / 100));
+          promoEffect = `Cashback ambassadeur : ${matchedPromo.discount_percentage}% des frais`;
         }
       }
     }
@@ -168,8 +165,8 @@ const Calculator = () => {
     
     const directionText = direction === "beceao-cemac" ? `depuis le Togo vers ${destination.toUpperCase()}` : 
                           direction === "cemac-beceao" ? `depuis ${destination.toUpperCase()} vers le Togo` :
-                          direction === "togo-france" ? "depuis le Togo vers la FRANCE" :
                           direction === "togo-europe" ? `depuis le Togo vers ${destination === "autres" ? "l'EUROPE" : destination.toUpperCase()}` :
+                          direction === "cemac-europe" ? `depuis ${destination.toUpperCase()} vers l'EUROPE` :
                           "depuis la FRANCE vers le Togo";
     const deliveryText = deliveryTime === "instant" ? "instantané" : deliveryTime === "1day" ? "24h" : deliveryTime === "2days" ? "2 jours" : "3 jours";
     
@@ -180,29 +177,38 @@ const Calculator = () => {
       month: 'long', 
       day: 'numeric'
     });
+
+    // Devise selon la direction
+    const sendCurrency = direction === 'france-togo' ? 'EUR' : direction === 'cemac-europe' ? 'FCFA' : 'FCFA';
+    const receiveCurrency = direction === 'france-togo' ? 'FCFA' : direction === 'togo-europe' || direction === 'cemac-europe' ? 'EUR' : 'FCFA';
     
-    let message = `🏦 DYNAMIK Transfert - Demande de transfert
+    let message = `🎄✨ DYNAMIK Transfert - Demande de transfert ✨🎄
 📅 Date de la transaction : ${transactionDate}
 
+🎅 Joyeux Noël et Excellentes Fêtes de fin d'année ! 🎅
+Toute l'équipe DYNAMIK Transfert vous souhaite ses meilleurs vœux de bonheur, de santé et de prospérité pour cette période festive et pour la nouvelle année à venir.
+Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
+
 💰 DÉTAILS DU TRANSFERT :
-- Montant : ${amount} ${direction === 'togo-france' ? 'FCFA' : direction === 'france-togo' ? 'EUR' : 'FCFA'}
+- Montant : ${amount} ${sendCurrency}
 - Direction : ${directionText}
 - Motif : ${motif || 'Non spécifié'}
 - Délai : ${deliveryText}
-- Total à payer : ${result.totalToPay.toFixed(0)} ${direction === 'togo-france' ? 'FCFA' : direction === 'france-togo' ? 'EUR' : 'FCFA'}
-- Montant reçu : ${result.amountReceived.toFixed(0)} ${direction === 'togo-france' ? 'EUR' : direction === 'france-togo' ? 'FCFA' : 'FCFA'}
-- Frais appliqués : ${result.fees.toFixed(0)} ${direction === 'togo-france' ? 'FCFA' : direction === 'france-togo' ? 'EUR' : 'FCFA'}`;
+- Total à payer : ${result.totalToPay.toFixed(0)} ${sendCurrency}
+- Montant reçu : ${result.amountReceived.toFixed(0)} ${receiveCurrency}
+- Frais appliqués : ${result.fees.toFixed(0)} ${sendCurrency}`;
 
     if (promoCode) {
       message += `\n- Code promo : ${promoCode.toUpperCase()} (${result.promoEffect})`;
     }
 
     if (result.cashback > 0) {
-      message += `\n- Cashback prévu : +${result.cashback} FCFA`;
+      message += `\n- Cashback ambassadeur prévu : +${result.cashback} FCFA`;
     }
 
     message += `\n\n✅ Je confirme vouloir procéder à ce transfert.
-📱 Merci de me contacter pour finaliser la transaction.`;
+📱 Merci de me contacter pour finaliser la transaction.
+🎄 Bonnes fêtes avec DYNAMIK Transfert ! 🎄`;
 
     const finalMessage = `Bonjour DYNAMIK TRANSFERT, ${message}`;
     const whatsappUrl = `https://wa.me/22899771419?text=${encodeURIComponent(finalMessage)}`;
@@ -264,7 +270,7 @@ const Calculator = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="togo-europe">🎄 Togo → Europe (Promo Fêtes 8.9%)</SelectItem>
-                      <SelectItem value="togo-france">Togo → France (depuis le Togo)</SelectItem>
+                      <SelectItem value="cemac-europe">🎄 CEMAC → Europe (Promo Fêtes 8.9%)</SelectItem>
                       <SelectItem value="france-togo">France → Togo (1% fixe)</SelectItem>
                       <SelectItem value="beceao-cemac">BECEAO → CEMAC (Depuis le Togo)</SelectItem>
                       <SelectItem value="cemac-beceao">CEMAC → BECEAO (Vers le Togo)</SelectItem>
@@ -319,13 +325,20 @@ const Calculator = () => {
                           <SelectItem value="guinee-equatoriale">Guinée Équatoriale</SelectItem>
                           <SelectItem value="tchad">Tchad</SelectItem>
                         </>
-                      ) : direction === "togo-france" ? (
-                        <SelectItem value="france">France</SelectItem>
                       ) : direction === "togo-europe" ? (
                         <>
                           <SelectItem value="france">France</SelectItem>
                           <SelectItem value="allemagne">Allemagne</SelectItem>
                           <SelectItem value="autres">Autres pays européens</SelectItem>
+                        </>
+                      ) : direction === "cemac-europe" ? (
+                        <>
+                          <SelectItem value="gabon">Gabon</SelectItem>
+                          <SelectItem value="cameroun">Cameroun</SelectItem>
+                          <SelectItem value="centrafrique">République Centrafricaine</SelectItem>
+                          <SelectItem value="congo">Congo-Brazzaville</SelectItem>
+                          <SelectItem value="guinee-equatoriale">Guinée Équatoriale</SelectItem>
+                          <SelectItem value="tchad">Tchad</SelectItem>
                         </>
                       ) : direction === "france-togo" ? (
                         <SelectItem value="togo">Togo</SelectItem>
@@ -352,20 +365,28 @@ const Calculator = () => {
                          <>
                            <SelectItem value="instant">Instantané (frais selon pays)</SelectItem>
                          </>
-                        ) : direction === "togo-france" ? (
-                          <>
-                            <SelectItem value="instant">Instantané (2% frais)</SelectItem>
-                            <SelectItem value="1day">24h (avec dépréciation 1%)</SelectItem>
-                            <SelectItem value="2days">2 jours (avec dépréciation 1%)</SelectItem>
-                            <SelectItem value="3days">3 jours (avec dépréciation 1%)</SelectItem>
-                          </>
                         ) : direction === "togo-europe" ? (
+                          <SelectItem value="instant">Instantané (8.9% promo fêtes)</SelectItem>
+                        ) : direction === "cemac-europe" ? (
                           <SelectItem value="instant">Instantané (8.9% promo fêtes)</SelectItem>
                         ) : direction === "france-togo" ? (
                           <SelectItem value="instant">Instantané (1% fixe)</SelectItem>
                         ) : null}
                     </SelectContent>
                   </Select>
+                  {(direction === "togo-europe" || direction === "cemac-europe") && (
+                    <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg">
+                      <p className="text-xs text-amber-800 dark:text-amber-200 font-medium mb-1">
+                        ⚠️ Note importante - Transferts vers l'Europe :
+                      </p>
+                      <ul className="text-xs text-amber-700 dark:text-amber-300 space-y-1 list-disc list-inside">
+                        <li>Limite : 1000€ maximum par client par jour</li>
+                        <li>Modes acceptés : Néo-banques ou cash uniquement</li>
+                        <li>Non acceptés : PayPal, virements bancaires classiques</li>
+                        <li>Vérification de l'origine des fonds obligatoire (lutte anti-blanchiment)</li>
+                      </ul>
+                    </div>
+                  )}
                 </div>
 
                 <div>
