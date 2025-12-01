@@ -179,8 +179,33 @@ const Calculator = () => {
     });
 
     // Devise selon la direction
-    const sendCurrency = direction === 'france-togo' ? 'EUR' : direction === 'cemac-europe' ? 'FCFA' : 'FCFA';
-    const receiveCurrency = direction === 'france-togo' ? 'FCFA' : direction === 'togo-europe' || direction === 'cemac-europe' ? 'EUR' : 'FCFA';
+    // XOF = Franc CFA BCEAO (Togo/Afrique de l'Ouest)
+    // XAF = Franc CFA CEMAC (Gabon, Cameroun, etc.)
+    // EUR = Euro
+    const EUR_RATE = 655; // Taux de conversion FCFA -> EUR
+    
+    let sendCurrency = 'XOF';
+    let receiveCurrency = 'XOF';
+    let displayAmountReceived = result.amountReceived;
+    
+    if (direction === 'france-togo') {
+      sendCurrency = 'EUR';
+      receiveCurrency = 'XOF';
+    } else if (direction === 'togo-europe') {
+      sendCurrency = 'XOF';
+      receiveCurrency = 'EUR';
+      displayAmountReceived = Math.floor(result.amountReceived / EUR_RATE);
+    } else if (direction === 'cemac-europe') {
+      sendCurrency = 'XAF';
+      receiveCurrency = 'EUR';
+      displayAmountReceived = Math.floor(result.amountReceived / EUR_RATE);
+    } else if (direction === 'beceao-cemac') {
+      sendCurrency = 'XOF';
+      receiveCurrency = 'XAF';
+    } else if (direction === 'cemac-beceao') {
+      sendCurrency = 'XAF';
+      receiveCurrency = 'XOF';
+    }
     
     let message = `🎄✨ DYNAMIK Transfert - Demande de transfert ✨🎄
 📅 Date de la transaction : ${transactionDate}
@@ -195,7 +220,7 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
 - Motif : ${motif || 'Non spécifié'}
 - Délai : ${deliveryText}
 - Total à payer : ${result.totalToPay.toFixed(0)} ${sendCurrency}
-- Montant reçu : ${result.amountReceived.toFixed(0)} ${receiveCurrency}
+- Montant reçu : ${displayAmountReceived} ${receiveCurrency}
 - Frais appliqués : ${result.fees.toFixed(0)} ${sendCurrency}`;
 
     if (promoCode) {
