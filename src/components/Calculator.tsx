@@ -300,11 +300,17 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    {direction === "beceao-cemac" ? "Pays de destination" : "Pays d'origine"}
+                    {direction === "beceao-cemac" || direction === "togo-europe" || direction === "france-togo" 
+                      ? "Pays de destination" 
+                      : "Pays d'origine"}
                   </label>
                   <Select value={destination} onValueChange={setDestination}>
                     <SelectTrigger className="h-12">
-                      <SelectValue placeholder={direction === "beceao-cemac" ? "Vers quel pays ?" : "Depuis quel pays ?"} />
+                      <SelectValue placeholder={
+                        direction === "beceao-cemac" || direction === "togo-europe" || direction === "france-togo"
+                          ? "Vers quel pays ?" 
+                          : "Depuis quel pays ?"
+                      } />
                     </SelectTrigger>
                     <SelectContent>
                       {direction === "beceao-cemac" ? (
