@@ -162,13 +162,23 @@ const Calculator = () => {
     if (direction === "beceao-cemac") {
       baseFeeRate = feeRates["beceao-cemac"][destination as keyof typeof feeRates["beceao-cemac"]] || 0.035;
     } else if (direction === "cemac-beceao") {
-      // PROMO jusqu'au 20 janvier 2026 - frais selon délai
-      if (deliveryTime === "instant") {
-        baseFeeRate = feeRates["cemac-beceao"].instant; // 9.6%
-      } else if (deliveryTime === "1-2days") {
-        baseFeeRate = feeRates["cemac-beceao"]["1-2days"]; // 8.7%
-      } else if (deliveryTime === "3days") {
-        baseFeeRate = feeRates["cemac-beceao"]["3days"]; // 7.3%
+      // Minimum 50 000 FCFA pour bénéficier de la promo, sinon 11% fixe
+      const PROMO_MINIMUM = 50000;
+      
+      if (amountNum >= PROMO_MINIMUM) {
+        // PROMO jusqu'au 20 janvier 2026 - frais selon délai
+        if (deliveryTime === "instant") {
+          baseFeeRate = feeRates["cemac-beceao"].instant; // 9.6%
+        } else if (deliveryTime === "1-2days") {
+          baseFeeRate = feeRates["cemac-beceao"]["1-2days"]; // 8.7%
+        } else if (deliveryTime === "3days") {
+          baseFeeRate = feeRates["cemac-beceao"]["3days"]; // 7.3%
+        }
+        promoEffect = "Promo appliquée (montant ≥ 50 000 FCFA)";
+      } else {
+        // Montant inférieur à 50 000 FCFA = taux fixe 11%
+        baseFeeRate = 0.11;
+        promoEffect = "Taux standard 11% (montant < 50 000 FCFA)";
       }
       
       // Info Mobile Money
@@ -391,9 +401,12 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
                     </SelectContent>
                   </Select>
                   {direction === "cemac-beceao" && (
-                    <div className="mt-2 p-2 bg-primary/10 border border-primary/30 rounded-lg">
+                    <div className="mt-2 p-3 bg-primary/10 border border-primary/30 rounded-lg space-y-1">
                       <p className="text-xs text-primary font-medium">
                         🔥 Promo spéciale : Frais réduits jusqu'au 20 janvier 2026 !
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        💡 Minimum 50 000 FCFA pour bénéficier de la promo. En dessous : 11% fixe.
                       </p>
                     </div>
                   )}
