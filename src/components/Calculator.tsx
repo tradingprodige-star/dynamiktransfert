@@ -3,21 +3,33 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { supabase } from "@/integrations/supabase/client";
+
+// Génération d'un numéro de référence unique
+const generateReferenceNumber = (): string => {
+  const prefix = "DYN";
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `${prefix}-${timestamp}-${random}`;
+};
 
 const Calculator = () => {
   const scrollRevealRef = useScrollReveal();
   const [amount, setAmount] = useState("");
   const [direction, setDirection] = useState("");
   const [destination, setDestination] = useState("");
-  const [destinationCountry, setDestinationCountry] = useState(""); // Pour CEMAC → BECEAO
+  const [destinationCountry, setDestinationCountry] = useState("");
   const [senderMobileMoney, setSenderMobileMoney] = useState("");
   const [receiverMobileMoney, setReceiverMobileMoney] = useState("");
+  const [europeReceiveMethod, setEuropeReceiveMethod] = useState("");
   const [deliveryTime, setDeliveryTime] = useState("");
   const [promoCode, setPromoCode] = useState("");
   const [motif, setMotif] = useState("");
+  const [customRequest, setCustomRequest] = useState("");
+  const [showCustomRequest, setShowCustomRequest] = useState(false);
   const [promoCodes, setPromoCodes] = useState<Array<{
     id: string;
     code: string;
@@ -33,9 +45,9 @@ const Calculator = () => {
     promoEffect: string;
     senderMobileMoneyInfo?: string;
     receiverMobileMoneyInfo?: string;
+    referenceNumber: string;
   } | null>(null);
 
-  // Fetch available promo codes from database on component mount
   useEffect(() => {
     const fetchPromoCodes = async () => {
       try {
@@ -46,7 +58,6 @@ const Calculator = () => {
         
         if (error) {
           console.error('Error fetching promo codes:', error);
-          // Set empty array if fetch fails
           setPromoCodes([]);
           return;
         }
@@ -64,46 +75,57 @@ const Calculator = () => {
   // Configuration des frais selon direction et destination
   const feeRates = {
     "beceao-cemac": {
-      gabon: 0.11, // 11% pour le Gabon
-      cameroun: 0.035, // 3.5% pour autres pays CEMAC
+      gabon: 0.11,
+      cameroun: 0.035,
       "centrafrique": 0.035,
       "congo": 0.035,
       "guinee-equatoriale": 0.035,
       "tchad": 0.035
     },
-    // PROMO CEMAC → BECEAO (jusqu'au 20 janvier 2026)
     "cemac-beceao": {
-      instant: 0.096, // 9.6% instantané
-      "1-2days": 0.087, // 8.7% en 1-2 jours
-      "3days": 0.073 // 7.3% après 3 jours
+      instant: 0.096,
+      "1-2days": 0.087,
+      "3days": 0.073
+    },
+    "beceao-beceao": {
+      instant: 0.05,
+      "1-2days": 0.04,
+      "3days": 0.03
     },
     "france-togo": {
-      standard: 0.01 // 1% fixe pour France vers Togo
+      standard: 0.01
     },
     "togo-europe": {
-      france: 0.089, // 8.9% promo fêtes de fin d'année
+      france: 0.089,
       allemagne: 0.089,
       autres: 0.089
     },
     "cemac-europe": {
-      gabon: 0.089, // 8.9% pour le Gabon vers Europe
+      gabon: 0.089,
       cameroun: 0.089,
       "centrafrique": 0.089,
       "congo": 0.089,
       "guinee-equatoriale": 0.089,
       "tchad": 0.089
+    },
+    "beceao-europe": {
+      togo: 0.089,
+      "cote-ivoire": 0.089,
+      benin: 0.089,
+      burkina: 0.089,
+      senegal: 0.089,
+      mali: 0.089
     }
   };
 
-  // Réductions selon délai de livraison (pour BECEAO → CEMAC)
   const deliveryDiscounts = {
     instant: 0,
-    "1day": 0.01, // -1%
-    "2days": 0.02, // -2%
-    "3days": 0.03 // -3%
+    "1day": 0.01,
+    "2days": 0.02,
+    "3days": 0.03
   };
 
-  // Options Mobile Money expéditeur selon pays
+  // Options Mobile Money expéditeur
   const senderMobileMoneyOptions: Record<string, Array<{value: string, label: string, recommended?: boolean, fees: string}>> = {
     gabon: [
       { value: "moov-money", label: "Moov Money", recommended: true, fees: "2-3%" },
@@ -113,10 +135,23 @@ const Calculator = () => {
     centrafrique: [{ value: "airtel-money", label: "Airtel Money", fees: "Variable" }],
     congo: [{ value: "airtel-money", label: "Airtel Money", fees: "Variable" }],
     "guinee-equatoriale": [{ value: "airtel-money", label: "Airtel Money", fees: "Variable" }],
-    tchad: [{ value: "airtel-money", label: "Airtel Money", fees: "Variable" }]
+    tchad: [{ value: "airtel-money", label: "Airtel Money", fees: "Variable" }],
+    // Afrique de l'Ouest
+    togo: [
+      { value: "mix-by-yas", label: "Mix by Yas", recommended: true, fees: "Variable" },
+      { value: "moov-money", label: "Moov Money", fees: "Variable" }
+    ],
+    "cote-ivoire": [
+      { value: "orange-money", label: "Orange Money", fees: "Variable" },
+      { value: "wave", label: "Wave", fees: "Variable" }
+    ],
+    benin: [{ value: "mtn", label: "MTN", fees: "Variable" }],
+    burkina: [{ value: "wave", label: "Wave", fees: "Variable" }],
+    senegal: [{ value: "wave", label: "Wave", fees: "Variable" }],
+    mali: [{ value: "wave", label: "Wave", fees: "Variable" }]
   };
 
-  // Options Mobile Money destinataire selon pays d'Afrique de l'Ouest
+  // Options Mobile Money destinataire
   const receiverMobileMoneyOptions: Record<string, Array<{value: string, label: string, recommended?: boolean, note?: string}>> = {
     togo: [
       { value: "mix-by-yas", label: "Mix by Yas", recommended: true, note: "Rapide" },
@@ -133,7 +168,16 @@ const Calculator = () => {
     ghana: [{ value: "mtn", label: "MTN" }]
   };
 
-  // Liste des pays destinataires Afrique de l'Ouest
+  // Méthodes de réception en Europe
+  const europeReceiveMethods = [
+    { value: "virement", label: "Virement bancaire" },
+    { value: "paypal", label: "PayPal" },
+    { value: "revolut", label: "Revolut / Néo-banque" },
+    { value: "paiement-site", label: "Paiement sur un site web" },
+    { value: "autres", label: "Autres" }
+  ];
+
+  // Pays Afrique de l'Ouest
   const westAfricaCountries = [
     { value: "togo", label: "Togo" },
     { value: "cote-ivoire", label: "Côte d'Ivoire" },
@@ -144,12 +188,24 @@ const Calculator = () => {
     { value: "ghana", label: "Ghana" }
   ];
 
+  // Pays CEMAC
+  const cemacCountries = [
+    { value: "gabon", label: "Gabon", recommended: true },
+    { value: "cameroun", label: "Cameroun" },
+    { value: "centrafrique", label: "République Centrafricaine" },
+    { value: "congo", label: "Congo-Brazzaville" },
+    { value: "guinee-equatoriale", label: "Guinée Équatoriale" },
+    { value: "tchad", label: "Tchad" }
+  ];
+
   const calculateTransfer = () => {
     if (!amount || !direction || !deliveryTime) return;
     
-    // Validation spécifique par direction
+    // Validations spécifiques
     if (direction === "cemac-beceao" && (!destination || !destinationCountry || !senderMobileMoney || !receiverMobileMoney)) return;
-    if (direction !== "cemac-beceao" && direction !== "france-togo" && !destination) return;
+    if (direction === "beceao-beceao" && (!destination || !destinationCountry || !senderMobileMoney || !receiverMobileMoney)) return;
+    if ((direction === "cemac-europe" || direction === "beceao-europe") && (!destination || !senderMobileMoney || !europeReceiveMethod)) return;
+    if (direction !== "cemac-beceao" && direction !== "beceao-beceao" && direction !== "france-togo" && direction !== "cemac-europe" && direction !== "beceao-europe" && !destination) return;
 
     const amountNum = parseFloat(amount);
     let baseFeeRate = 0;
@@ -158,61 +214,70 @@ const Calculator = () => {
     let senderMobileMoneyInfo = "";
     let receiverMobileMoneyInfo = "";
 
-    // Détermination du taux de base selon direction
     if (direction === "beceao-cemac") {
       baseFeeRate = feeRates["beceao-cemac"][destination as keyof typeof feeRates["beceao-cemac"]] || 0.035;
     } else if (direction === "cemac-beceao") {
-      // Minimum 50 000 FCFA pour bénéficier de la promo, sinon 11% fixe
       const PROMO_MINIMUM = 50000;
       
       if (amountNum >= PROMO_MINIMUM) {
-        // PROMO jusqu'au 20 janvier 2026 - frais selon délai
         if (deliveryTime === "instant") {
-          baseFeeRate = feeRates["cemac-beceao"].instant; // 9.6%
+          baseFeeRate = feeRates["cemac-beceao"].instant;
         } else if (deliveryTime === "1-2days") {
-          baseFeeRate = feeRates["cemac-beceao"]["1-2days"]; // 8.7%
+          baseFeeRate = feeRates["cemac-beceao"]["1-2days"];
         } else if (deliveryTime === "3days") {
-          baseFeeRate = feeRates["cemac-beceao"]["3days"]; // 7.3%
+          baseFeeRate = feeRates["cemac-beceao"]["3days"];
         }
         promoEffect = "Promo appliquée (montant ≥ 50 000 FCFA)";
       } else {
-        // Montant inférieur à 50 000 FCFA = taux fixe 11%
         baseFeeRate = 0.11;
         promoEffect = "Taux standard 11% (montant < 50 000 FCFA)";
       }
       
-      // Info Mobile Money
       const senderOption = senderMobileMoneyOptions[destination]?.find(o => o.value === senderMobileMoney);
       const receiverOption = receiverMobileMoneyOptions[destinationCountry]?.find(o => o.value === receiverMobileMoney);
       senderMobileMoneyInfo = senderOption ? `${senderOption.label} (${senderOption.fees} frais réseau)` : "";
       receiverMobileMoneyInfo = receiverOption ? `${receiverOption.label}${receiverOption.note ? ` - ${receiverOption.note}` : ""}` : "";
+    } else if (direction === "beceao-beceao") {
+      if (deliveryTime === "instant") {
+        baseFeeRate = feeRates["beceao-beceao"].instant;
+      } else if (deliveryTime === "1-2days") {
+        baseFeeRate = feeRates["beceao-beceao"]["1-2days"];
+      } else if (deliveryTime === "3days") {
+        baseFeeRate = feeRates["beceao-beceao"]["3days"];
+      }
+      
+      const senderOption = senderMobileMoneyOptions[destination]?.find(o => o.value === senderMobileMoney);
+      const receiverOption = receiverMobileMoneyOptions[destinationCountry]?.find(o => o.value === receiverMobileMoney);
+      senderMobileMoneyInfo = senderOption ? `${senderOption.label}` : "";
+      receiverMobileMoneyInfo = receiverOption ? `${receiverOption.label}${receiverOption.note ? ` - ${receiverOption.note}` : ""}` : "";
     } else if (direction === "france-togo") {
-      baseFeeRate = feeRates["france-togo"].standard; // 1% fixe
+      baseFeeRate = feeRates["france-togo"].standard;
     } else if (direction === "togo-europe") {
       baseFeeRate = feeRates["togo-europe"][destination as keyof typeof feeRates["togo-europe"]] || 0.089;
     } else if (direction === "cemac-europe") {
       baseFeeRate = feeRates["cemac-europe"][destination as keyof typeof feeRates["cemac-europe"]] || 0.089;
+      const senderOption = senderMobileMoneyOptions[destination]?.find(o => o.value === senderMobileMoney);
+      senderMobileMoneyInfo = senderOption ? `${senderOption.label}` : "";
+    } else if (direction === "beceao-europe") {
+      baseFeeRate = feeRates["beceao-europe"][destination as keyof typeof feeRates["beceao-europe"]] || 0.089;
+      const senderOption = senderMobileMoneyOptions[destination]?.find(o => o.value === senderMobileMoney);
+      senderMobileMoneyInfo = senderOption ? `${senderOption.label}` : "";
     }
 
-    // Application des réductions de délai (pour BECEAO → CEMAC uniquement)
     if (direction === "beceao-cemac") {
       const deliveryDiscount = deliveryDiscounts[deliveryTime as keyof typeof deliveryDiscounts] || 0;
       baseFeeRate = Math.max(0, baseFeeRate - deliveryDiscount);
     }
 
-    // Application des codes promo ambassadeurs - CASHBACK uniquement (pas de réduction supplémentaire)
-    // Les réductions de fêtes sont déjà appliquées pour les clients
+    // Codes promo (pas pour CEMAC → BECEAO)
     if (promoCode && direction !== "cemac-beceao") {
       const matchedPromo = promoCodes.find(p => p.code.toUpperCase() === promoCode.toUpperCase());
       
       if (matchedPromo) {
         if (matchedPromo.type === "welcome") {
-          // Code bienvenue : 0% de frais pour le premier transfert
           baseFeeRate = 0;
           promoEffect = `Code BIENVENUE : 0% de frais`;
         } else if (matchedPromo.type === "ambassador") {
-          // Codes ambassadeurs : uniquement cashback pour le détenteur du code
-          // Calcul du cashback basé sur le pourcentage des frais
           const feesAmount = amountNum * baseFeeRate;
           cashback = Math.round(feesAmount * (matchedPromo.discount_percentage / 100));
           promoEffect = `Cashback ambassadeur : ${matchedPromo.discount_percentage}% des frais`;
@@ -222,7 +287,8 @@ const Calculator = () => {
 
     const fees = amountNum * baseFeeRate;
     const totalToPay = amountNum + fees;
-    const amountReceived = amountNum; // Même devise FCFA
+    const amountReceived = amountNum;
+    const referenceNumber = generateReferenceNumber();
 
     setResult({
       totalToPay,
@@ -231,7 +297,8 @@ const Calculator = () => {
       cashback,
       promoEffect,
       senderMobileMoneyInfo,
-      receiverMobileMoneyInfo
+      receiverMobileMoneyInfo,
+      referenceNumber
     });
   };
 
@@ -244,10 +311,17 @@ const Calculator = () => {
     } else if (direction === "cemac-beceao") {
       const destCountryLabel = westAfricaCountries.find(c => c.value === destinationCountry)?.label || destinationCountry;
       directionText = `depuis ${destination.toUpperCase()} vers ${destCountryLabel.toUpperCase()}`;
+    } else if (direction === "beceao-beceao") {
+      const originLabel = westAfricaCountries.find(c => c.value === destination)?.label || destination;
+      const destLabel = westAfricaCountries.find(c => c.value === destinationCountry)?.label || destinationCountry;
+      directionText = `depuis ${originLabel.toUpperCase()} vers ${destLabel.toUpperCase()}`;
     } else if (direction === "togo-europe") {
       directionText = `depuis le Togo vers ${destination === "autres" ? "l'EUROPE" : destination.toUpperCase()}`;
     } else if (direction === "cemac-europe") {
       directionText = `depuis ${destination.toUpperCase()} vers l'EUROPE`;
+    } else if (direction === "beceao-europe") {
+      const originLabel = westAfricaCountries.find(c => c.value === destination)?.label || destination;
+      directionText = `depuis ${originLabel.toUpperCase()} vers l'EUROPE`;
     } else {
       directionText = "depuis la FRANCE vers le Togo";
     }
@@ -258,7 +332,6 @@ const Calculator = () => {
     else if (deliveryTime === "3days") deliveryText = "3 jours";
     else if (deliveryTime === "1-2days") deliveryText = "1-2 jours";
     
-    // Formatage de la date du jour
     const today = new Date();
     const transactionDate = today.toLocaleDateString('fr-FR', {
       year: 'numeric',
@@ -266,22 +339,24 @@ const Calculator = () => {
       day: 'numeric'
     });
 
-    // Devise selon la direction
-    // XOF = Franc CFA BCEAO (Togo/Afrique de l'Ouest)
-    // XAF = Franc CFA CEMAC (Gabon, Cameroun, etc.)
-    // EUR = Euro
-    const EUR_RATE = 655; // Taux de conversion FCFA -> EUR
+    const EUR_RATE = 655;
     
+    // Devises et montants selon la direction
     let sendCurrency = 'XOF';
     let receiveCurrency = 'XOF';
     let displayAmountReceived = result.amountReceived;
+    let displayFees = result.fees;
+    let displayTotalToPay = result.totalToPay;
     
     if (direction === 'france-togo') {
       sendCurrency = 'EUR';
       receiveCurrency = 'XOF';
-    } else if (direction === 'togo-europe') {
+      // Montant en EUR, on reçoit en XOF
+      displayAmountReceived = Math.floor(result.amountReceived * EUR_RATE);
+    } else if (direction === 'togo-europe' || direction === 'beceao-europe') {
       sendCurrency = 'XOF';
       receiveCurrency = 'EUR';
+      // Envoi en XOF, conversion en EUR pour réception
       displayAmountReceived = Math.floor(result.amountReceived / EUR_RATE);
     } else if (direction === 'cemac-europe') {
       sendCurrency = 'XAF';
@@ -293,26 +368,30 @@ const Calculator = () => {
     } else if (direction === 'cemac-beceao') {
       sendCurrency = 'XAF';
       receiveCurrency = 'XOF';
+    } else if (direction === 'beceao-beceao') {
+      sendCurrency = 'XOF';
+      receiveCurrency = 'XOF';
     }
     
     let message = `🎄✨ DYNAMIK Transfert - Demande de transfert ✨🎄
-📅 Date de la transaction : ${transactionDate}
 
-🎅 Joyeux Noël et Excellentes Fêtes de fin d'année ! 🎅
-Toute l'équipe DYNAMIK Transfert vous souhaite ses meilleurs vœux de bonheur, de santé et de prospérité pour cette période festive et pour la nouvelle année à venir.
-Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
+📋 RÉFÉRENCE : ${result.referenceNumber}
+📅 Date : ${transactionDate}
+
+🎅 Joyeuses Fêtes et Meilleurs Vœux pour 2025 ! 🎅
+Merci de votre confiance !
 
 💰 DÉTAILS DU TRANSFERT :
-- Montant : ${amount} ${sendCurrency}
+- Montant à envoyer : ${parseFloat(amount).toFixed(0)} ${sendCurrency}
 - Direction : ${directionText}
 - Motif : ${motif || 'Non spécifié'}
 - Délai : ${deliveryText}
-- Total à payer : ${result.totalToPay.toFixed(0)} ${sendCurrency}
-- Montant reçu : ${displayAmountReceived} ${receiveCurrency}
-- Frais appliqués : ${result.fees.toFixed(0)} ${sendCurrency}`;
+- Frais : ${displayFees.toFixed(0)} ${sendCurrency}
+- Total à payer : ${displayTotalToPay.toFixed(0)} ${sendCurrency}
+- Montant reçu : ${displayAmountReceived} ${receiveCurrency}`;
 
-    // Ajout des infos Mobile Money pour CEMAC → BECEAO
-    if (direction === "cemac-beceao") {
+    // Mobile Money info
+    if (direction === "cemac-beceao" || direction === "beceao-beceao") {
       message += `\n\n📱 MOBILE MONEY :`;
       if (result.senderMobileMoneyInfo) {
         message += `\n- Envoi via : ${result.senderMobileMoneyInfo}`;
@@ -322,21 +401,63 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
       }
     }
 
+    // Europe transfers - Mobile Money sender + receive method
+    if (direction === "cemac-europe" || direction === "beceao-europe") {
+      message += `\n\n📱 MOBILE MONEY EXPÉDITEUR :`;
+      if (result.senderMobileMoneyInfo) {
+        message += `\n- Envoi via : ${result.senderMobileMoneyInfo}`;
+      }
+      const receiveMethodLabel = europeReceiveMethods.find(m => m.value === europeReceiveMethod)?.label || europeReceiveMethod;
+      message += `\n\n💳 MODE DE RÉCEPTION EN EUROPE :`;
+      message += `\n- ${receiveMethodLabel}`;
+      message += `\n\n📄 NOTE : Carte d'identité requise pour ce transfert.`;
+    }
+
     if (promoCode) {
       message += `\n- Code promo : ${promoCode.toUpperCase()} (${result.promoEffect})`;
     }
 
     if (result.cashback > 0) {
-      message += `\n- Cashback ambassadeur prévu : +${result.cashback} FCFA`;
+      message += `\n- Cashback ambassadeur : +${result.cashback} FCFA`;
     }
 
     message += `\n\n✅ Je confirme vouloir procéder à ce transfert.
-📱 Merci de me contacter pour finaliser la transaction.
-🎄 Bonnes fêtes avec DYNAMIK Transfert ! 🎄`;
+📱 Merci de me contacter pour finaliser.
+
+🔖 Conservez votre référence : ${result.referenceNumber}`;
 
     const finalMessage = `Bonjour DYNAMIK TRANSFERT, ${message}`;
     const whatsappUrl = `https://wa.me/22899771419?text=${encodeURIComponent(finalMessage)}`;
     window.open(whatsappUrl, '_blank');
+  };
+
+  const sendCustomRequest = () => {
+    if (!customRequest.trim()) return;
+    
+    const message = `Bonjour DYNAMIK TRANSFERT,
+
+📋 DEMANDE PERSONNALISÉE
+
+Je ne trouve pas l'option de transfert que je cherche. Voici ma demande :
+
+${customRequest}
+
+Merci de me contacter pour plus d'informations.`;
+
+    const whatsappUrl = `https://wa.me/22899771419?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  // Reset des champs dépendants lors du changement de direction
+  const handleDirectionChange = (value: string) => {
+    setDirection(value);
+    setDestination("");
+    setDestinationCountry("");
+    setSenderMobileMoney("");
+    setReceiverMobileMoney("");
+    setEuropeReceiveMethod("");
+    setDeliveryTime("");
+    setResult(null);
   };
 
   return (
@@ -359,7 +480,7 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
           >
-            Découvrez combien vous économisez avec DYNAMIK Transfert
+            Transferts rapides, sécurisés et économiques avec DYNAMIK Transfert
           </motion.p>
 
           <div className="grid lg:grid-cols-2 gap-8">
@@ -376,7 +497,7 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
                 </CardHeader>
                 <CardContent className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Montant à envoyer (FCFA)</label>
+                  <label className="block text-sm font-medium mb-2">Montant à envoyer</label>
                   <Input
                     type="number"
                     placeholder="Ex: 50000"
@@ -388,25 +509,40 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
 
                 <div>
                   <label className="block text-sm font-medium mb-2">Direction du transfert</label>
-                  <Select value={direction} onValueChange={setDirection}>
+                  <Select value={direction} onValueChange={handleDirectionChange}>
                     <SelectTrigger className="h-12">
-                      <SelectValue placeholder="Choisissez la direction" />
+                      <SelectValue placeholder="Choisissez votre transfert" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="togo-europe">🎄 Togo → Europe (Promo Fêtes 8.9%)</SelectItem>
-                      <SelectItem value="cemac-europe">🎄 CEMAC → Europe (Promo Fêtes 8.9%)</SelectItem>
-                      <SelectItem value="france-togo">France → Togo (1% fixe)</SelectItem>
-                      <SelectItem value="beceao-cemac">BECEAO → CEMAC (Depuis le Togo)</SelectItem>
-                      <SelectItem value="cemac-beceao">🔥 CEMAC → Afrique de l'Ouest (PROMO jusqu'au 20/01/2026)</SelectItem>
+                      {/* Les plus fréquents en premier */}
+                      <SelectItem value="cemac-beceao">🔥 CEMAC → Afrique de l'Ouest (PROMO -7.3%)</SelectItem>
+                      <SelectItem value="france-togo">🇫🇷 France → Togo (1% fixe)</SelectItem>
+                      <SelectItem value="cemac-europe">🌍 CEMAC → Europe (8.9%)</SelectItem>
+                      <SelectItem value="beceao-europe">🌍 Afrique de l'Ouest → Europe (8.9%)</SelectItem>
+                      <SelectItem value="beceao-beceao">🌍 Afrique de l'Ouest ↔ Afrique de l'Ouest</SelectItem>
+                      <SelectItem value="beceao-cemac">🌍 Togo → CEMAC</SelectItem>
+                      <SelectItem value="togo-europe">🎄 Togo → Europe (Promo 8.9%)</SelectItem>
                     </SelectContent>
                   </Select>
+                  
                   {direction === "cemac-beceao" && (
                     <div className="mt-2 p-3 bg-primary/10 border border-primary/30 rounded-lg space-y-1">
                       <p className="text-xs text-primary font-medium">
-                        🔥 Promo spéciale : Frais réduits jusqu'au 20 janvier 2026 !
+                        🔥 Promo spéciale jusqu'au 20 janvier 2026 !
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        💡 Minimum 50 000 FCFA pour bénéficier de la promo. En dessous : 11% fixe.
+                        💡 Minimum 50 000 FCFA pour la promo. En dessous : 11% fixe.
+                      </p>
+                    </div>
+                  )}
+
+                  {(direction === "cemac-europe" || direction === "beceao-europe") && (
+                    <div className="mt-2 p-3 bg-accent/10 border border-accent/30 rounded-lg space-y-1">
+                      <p className="text-xs text-accent font-medium">
+                        💳 Transferts vers l'Europe simplifiés !
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Envoyez depuis votre Mobile Money, recevez par virement, PayPal, Revolut ou payez directement sur un site.
                       </p>
                     </div>
                   )}
@@ -424,74 +560,67 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
                       <SelectItem value="medical">Frais médicaux</SelectItem>
                       <SelectItem value="business">Transaction commerciale</SelectItem>
                       <SelectItem value="investment">Investissement</SelectItem>
+                      <SelectItem value="paiement-service">Paiement de service</SelectItem>
+                      <SelectItem value="achat-en-ligne">Achat en ligne</SelectItem>
                       <SelectItem value="autres">Autres</SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Requis pour la lutte contre le blanchiment et la cybercriminalité
+                    Requis pour la conformité (LCB-FT)
                   </p>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    {direction === "beceao-cemac" || direction === "togo-europe" || direction === "france-togo" 
-                      ? "Pays de destination" 
-                      : "Pays d'origine"}
-                  </label>
-                  <Select value={destination} onValueChange={setDestination}>
-                    <SelectTrigger className="h-12">
-                      <SelectValue placeholder={
-                        direction === "beceao-cemac" || direction === "togo-europe" || direction === "france-togo"
-                          ? "Vers quel pays ?" 
-                          : "Depuis quel pays ?"
-                      } />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {direction === "beceao-cemac" ? (
-                        <>
-                          <SelectItem value="gabon">Gabon</SelectItem>
-                          <SelectItem value="cameroun">Cameroun</SelectItem>
-                          <SelectItem value="centrafrique">République Centrafricaine</SelectItem>
-                          <SelectItem value="congo">Congo-Brazzaville</SelectItem>
-                          <SelectItem value="guinee-equatoriale">Guinée Équatoriale</SelectItem>
-                          <SelectItem value="tchad">Tchad</SelectItem>
-                        </>
-                      ) : direction === "cemac-beceao" ? (
-                        <>
-                          <SelectItem value="gabon">🌟 Gabon (Moov Money recommandé)</SelectItem>
-                          <SelectItem value="cameroun">Cameroun</SelectItem>
-                          <SelectItem value="centrafrique">République Centrafricaine</SelectItem>
-                          <SelectItem value="congo">Congo-Brazzaville</SelectItem>
-                          <SelectItem value="guinee-equatoriale">Guinée Équatoriale</SelectItem>
-                          <SelectItem value="tchad">Tchad</SelectItem>
-                        </>
-                      ) : direction === "togo-europe" ? (
-                        <>
-                          <SelectItem value="france">France</SelectItem>
-                          <SelectItem value="allemagne">Allemagne</SelectItem>
-                          <SelectItem value="autres">Autres pays européens</SelectItem>
-                        </>
-                      ) : direction === "cemac-europe" ? (
-                        <>
-                          <SelectItem value="gabon">Gabon</SelectItem>
-                          <SelectItem value="cameroun">Cameroun</SelectItem>
-                          <SelectItem value="centrafrique">République Centrafricaine</SelectItem>
-                          <SelectItem value="congo">Congo-Brazzaville</SelectItem>
-                          <SelectItem value="guinee-equatoriale">Guinée Équatoriale</SelectItem>
-                          <SelectItem value="tchad">Tchad</SelectItem>
-                        </>
-                      ) : direction === "france-togo" ? (
-                        <SelectItem value="togo">Togo</SelectItem>
-                      ) : null}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Mobile Money Expéditeur - CEMAC → BECEAO uniquement */}
-                {direction === "cemac-beceao" && destination && (
+                {/* Pays d'origine / destination selon direction */}
+                {direction && direction !== "france-togo" && (
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      📱 Mobile Money expéditeur (depuis {destination.charAt(0).toUpperCase() + destination.slice(1)})
+                      {direction === "beceao-cemac" || direction === "togo-europe" 
+                        ? "Pays de destination" 
+                        : "Pays d'origine (où vous envoyez)"}
+                    </label>
+                    <Select value={destination} onValueChange={(value) => {
+                      setDestination(value);
+                      setSenderMobileMoney("");
+                    }}>
+                      <SelectTrigger className="h-12">
+                        <SelectValue placeholder="Sélectionnez le pays" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {direction === "beceao-cemac" && cemacCountries.map(c => (
+                          <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                        ))}
+                        {direction === "cemac-beceao" && cemacCountries.map(c => (
+                          <SelectItem key={c.value} value={c.value}>
+                            {c.recommended ? "🌟 " : ""}{c.label}
+                            {c.recommended ? " (Moov Money recommandé)" : ""}
+                          </SelectItem>
+                        ))}
+                        {direction === "cemac-europe" && cemacCountries.map(c => (
+                          <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                        ))}
+                        {direction === "beceao-europe" && westAfricaCountries.filter(c => c.value !== "ghana").map(c => (
+                          <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                        ))}
+                        {direction === "beceao-beceao" && westAfricaCountries.map(c => (
+                          <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                        ))}
+                        {direction === "togo-europe" && (
+                          <>
+                            <SelectItem value="france">France</SelectItem>
+                            <SelectItem value="allemagne">Allemagne</SelectItem>
+                            <SelectItem value="autres">Autres pays européens</SelectItem>
+                          </>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {/* Mobile Money Expéditeur */}
+                {(direction === "cemac-beceao" || direction === "cemac-europe" || direction === "beceao-europe" || direction === "beceao-beceao") && destination && (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      📱 Votre Mobile Money (envoi)
                     </label>
                     <Select value={senderMobileMoney} onValueChange={setSenderMobileMoney}>
                       <SelectTrigger className="h-12">
@@ -500,7 +629,7 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
                       <SelectContent>
                         {senderMobileMoneyOptions[destination]?.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
-                            {option.recommended ? "⭐ " : ""}{option.label} ({option.fees} frais réseau)
+                            {option.recommended ? "⭐ " : ""}{option.label}
                             {option.recommended ? " - Recommandé" : ""}
                           </SelectItem>
                         ))}
@@ -511,18 +640,21 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
                         💡 Moov Money : moins de frais de retrait et plus rapide !
                       </p>
                     )}
+                    <p className="text-xs text-muted-foreground mt-1">
+                      ℹ️ Les frais Mobile Money sont à votre charge selon votre opérateur.
+                    </p>
                   </div>
                 )}
 
-                {/* Pays destinataire Afrique de l'Ouest - CEMAC → BECEAO uniquement */}
-                {direction === "cemac-beceao" && (
+                {/* Pays destinataire Afrique de l'Ouest */}
+                {(direction === "cemac-beceao" || direction === "beceao-beceao") && (
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      🌍 Pays destinataire (Afrique de l'Ouest)
+                      🌍 Pays destinataire
                     </label>
                     <Select value={destinationCountry} onValueChange={(value) => {
                       setDestinationCountry(value);
-                      setReceiverMobileMoney(""); // Reset receiver mobile money
+                      setReceiverMobileMoney("");
                     }}>
                       <SelectTrigger className="h-12">
                         <SelectValue placeholder="Vers quel pays ?" />
@@ -538,15 +670,15 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
                   </div>
                 )}
 
-                {/* Mobile Money Destinataire - CEMAC → BECEAO uniquement */}
-                {direction === "cemac-beceao" && destinationCountry && (
+                {/* Mobile Money Destinataire */}
+                {(direction === "cemac-beceao" || direction === "beceao-beceao") && destinationCountry && (
                   <div>
                     <label className="block text-sm font-medium mb-2">
                       📱 Mobile Money destinataire
                     </label>
                     <Select value={receiverMobileMoney} onValueChange={setReceiverMobileMoney}>
                       <SelectTrigger className="h-12">
-                        <SelectValue placeholder="Choisissez le Mobile Money de réception" />
+                        <SelectValue placeholder="Mobile Money de réception" />
                       </SelectTrigger>
                       <SelectContent>
                         {receiverMobileMoneyOptions[destinationCountry]?.map((option) => (
@@ -563,6 +695,30 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
                         💡 Mix by Yas : traitement prioritaire et rapide !
                       </p>
                     )}
+                  </div>
+                )}
+
+                {/* Mode de réception Europe */}
+                {(direction === "cemac-europe" || direction === "beceao-europe") && destination && (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      💳 Mode de réception en Europe
+                    </label>
+                    <Select value={europeReceiveMethod} onValueChange={setEuropeReceiveMethod}>
+                      <SelectTrigger className="h-12">
+                        <SelectValue placeholder="Comment recevoir les fonds ?" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {europeReceiveMethods.map((method) => (
+                          <SelectItem key={method.value} value={method.value}>
+                            {method.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      📄 Une pièce d'identité sera demandée pour ce transfert.
+                    </p>
                   </div>
                 )}
 
@@ -586,32 +742,34 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
                            <SelectItem value="1-2days">📅 1-2 jours (8.7%)</SelectItem>
                            <SelectItem value="3days">📅 Après 3 jours (7.3%)</SelectItem>
                          </>
-                        ) : direction === "togo-europe" ? (
-                          <SelectItem value="instant">Instantané (8.9% promo fêtes)</SelectItem>
-                        ) : direction === "cemac-europe" ? (
-                          <SelectItem value="instant">Instantané (8.9% promo fêtes)</SelectItem>
+                        ) : direction === "beceao-beceao" ? (
+                          <>
+                            <SelectItem value="instant">⚡ Instantané (5%)</SelectItem>
+                            <SelectItem value="1-2days">📅 1-2 jours (4%)</SelectItem>
+                            <SelectItem value="3days">📅 Après 3 jours (3%)</SelectItem>
+                          </>
+                        ) : (direction === "togo-europe" || direction === "cemac-europe" || direction === "beceao-europe") ? (
+                          <SelectItem value="instant">Instantané (8.9%)</SelectItem>
                         ) : direction === "france-togo" ? (
                           <SelectItem value="instant">Instantané (1% fixe)</SelectItem>
                         ) : null}
                     </SelectContent>
                   </Select>
-                  {(direction === "togo-europe" || direction === "cemac-europe") && (
+                  {(direction === "togo-europe" || direction === "cemac-europe" || direction === "beceao-europe") && (
                     <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg">
                       <p className="text-xs text-amber-800 dark:text-amber-200 font-medium mb-1">
-                        ⚠️ Note importante - Transferts vers l'Europe :
+                        ⚠️ Transferts vers l'Europe :
                       </p>
                       <ul className="text-xs text-amber-700 dark:text-amber-300 space-y-1 list-disc list-inside">
-                        <li>Limite : 1000€ maximum par client par jour</li>
-                        <li>Modes acceptés : Néo-banques ou cash uniquement</li>
-                        <li>Non acceptés : PayPal, virements bancaires classiques</li>
-                        <li>Vérification de l'origine des fonds obligatoire (lutte anti-blanchiment)</li>
+                        <li>Limite : 1000€ max/jour</li>
+                        <li>Vérification d'identité obligatoire</li>
                       </ul>
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Code promo ambassadeur (optionnel)</label>
+                  <label className="block text-sm font-medium mb-2">Code promo (optionnel)</label>
                    <Input
                     placeholder="Entrez votre code promo"
                     value={promoCode}
@@ -621,11 +779,11 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
                   />
                   {direction === "cemac-beceao" ? (
                     <p className="text-xs text-muted-foreground mt-1">
-                      ⚠️ Les codes promos ne s'appliquent pas aux transferts CEMAC → BECEAO
+                      ⚠️ Codes promos non applicables sur cette promotion
                     </p>
                   ) : (
                     <p className="text-xs text-muted-foreground mt-1">
-                      Premier transfert ? Utilisez <span className="font-bold text-primary">WELCOME10</span> pour une réduction !
+                      Premier transfert ? Utilisez <span className="font-bold text-primary">BIENVENUE</span>
                     </p>
                   )}
                 </div>
@@ -635,8 +793,38 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
                   className="w-full h-12 text-lg"
                   variant="hero"
                 >
-                  Calculer
+                  Calculer mes frais
                 </Button>
+
+                {/* Option demande personnalisée */}
+                <div className="pt-4 border-t border-border">
+                  <button 
+                    onClick={() => setShowCustomRequest(!showCustomRequest)}
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"
+                  >
+                    <span>🔍</span>
+                    <span>Vous ne trouvez pas votre option de transfert ?</span>
+                  </button>
+                  
+                  {showCustomRequest && (
+                    <div className="mt-4 space-y-3">
+                      <Textarea
+                        placeholder="Décrivez votre besoin de transfert (pays d'origine, destination, montant, etc.)"
+                        value={customRequest}
+                        onChange={(e) => setCustomRequest(e.target.value)}
+                        className="min-h-[100px]"
+                      />
+                      <Button 
+                        onClick={sendCustomRequest}
+                        variant="outline"
+                        className="w-full"
+                        disabled={!customRequest.trim()}
+                      >
+                        Envoyer ma demande sur WhatsApp
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </CardContent>
               </Card>
             </motion.div>
@@ -655,31 +843,42 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
               <CardContent>
                 {result ? (
                   <div className="space-y-6">
+                    {/* Référence */}
+                    <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg text-center">
+                      <p className="text-xs text-muted-foreground mb-1">Référence</p>
+                      <p className="text-lg font-mono font-bold text-primary">{result.referenceNumber}</p>
+                    </div>
+
                     <div className="space-y-4">
                       <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
                         <span className="text-muted-foreground">Total à payer</span>
                         <span className="text-2xl font-bold text-primary">
-                          {result.totalToPay.toFixed(0)} FCFA
+                          {result.totalToPay.toFixed(0)} {direction === 'france-togo' ? 'EUR' : (direction?.includes('cemac') && !direction?.includes('beceao')) ? 'XAF' : 'XOF'}
                         </span>
                       </div>
                       
                       <div className="flex justify-between items-center p-4 bg-primary/10 rounded-lg">
                         <span className="text-muted-foreground">Montant reçu</span>
                         <span className="text-2xl font-bold text-accent">
-                          {result.amountReceived.toFixed(0)} FCFA
+                          {direction === 'france-togo' 
+                            ? `${Math.floor(result.amountReceived * 655)} XOF`
+                            : (direction === 'togo-europe' || direction === 'cemac-europe' || direction === 'beceao-europe')
+                              ? `${Math.floor(result.amountReceived / 655)} EUR`
+                              : `${result.amountReceived.toFixed(0)} ${direction === 'cemac-beceao' ? 'XOF' : direction === 'beceao-cemac' ? 'XAF' : 'XOF'}`
+                          }
                         </span>
                       </div>
                       
                        <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
                         <span className="text-muted-foreground">Frais appliqués</span>
                         <span className="text-lg font-bold">
-                          {result.fees.toFixed(0)} FCFA
+                          {result.fees.toFixed(0)} {direction === 'france-togo' ? 'EUR' : (direction?.startsWith('cemac') && direction !== 'cemac-beceao') ? 'XAF' : 'XOF'}
                         </span>
                       </div>
 
                       {result.promoEffect && (
                         <div className="flex justify-between items-center p-4 bg-accent/10 rounded-lg border border-accent/20">
-                          <span className="text-muted-foreground">Code promo appliqué</span>
+                          <span className="text-muted-foreground">Promo</span>
                           <span className="text-sm font-bold text-accent">
                             {result.promoEffect}
                           </span>
@@ -688,7 +887,7 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
 
                       {result.cashback > 0 && (
                         <div className="flex justify-between items-center p-4 bg-primary/10 rounded-lg border border-primary/20">
-                          <span className="text-muted-foreground">Cashback à recevoir</span>
+                          <span className="text-muted-foreground">Cashback</span>
                           <span className="text-lg font-bold text-primary">
                             +{result.cashback} FCFA
                           </span>
@@ -703,6 +902,10 @@ Merci de votre confiance ! Profitez de nos tarifs réduits spécial fêtes 🎁
                     >
                       Finaliser sur WhatsApp 🚀
                     </Button>
+
+                    <p className="text-xs text-center text-muted-foreground">
+                      Conservez votre référence : <span className="font-mono font-bold">{result.referenceNumber}</span>
+                    </p>
                   </div>
                 ) : (
                   <div className="text-center py-12">
