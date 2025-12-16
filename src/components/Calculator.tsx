@@ -79,6 +79,7 @@ const Calculator = () => {
       cameroun: 0.035,
       "centrafrique": 0.035,
       "congo": 0.035,
+      "congo-rdc": 0.035,
       "guinee-equatoriale": 0.035,
       "tchad": 0.035
     },
@@ -105,6 +106,7 @@ const Calculator = () => {
       cameroun: 0.089,
       "centrafrique": 0.089,
       "congo": 0.089,
+      "congo-rdc": 0.089,
       "guinee-equatoriale": 0.089,
       "tchad": 0.089
     },
@@ -131,9 +133,16 @@ const Calculator = () => {
       { value: "moov-money", label: "Moov Money", recommended: true, fees: "2-3%" },
       { value: "airtel-money", label: "Airtel Money", fees: "3-4%" }
     ],
-    cameroun: [{ value: "airtel-money", label: "Airtel Money", fees: "Variable" }],
-    centrafrique: [{ value: "airtel-money", label: "Airtel Money", fees: "Variable" }],
+    cameroun: [
+      { value: "orange-money", label: "Orange Money", recommended: true, fees: "Variable" },
+      { value: "mtn", label: "MTN Mobile Money", fees: "Variable" }
+    ],
+    centrafrique: [
+      { value: "moov-money", label: "Moov Money", recommended: true, fees: "Variable" },
+      { value: "orange-money", label: "Orange Money", fees: "Variable" }
+    ],
     congo: [{ value: "airtel-money", label: "Airtel Money", fees: "Variable" }],
+    "congo-rdc": [{ value: "airtel-money", label: "Airtel Money", fees: "Variable" }],
     "guinee-equatoriale": [{ value: "airtel-money", label: "Airtel Money", fees: "Variable" }],
     tchad: [{ value: "airtel-money", label: "Airtel Money", fees: "Variable" }],
     // Afrique de l'Ouest
@@ -188,14 +197,15 @@ const Calculator = () => {
     { value: "ghana", label: "Ghana" }
   ];
 
-  // Pays CEMAC
+  // Pays CEMAC (Afrique Centrale)
   const cemacCountries = [
-    { value: "gabon", label: "Gabon", recommended: true },
-    { value: "cameroun", label: "Cameroun" },
-    { value: "centrafrique", label: "République Centrafricaine" },
-    { value: "congo", label: "Congo-Brazzaville" },
-    { value: "guinee-equatoriale", label: "Guinée Équatoriale" },
-    { value: "tchad", label: "Tchad" }
+    { value: "gabon", label: "🇬🇦 Gabon", recommended: true },
+    { value: "cameroun", label: "🇨🇲 Cameroun" },
+    { value: "centrafrique", label: "🇨🇫 République Centrafricaine" },
+    { value: "congo", label: "🇨🇬 Congo-Brazzaville" },
+    { value: "congo-rdc", label: "🇨🇩 Congo-Kinshasa (RDC)" },
+    { value: "guinee-equatoriale", label: "🇬🇶 Guinée Équatoriale" },
+    { value: "tchad", label: "🇹🇩 Tchad" }
   ];
 
   const calculateTransfer = () => {
@@ -515,12 +525,12 @@ Merci de me contacter pour plus d'informations.`;
                     </SelectTrigger>
                     <SelectContent>
                       {/* Les plus fréquents en premier */}
-                      <SelectItem value="cemac-beceao">🔥 CEMAC → Afrique de l'Ouest (PROMO -7.3%)</SelectItem>
+                      <SelectItem value="cemac-beceao">🔥 Afrique Centrale → Afrique de l'Ouest (PROMO -7.3%)</SelectItem>
                       <SelectItem value="france-togo">🇫🇷 France → Togo (1% fixe)</SelectItem>
-                      <SelectItem value="cemac-europe">🌍 CEMAC → Europe (8.9%)</SelectItem>
+                      <SelectItem value="cemac-europe">🌍 Afrique Centrale → Europe (8.9%)</SelectItem>
                       <SelectItem value="beceao-europe">🌍 Afrique de l'Ouest → Europe (8.9%)</SelectItem>
                       <SelectItem value="beceao-beceao">🌍 Afrique de l'Ouest ↔ Afrique de l'Ouest</SelectItem>
-                      <SelectItem value="beceao-cemac">🌍 Togo → CEMAC</SelectItem>
+                      <SelectItem value="beceao-cemac">🌍 Togo → Afrique Centrale</SelectItem>
                       <SelectItem value="togo-europe">🎄 Togo → Europe (Promo 8.9%)</SelectItem>
                     </SelectContent>
                   </Select>

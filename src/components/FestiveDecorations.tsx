@@ -18,19 +18,19 @@ const FestiveDecorations = () => {
 
   useEffect(() => {
     const generateParticles = (): Particle[] => {
-      // Réduction de la densité - moins de particules et principalement de la neige
-      const types: Particle["type"][] = ["snow", "snow", "snow", "star", "gift"];
-      return Array.from({ length: 20 }, (_, i) => ({
+      // Mix équilibré de décorations festives
+      const types: Particle["type"][] = ["snow", "snow", "snow", "snow", "star", "gift", "tree"];
+      return Array.from({ length: 35 }, (_, i) => ({
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100 - 100,
-        size: Math.random() * 15 + 8,
-        speed: Math.random() * 1.5 + 0.5,
-        opacity: Math.random() * 0.5 + 0.2,
+        size: Math.random() * 14 + 10,
+        speed: Math.random() * 1.2 + 0.4,
+        opacity: Math.random() * 0.6 + 0.25,
         type: types[Math.floor(Math.random() * types.length)],
-        drift: (Math.random() - 0.5) * 1.5,
+        drift: (Math.random() - 0.5) * 1.2,
         rotation: Math.random() * 360,
-        rotationSpeed: (Math.random() - 0.5) * 2,
+        rotationSpeed: (Math.random() - 0.5) * 1.5,
       }));
     };
 
@@ -84,12 +84,20 @@ const FestiveDecorations = () => {
         </div>
       ))}
       
-      {/* Sapins discrets aux coins */}
-      <div className="fixed bottom-0 left-4 text-4xl opacity-50">
+      {/* Sapins et décorations aux coins */}
+      <div className="fixed bottom-0 left-4 text-4xl opacity-60 animate-pulse">
         🎄
       </div>
-      <div className="fixed bottom-0 right-4 text-4xl opacity-50">
+      <div className="fixed bottom-0 right-4 text-4xl opacity-60 animate-pulse">
         🎄
+      </div>
+      
+      {/* Guirlandes en haut */}
+      <div className="fixed top-2 left-1/4 text-2xl opacity-50">
+        ✨🎀✨
+      </div>
+      <div className="fixed top-2 right-1/4 text-2xl opacity-50">
+        ✨🎀✨
       </div>
     </div>
   );
