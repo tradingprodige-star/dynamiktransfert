@@ -92,12 +92,13 @@ const FestiveDecorations = () => {
         🎄
       </div>
       
-      {/* Guirlandes en haut */}
-      <div className="fixed top-2 left-1/4 text-2xl opacity-50">
-        ✨🎀✨
-      </div>
-      <div className="fixed top-2 right-1/4 text-2xl opacity-50">
-        ✨🎀✨
+      {/* Sticker Bonne Année */}
+      <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+        <div className="bg-gradient-to-r from-primary via-rose to-violet px-6 py-2 rounded-full shadow-lg transform -rotate-2 animate-pulse">
+          <span className="text-white font-bold text-sm md:text-base whitespace-nowrap drop-shadow-md">
+            🎉 Bonne et heureuse année 2025 ! 🎉
+          </span>
+        </div>
       </div>
     </div>
   );
