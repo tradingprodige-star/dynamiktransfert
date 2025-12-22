@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      points_history: {
+        Row: {
+          created_at: string
+          id: string
+          points: number
+          reason: string
+          referral_click_id: string | null
+          sponsor_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          points: number
+          reason: string
+          referral_click_id?: string | null
+          sponsor_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          points?: number
+          reason?: string
+          referral_click_id?: string | null
+          sponsor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "points_history_referral_click_id_fkey"
+            columns: ["referral_click_id"]
+            isOneToOne: false
+            referencedRelation: "referral_clicks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "points_history_sponsor_id_fkey"
+            columns: ["sponsor_id"]
+            isOneToOne: false
+            referencedRelation: "sponsors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       promo_code_usage: {
         Row: {
           id: string
@@ -92,6 +134,215 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_clicks: {
+        Row: {
+          country_from: string | null
+          country_to: string | null
+          created_at: string
+          godchild_id: string
+          godchild_phone: string | null
+          id: string
+          ip_address: string | null
+          points_awarded: number | null
+          referral_code: string
+          source: string | null
+          sponsor_id: string
+          transfer_amount: number | null
+          transfer_status: string
+          updated_at: string
+          user_agent: string | null
+          validated_at: string | null
+          validated_by: string | null
+        }
+        Insert: {
+          country_from?: string | null
+          country_to?: string | null
+          created_at?: string
+          godchild_id: string
+          godchild_phone?: string | null
+          id?: string
+          ip_address?: string | null
+          points_awarded?: number | null
+          referral_code: string
+          source?: string | null
+          sponsor_id: string
+          transfer_amount?: number | null
+          transfer_status?: string
+          updated_at?: string
+          user_agent?: string | null
+          validated_at?: string | null
+          validated_by?: string | null
+        }
+        Update: {
+          country_from?: string | null
+          country_to?: string | null
+          created_at?: string
+          godchild_id?: string
+          godchild_phone?: string | null
+          id?: string
+          ip_address?: string | null
+          points_awarded?: number | null
+          referral_code?: string
+          source?: string | null
+          sponsor_id?: string
+          transfer_amount?: number | null
+          transfer_status?: string
+          updated_at?: string
+          user_agent?: string | null
+          validated_at?: string | null
+          validated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_clicks_sponsor_id_fkey"
+            columns: ["sponsor_id"]
+            isOneToOne: false
+            referencedRelation: "sponsors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reward_claims: {
+        Row: {
+          created_at: string
+          id: string
+          points_spent: number
+          processed_at: string | null
+          processed_by: string | null
+          reward_id: string
+          sponsor_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          points_spent: number
+          processed_at?: string | null
+          processed_by?: string | null
+          reward_id: string
+          sponsor_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          points_spent?: number
+          processed_at?: string | null
+          processed_by?: string | null
+          reward_id?: string
+          sponsor_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reward_claims_reward_id_fkey"
+            columns: ["reward_id"]
+            isOneToOne: false
+            referencedRelation: "rewards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reward_claims_sponsor_id_fkey"
+            columns: ["sponsor_id"]
+            isOneToOne: false
+            referencedRelation: "sponsors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rewards: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          points_required: number
+          reward_type: string
+          reward_value: number | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          points_required: number
+          reward_type: string
+          reward_value?: number | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          points_required?: number
+          reward_type?: string
+          reward_value?: number | null
+        }
+        Relationships: []
+      }
+      sponsors: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          is_blocked: boolean
+          phone_number: string
+          referral_code: string
+          total_points: number
+          total_referrals: number
+          total_validated: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_blocked?: boolean
+          phone_number: string
+          referral_code: string
+          total_points?: number
+          total_referrals?: number
+          total_validated?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_blocked?: boolean
+          phone_number?: string
+          referral_code?: string
+          total_points?: number
+          total_referrals?: number
+          total_validated?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_at: string
@@ -118,10 +369,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_referral_code: { Args: never; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      validate_transfer: {
+        Args: { _admin_id: string; _click_id: string; _transfer_amount: number }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -248,6 +510,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
