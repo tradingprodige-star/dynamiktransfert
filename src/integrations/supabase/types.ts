@@ -286,9 +286,14 @@ export type Database = {
       sponsors: {
         Row: {
           created_at: string
+          cumulative_volume: number | null
+          current_level: string | null
           id: string
           is_active: boolean
           is_blocked: boolean
+          is_vip_godchild: boolean | null
+          monthly_volume: number | null
+          monthly_volume_reset_at: string | null
           phone_number: string
           referral_code: string
           total_points: number
@@ -298,9 +303,14 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          cumulative_volume?: number | null
+          current_level?: string | null
           id?: string
           is_active?: boolean
           is_blocked?: boolean
+          is_vip_godchild?: boolean | null
+          monthly_volume?: number | null
+          monthly_volume_reset_at?: string | null
           phone_number: string
           referral_code: string
           total_points?: number
@@ -310,9 +320,14 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          cumulative_volume?: number | null
+          current_level?: string | null
           id?: string
           is_active?: boolean
           is_blocked?: boolean
+          is_vip_godchild?: boolean | null
+          monthly_volume?: number | null
+          monthly_volume_reset_at?: string | null
           phone_number?: string
           referral_code?: string
           total_points?: number
@@ -369,7 +384,31 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_points_for_amount: {
+        Args: { _amount: number }
+        Returns: number
+      }
+      calculate_sponsor_level: {
+        Args: { _monthly_volume: number }
+        Returns: string
+      }
+      check_and_award_milestone_bonus: {
+        Args: {
+          _new_cumulative: number
+          _old_cumulative: number
+          _sponsor_id: string
+        }
+        Returns: number
+      }
       generate_referral_code: { Args: never; Returns: string }
+      get_level_bonus_percentage: {
+        Args: { _monthly_volume: number }
+        Returns: number
+      }
+      get_referral_multiplier: {
+        Args: { _is_vip_godchild: boolean }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -377,10 +416,23 @@ export type Database = {
         }
         Returns: boolean
       }
-      validate_transfer: {
-        Args: { _admin_id: string; _click_id: string; _transfer_amount: number }
-        Returns: boolean
-      }
+      validate_transfer:
+        | {
+            Args: {
+              _admin_id: string
+              _click_id: string
+              _transfer_amount: number
+            }
+            Returns: boolean
+          }
+        | {
+            Args: {
+              _admin_id: string
+              _click_id: string
+              _transfer_amount: number
+            }
+            Returns: boolean
+          }
     }
     Enums: {
       app_role: "admin" | "user"

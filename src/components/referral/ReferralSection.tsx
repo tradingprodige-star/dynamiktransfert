@@ -56,27 +56,57 @@ const ReferralSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
-            className="mt-12 grid grid-cols-2 gap-4"
+            className="mt-12"
           >
-            <div className="bg-card p-4 rounded-xl border text-center">
-              <div className="text-3xl mb-2">🎁</div>
-              <p className="font-semibold">10 points</p>
-              <p className="text-xs text-muted-foreground">par transfert validé</p>
+            <h3 className="text-lg font-semibold text-center mb-4">Points par transfert</h3>
+            <div className="grid grid-cols-3 gap-2 mb-6">
+              <div className="bg-card p-3 rounded-xl border text-center">
+                <p className="font-bold text-primary">2 pts</p>
+                <p className="text-xs text-muted-foreground">5K - 20K</p>
+              </div>
+              <div className="bg-card p-3 rounded-xl border text-center">
+                <p className="font-bold text-primary">5 pts</p>
+                <p className="text-xs text-muted-foreground">20K - 50K</p>
+              </div>
+              <div className="bg-card p-3 rounded-xl border text-center">
+                <p className="font-bold text-primary">12 pts</p>
+                <p className="text-xs text-muted-foreground">50K - 100K</p>
+              </div>
+              <div className="bg-card p-3 rounded-xl border text-center">
+                <p className="font-bold text-primary">30 pts</p>
+                <p className="text-xs text-muted-foreground">100K - 250K</p>
+              </div>
+              <div className="bg-card p-3 rounded-xl border text-center">
+                <p className="font-bold text-primary">70 pts</p>
+                <p className="text-xs text-muted-foreground">250K - 500K</p>
+              </div>
+              <div className="bg-card p-3 rounded-xl border border-primary text-center">
+                <p className="font-bold text-primary">150 pts</p>
+                <p className="text-xs text-muted-foreground">+500K</p>
+              </div>
             </div>
-            <div className="bg-card p-4 rounded-xl border text-center">
-              <div className="text-3xl mb-2">💰</div>
-              <p className="font-semibold">Cashback</p>
-              <p className="text-xs text-muted-foreground">à partir de 1000 FCFA</p>
-            </div>
-            <div className="bg-card p-4 rounded-xl border text-center">
-              <div className="text-3xl mb-2">🎯</div>
-              <p className="font-semibold">Réductions</p>
-              <p className="text-xs text-muted-foreground">sur vos frais</p>
-            </div>
-            <div className="bg-card p-4 rounded-xl border text-center">
-              <div className="text-3xl mb-2">⭐</div>
-              <p className="font-semibold">Statut VIP</p>
-              <p className="text-xs text-muted-foreground">bonus exclusifs</p>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-card p-4 rounded-xl border text-center">
+                <div className="text-3xl mb-2">💰</div>
+                <p className="font-semibold">Cashback</p>
+                <p className="text-xs text-muted-foreground">à partir de 1000 FCFA</p>
+              </div>
+              <div className="bg-card p-4 rounded-xl border text-center">
+                <div className="text-3xl mb-2">🎁</div>
+                <p className="font-semibold">Transferts gratuits</p>
+                <p className="text-xs text-muted-foreground">jusqu'à 200K FCFA</p>
+              </div>
+              <div className="bg-card p-4 rounded-xl border text-center">
+                <div className="text-3xl mb-2">🚀</div>
+                <p className="font-semibold">×1.5 points</p>
+                <p className="text-xs text-muted-foreground">sur transferts filleuls</p>
+              </div>
+              <div className="bg-card p-4 rounded-xl border text-center">
+                <div className="text-3xl mb-2">👑</div>
+                <p className="font-semibold">Statut VIP</p>
+                <p className="text-xs text-muted-foreground">+20% bonus points</p>
+              </div>
             </div>
           </motion.div>
         </div>
