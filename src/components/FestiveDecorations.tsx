@@ -96,7 +96,7 @@ const FestiveDecorations = () => {
       <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
         <div className="bg-gradient-to-r from-primary via-rose to-violet px-6 py-2 rounded-full shadow-lg transform -rotate-2 animate-pulse">
           <span className="text-white font-bold text-sm md:text-base whitespace-nowrap drop-shadow-md">
-            🎉 Bonne et heureuse année 2025 ! 🎉
+            🎉 Bonne et heureuse année 2026 ! 🎉
           </span>
         </div>
       </div>

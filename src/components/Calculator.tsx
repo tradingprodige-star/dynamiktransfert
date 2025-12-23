@@ -383,12 +383,16 @@ const Calculator = () => {
       receiveCurrency = 'XOF';
     }
     
+    // Récupérer le code parrain depuis l'URL ou localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const referralCode = urlParams.get('ref') || localStorage.getItem('referralCode') || '';
+    
     let message = `🎄✨ DYNAMIK Transfert - Demande de transfert ✨🎄
 
 📋 RÉFÉRENCE : ${result.referenceNumber}
-📅 Date : ${transactionDate}
+📅 Date : ${transactionDate}${referralCode ? `\n🎁 Code parrain : ${referralCode}` : ''}
 
-🎅 Joyeuses Fêtes et Meilleurs Vœux pour 2025 ! 🎅
+🎅 Joyeuses Fêtes et Meilleurs Vœux pour 2026 ! 🎅
 Merci de votre confiance !
 
 💰 DÉTAILS DU TRANSFERT :
