@@ -66,7 +66,7 @@ const ReferralSection = () => {
             <div className="bg-card p-4 rounded-xl border text-center">
               <div className="text-3xl mb-2">💰</div>
               <p className="font-semibold">Cashback</p>
-              <p className="text-xs text-muted-foreground">jusqu'à 1000 FCFA</p>
+              <p className="text-xs text-muted-foreground">à partir de 1000 FCFA</p>
             </div>
             <div className="bg-card p-4 rounded-xl border text-center">
               <div className="text-3xl mb-2">🎯</div>
