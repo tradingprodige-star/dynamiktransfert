@@ -56,9 +56,9 @@ const AmbassadorsSection = () => {
       color: "from-teal-500 to-green-500"
     },
     {
-      name: "Com Master",
-      code: "COM-MASTER",
-      message: "Avec Com Master, communication parfaite !",
+      name: "CID",
+      code: "CID",
+      message: "Centre de l'Innovation Digital, partenaire officiel !",
       color: "from-amber-500 to-yellow-500"
     }
   ];
