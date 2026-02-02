@@ -29,13 +29,40 @@ const SponsorRegistration = ({ onSponsorFound }: SponsorRegistrationProps) => {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
+  // Extraire les chiffres du numéro de téléphone
+  const getCleanPhoneNumber = (phoneNumber: string) => {
+    return phoneNumber.replace(/\D/g, '');
+  };
+
+  // Ouvrir WhatsApp avec un message de confirmation
+  const sendWhatsAppConfirmation = (phoneNumber: string, referralCode: string) => {
+    const cleanPhone = getCleanPhoneNumber(phoneNumber);
+    const message = `🎉 Félicitations et bienvenue chez DYNAMIK TRANSFERT ! 
+
+Votre inscription au programme de parrainage est confirmée.
+
+📌 Votre code parrain : ${referralCode}
+
+🔗 Votre lien de parrainage :
+https://dynamiktransfert.lovable.app/?ref=${referralCode}
+
+Partagez ce lien avec vos proches et gagnez des points à chaque transfert effectué !
+
+✨ DYNAMIK TRANSFERT - Bonne et heureuse année 2026 !`;
+    
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!phone || phone.length < 10) {
+    // Validation plus souple - minimum 8 chiffres
+    const cleanPhone = getCleanPhoneNumber(phone);
+    if (!phone || cleanPhone.length < 8) {
       toast({
         title: "Numéro invalide",
-        description: "Veuillez entrer un numéro de téléphone valide",
+        description: "Veuillez entrer un numéro de téléphone valide (minimum 8 chiffres)",
         variant: "destructive"
       });
       return;
@@ -80,9 +107,13 @@ const SponsorRegistration = ({ onSponsorFound }: SponsorRegistrationProps) => {
         if (insertError) throw insertError;
 
         setNewSponsor(newData as SponsorData);
+        
+        // Envoyer la notification WhatsApp
+        sendWhatsAppConfirmation(phone, codeData);
+        
         toast({
           title: "Félicitations !",
-          description: "Votre code parrain a été créé avec succès",
+          description: "Votre code parrain a été créé avec succès. Vérifiez WhatsApp !",
         });
       }
     } catch (error: any) {
