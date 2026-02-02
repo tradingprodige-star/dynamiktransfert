@@ -6,6 +6,15 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 const AmbassadorsSection = () => {
   const scrollRevealRef = useScrollReveal();
   
+  // Partenaire officiel en vedette
+  const featuredPartner = {
+    name: "CID",
+    code: "CID",
+    message: "Centre de l'Innovation Digital, partenaire officiel !",
+    color: "from-primary to-gold-500",
+    isFeatured: true
+  };
+
   const ambassadors = [
     {
       name: "Bienvenue",
@@ -54,12 +63,6 @@ const AmbassadorsSection = () => {
       code: "J-ZENITH",
       message: "Avec J-Zenith, au sommet !",
       color: "from-teal-500 to-green-500"
-    },
-    {
-      name: "CID",
-      code: "CID",
-      message: "Centre de l'Innovation Digital, partenaire officiel !",
-      color: "from-amber-500 to-yellow-500"
     }
   ];
 
@@ -93,6 +96,46 @@ const AmbassadorsSection = () => {
           >
             Profitez de codes promo exclusifs avec nos ambassadeurs de confiance
           </motion.p>
+
+          {/* Partenaire officiel en vedette */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="mb-12"
+          >
+            <Card className="relative overflow-hidden border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-gold-500/5 shadow-glow">
+              <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-4 py-1 text-xs font-bold rounded-bl-lg">
+                Partenaire Officiel
+              </div>
+              <CardContent className="p-8 flex flex-col md:flex-row items-center gap-8">
+                <div className={`w-28 h-28 rounded-full bg-gradient-to-br ${featuredPartner.color} flex items-center justify-center text-white text-3xl font-bold shadow-xl ring-4 ring-primary/20`}>
+                  {featuredPartner.name}
+                </div>
+                <div className="flex-1 text-center md:text-left">
+                  <h3 className="text-2xl font-bold mb-2 text-foreground">{featuredPartner.name} - Centre de l'Innovation Digital</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Partenaire stratégique de DYNAMIK TRANSFERT. Utilisez le code <span className="font-bold text-primary">{featuredPartner.code}</span> pour bénéficier d'avantages exclusifs sur vos transferts.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+                    <div className="bg-gradient-primary text-white px-6 py-2 rounded-full text-lg font-bold inline-block">
+                      {featuredPartner.code}
+                    </div>
+                    <Button 
+                      variant="outline"
+                      onClick={() => {
+                        navigator.clipboard.writeText(featuredPartner.code);
+                      }}
+                      className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                    >
+                      Copier le code
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
           {/* Grille des codes promos */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
