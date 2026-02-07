@@ -7,7 +7,7 @@ interface Particle {
   size: number;
   speed: number;
   opacity: number;
-  type: "snow" | "tree" | "star" | "gift";
+  type: "heart" | "rose" | "sparkle" | "kiss";
   drift: number;
   rotation: number;
   rotationSpeed: number;
@@ -18,8 +18,8 @@ const FestiveDecorations = () => {
 
   useEffect(() => {
     const generateParticles = (): Particle[] => {
-      // Mix équilibré de décorations festives
-      const types: Particle["type"][] = ["snow", "snow", "snow", "snow", "star", "gift", "tree"];
+      // Mix équilibré de décorations Saint-Valentin
+      const types: Particle["type"][] = ["heart", "heart", "heart", "heart", "rose", "sparkle", "kiss"];
       return Array.from({ length: 35 }, (_, i) => ({
         id: i,
         x: Math.random() * 100,
@@ -52,16 +52,16 @@ const FestiveDecorations = () => {
 
   const getEmoji = (type: Particle["type"]) => {
     switch (type) {
-      case "snow":
-        return "❄️";
-      case "tree":
-        return "🎄";
-      case "star":
-        return "⭐";
-      case "gift":
-        return "🎁";
+      case "heart":
+        return "❤️";
+      case "rose":
+        return "🌹";
+      case "sparkle":
+        return "✨";
+      case "kiss":
+        return "💋";
       default:
-        return "❄️";
+        return "❤️";
     }
   };
 
@@ -77,26 +77,26 @@ const FestiveDecorations = () => {
             fontSize: `${particle.size}px`,
             opacity: particle.opacity,
             transform: `rotate(${particle.rotation}deg)`,
-            filter: particle.type === "snow" ? "drop-shadow(0 0 2px rgba(255,255,255,0.6))" : "none",
+            filter: particle.type === "heart" ? "drop-shadow(0 0 3px rgba(255,105,180,0.6))" : "none",
           }}
         >
           {getEmoji(particle.type)}
         </div>
       ))}
       
-      {/* Sapins et décorations aux coins */}
+      {/* Cœurs aux coins */}
       <div className="fixed bottom-0 left-4 text-4xl opacity-60 animate-pulse">
-        🎄
+        💕
       </div>
       <div className="fixed bottom-0 right-4 text-4xl opacity-60 animate-pulse">
-        🎄
+        💕
       </div>
       
-      {/* Sticker Bonne Année */}
+      {/* Bannière Saint-Valentin */}
       <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
-        <div className="bg-gradient-to-r from-primary via-rose to-violet px-6 py-2 rounded-full shadow-lg transform -rotate-2 animate-pulse">
+        <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 px-6 py-2 rounded-full shadow-lg transform -rotate-2 animate-pulse">
           <span className="text-white font-bold text-sm md:text-base whitespace-nowrap drop-shadow-md">
-            🎉 Bonne et heureuse année 2026 ! 🎉
+            💝 Joyeuse Saint-Valentin ! 0% de frais le 14 février 💝
           </span>
         </div>
       </div>
