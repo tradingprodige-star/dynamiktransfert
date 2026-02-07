@@ -32,9 +32,9 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   Users, TrendingUp, CheckCircle, Clock, XCircle, 
   Search, Download, RefreshCw, ArrowLeft, Shield,
-  Crown, Award, Wallet
+  Crown, Award, Wallet, LogOut
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface ReferralClick {
   id: string;
@@ -105,32 +105,72 @@ const AdminReferrals = () => {
   const [levelFilter, setLevelFilter] = useState('all');
   const [activeTab, setActiveTab] = useState<'referrals' | 'sponsors'>('referrals');
   const [isAdmin, setIsAdmin] = useState(false);
-  const [adminCode, setAdminCode] = useState('');
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [validateDialog, setValidateDialog] = useState<{ open: boolean; click: ReferralClick | null }>({ open: false, click: null });
   const [transferAmount, setTransferAmount] = useState('');
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const ADMIN_CODE = 'DYNAMIK2025';
-
+  // Check authentication and admin role on mount
   useEffect(() => {
-    const storedAdmin = localStorage.getItem('dynamik_admin');
-    if (storedAdmin === 'true') {
-      setIsAdmin(true);
-      loadData();
-    } else {
-      setIsLoading(false);
-    }
+    const checkAdminAccess = async () => {
+      setIsCheckingAuth(true);
+      
+      try {
+        // Get current session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError || !session?.user) {
+          setIsAdmin(false);
+          setIsCheckingAuth(false);
+          return;
+        }
+
+        // Check if user has admin role in database
+        const { data: roleData, error: roleError } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', session.user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
+
+        if (roleError) {
+          console.error('Error checking admin role:', roleError);
+          setIsAdmin(false);
+          setIsCheckingAuth(false);
+          return;
+        }
+
+        if (roleData) {
+          setIsAdmin(true);
+          loadData();
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        setIsAdmin(false);
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    };
+
+    checkAdminAccess();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        setIsAdmin(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const handleAdminLogin = () => {
-    if (adminCode === ADMIN_CODE) {
-      localStorage.setItem('dynamik_admin', 'true');
-      setIsAdmin(true);
-      loadData();
-      toast({ title: "Accès admin accordé" });
-    } else {
-      toast({ title: "Code incorrect", variant: "destructive" });
-    }
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsAdmin(false);
+    toast({ title: "Déconnexion réussie" });
   };
 
   const loadData = async () => {
@@ -196,83 +236,25 @@ const AdminReferrals = () => {
     }
 
     try {
-      // Mettre à jour le clic avec le nouveau système de points
-      const { error: updateError } = await supabase
-        .from('referral_clicks')
-        .update({
-          transfer_status: 'validated',
-          transfer_amount: amount,
-          validated_at: new Date().toISOString()
-        })
-        .eq('id', validateDialog.click.id);
-
-      if (updateError) throw updateError;
-
-      // Calculer les points selon le barème
-      let basePoints = 0;
-      if (amount >= 500000) basePoints = 150;
-      else if (amount >= 250001) basePoints = 70;
-      else if (amount >= 100001) basePoints = 30;
-      else if (amount >= 50001) basePoints = 12;
-      else if (amount >= 20001) basePoints = 5;
-      else if (amount >= 5000) basePoints = 2;
-
-      // Multiplicateur filleul (1.5x par défaut)
-      const finalPoints = Math.ceil(basePoints * 1.5);
-
-      // Mettre à jour les points du parrain
-      const { data: sponsorData } = await supabase
-        .from('sponsors')
-        .select('total_points, total_validated, monthly_volume, cumulative_volume, monthly_volume_reset_at')
-        .eq('id', validateDialog.click.sponsor_id)
-        .single();
-
-      if (sponsorData) {
-        const now = new Date();
-        const resetAt = new Date(sponsorData.monthly_volume_reset_at);
-        const isNewMonth = resetAt.getMonth() !== now.getMonth() || resetAt.getFullYear() !== now.getFullYear();
-
-        const newMonthlyVolume = isNewMonth ? amount : (sponsorData.monthly_volume || 0) + amount;
-        
-        // Calculer le nouveau niveau
-        let newLevel = 'starter';
-        if (newMonthlyVolume >= 10000000) newLevel = 'elite';
-        else if (newMonthlyVolume >= 3000000) newLevel = 'vip';
-        else if (newMonthlyVolume >= 1000000) newLevel = 'ambassadeur';
-        else if (newMonthlyVolume >= 250000) newLevel = 'active';
-
-        await supabase
-          .from('sponsors')
-          .update({
-            total_points: sponsorData.total_points + finalPoints,
-            total_validated: sponsorData.total_validated + 1,
-            monthly_volume: newMonthlyVolume,
-            monthly_volume_reset_at: isNewMonth ? now.toISOString() : sponsorData.monthly_volume_reset_at,
-            cumulative_volume: (sponsorData.cumulative_volume || 0) + amount,
-            current_level: newLevel
-          })
-          .eq('id', validateDialog.click.sponsor_id);
+      // Get current user for admin validation
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: "Non authentifié", variant: "destructive" });
+        return;
       }
 
-      // Mettre à jour les points attribués sur le clic
-      await supabase
-        .from('referral_clicks')
-        .update({ points_awarded: finalPoints })
-        .eq('id', validateDialog.click.id);
+      // Use the secure RPC function to validate transfer
+      const { data, error } = await supabase.rpc('validate_transfer', {
+        _admin_id: user.id,
+        _click_id: validateDialog.click.id,
+        _transfer_amount: amount
+      });
 
-      // Ajouter à l'historique des points
-      await supabase
-        .from('points_history')
-        .insert({
-          sponsor_id: validateDialog.click.sponsor_id,
-          referral_click_id: validateDialog.click.id,
-          points: finalPoints,
-          reason: `Transfert validé: ${amount.toLocaleString()} FCFA (${basePoints} pts × 1.5)`
-        });
+      if (error) throw error;
 
       toast({ 
         title: "Transfert validé", 
-        description: `+${finalPoints} points attribués (${amount.toLocaleString()} FCFA)` 
+        description: `Points attribués avec succès` 
       });
       
       setValidateDialog({ open: false, click: null });
@@ -286,15 +268,18 @@ const AdminReferrals = () => {
 
   const rejectTransfer = async (clickId: string) => {
     try {
-      await supabase
+      const { error } = await supabase
         .from('referral_clicks')
         .update({ transfer_status: 'rejected' })
         .eq('id', clickId);
 
+      if (error) throw error;
+
       toast({ title: "Transfert marqué comme non abouti" });
       loadData();
-    } catch (error) {
-      toast({ title: "Erreur", variant: "destructive" });
+    } catch (error: any) {
+      console.error('Error rejecting:', error);
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
     }
   };
 
@@ -371,25 +356,36 @@ const AdminReferrals = () => {
     return amount.toString();
   };
 
+  // Show loading state while checking auth
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-muted-foreground">Vérification des autorisations...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login redirect for non-admins
   if (!isAdmin) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <Shield className="w-12 h-12 mx-auto text-primary mb-2" />
-            <CardTitle>Admin Parrainage</CardTitle>
+            <CardTitle>Accès Admin Requis</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Input
-              type="password"
-              placeholder="Code d'accès admin"
-              value={adminCode}
-              onChange={(e) => setAdminCode(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAdminLogin()}
-            />
-            <Button className="w-full" onClick={handleAdminLogin}>
-              Accéder
-            </Button>
+            <p className="text-center text-muted-foreground">
+              Vous devez être connecté avec un compte administrateur pour accéder à cette page.
+            </p>
+            <Link to="/auth">
+              <Button className="w-full">
+                Se connecter
+              </Button>
+            </Link>
             <Link to="/">
               <Button variant="ghost" className="w-full">
                 <ArrowLeft className="w-4 h-4 mr-2" />
@@ -426,6 +422,10 @@ const AdminReferrals = () => {
             <Button variant="outline" onClick={exportCSV}>
               <Download className="w-4 h-4 mr-2" />
               Export CSV
+            </Button>
+            <Button variant="outline" onClick={handleLogout}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Déconnexion
             </Button>
           </div>
         </div>
@@ -506,257 +506,228 @@ const AdminReferrals = () => {
         </div>
 
         {/* Filters */}
-        <Card className="mb-6">
-          <CardContent className="pt-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Rechercher par code, ID filleul, téléphone..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              {activeTab === 'referrals' ? (
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-full md:w-48">
-                    <SelectValue placeholder="Filtrer par statut" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Tous les statuts</SelectItem>
-                    <SelectItem value="pending">En attente</SelectItem>
-                    <SelectItem value="validated">Validés</SelectItem>
-                    <SelectItem value="rejected">Non aboutis</SelectItem>
-                  </SelectContent>
-                </Select>
-              ) : (
-                <Select value={levelFilter} onValueChange={setLevelFilter}>
-                  <SelectTrigger className="w-full md:w-48">
-                    <SelectValue placeholder="Filtrer par niveau" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Tous les niveaux</SelectItem>
-                    <SelectItem value="starter">🔰 Starter</SelectItem>
-                    <SelectItem value="active">🚀 Active</SelectItem>
-                    <SelectItem value="ambassadeur">💼 Ambassadeur</SelectItem>
-                    <SelectItem value="vip">👑 VIP</SelectItem>
-                    <SelectItem value="elite">🏆 Elite</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex flex-wrap gap-4 mb-6">
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder={activeTab === 'referrals' ? "Rechercher par code, téléphone..." : "Rechercher par téléphone, code..."}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          
+          {activeTab === 'referrals' ? (
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Statut" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous les statuts</SelectItem>
+                <SelectItem value="pending">En attente</SelectItem>
+                <SelectItem value="validated">Validés</SelectItem>
+                <SelectItem value="rejected">Non aboutis</SelectItem>
+              </SelectContent>
+            </Select>
+          ) : (
+            <Select value={levelFilter} onValueChange={setLevelFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Niveau" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous les niveaux</SelectItem>
+                <SelectItem value="starter">🔰 Starter</SelectItem>
+                <SelectItem value="active">🚀 Active</SelectItem>
+                <SelectItem value="ambassadeur">💼 Ambassadeur</SelectItem>
+                <SelectItem value="vip">👑 VIP</SelectItem>
+                <SelectItem value="elite">🏆 Elite</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
 
-        {/* Tables */}
-        {activeTab === 'referrals' ? (
+        {/* Content */}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <RefreshCw className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        ) : activeTab === 'referrals' ? (
           <Card>
             <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Code Parrain</TableHead>
-                      <TableHead>Tél Parrain</TableHead>
-                      <TableHead>Niveau</TableHead>
-                      <TableHead>ID Filleul</TableHead>
-                      <TableHead>Source</TableHead>
-                      <TableHead>Montant</TableHead>
-                      <TableHead>Statut</TableHead>
-                      <TableHead>Points</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredReferrals.map((ref) => (
-                      <TableRow key={ref.id}>
-                        <TableCell className="whitespace-nowrap">
-                          {new Date(ref.created_at).toLocaleDateString('fr-FR')}
-                        </TableCell>
-                        <TableCell className="font-mono font-medium">
-                          {ref.referral_code}
-                        </TableCell>
-                        <TableCell>
-                          {ref.sponsors?.phone_number || '-'}
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={`${LEVEL_COLORS[ref.sponsors?.current_level || 'starter']} text-white`}>
-                            {LEVEL_EMOJIS[ref.sponsors?.current_level || 'starter']} {ref.sponsors?.current_level || 'starter'}
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Parrain</TableHead>
+                    <TableHead>Niveau</TableHead>
+                    <TableHead>Filleul</TableHead>
+                    <TableHead>Montant</TableHead>
+                    <TableHead>Points</TableHead>
+                    <TableHead>Statut</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredReferrals.map((click) => (
+                    <TableRow key={click.id}>
+                      <TableCell className="text-sm">
+                        {new Date(click.created_at).toLocaleDateString('fr-FR')}
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium">{click.referral_code}</p>
+                          <p className="text-xs text-muted-foreground">{click.sponsors?.phone_number}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={LEVEL_COLORS[click.sponsors?.current_level || 'starter']}>
+                          {LEVEL_EMOJIS[click.sponsors?.current_level || 'starter']} {click.sponsors?.current_level || 'starter'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="text-sm">{click.godchild_id}</p>
+                          <p className="text-xs text-muted-foreground">{click.source}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {click.transfer_amount ? (
+                          <span className="font-medium">{click.transfer_amount.toLocaleString()} FCFA</span>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-bold text-primary">+{click.points_awarded}</span>
+                      </TableCell>
+                      <TableCell>
+                        {click.transfer_status === 'validated' && (
+                          <Badge className="bg-green-500">
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            Validé
                           </Badge>
-                        </TableCell>
-                        <TableCell className="font-mono text-sm">
-                          {ref.godchild_id}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary">{ref.source}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          {ref.transfer_amount ? `${ref.transfer_amount.toLocaleString()} FCFA` : '-'}
-                        </TableCell>
-                        <TableCell>
-                          {ref.transfer_status === 'validated' && (
-                            <Badge className="bg-green-500">
-                              <CheckCircle className="w-3 h-3 mr-1" /> Validé
-                            </Badge>
-                          )}
-                          {ref.transfer_status === 'pending' && (
-                            <Badge variant="secondary">
-                              <Clock className="w-3 h-3 mr-1" /> En attente
-                            </Badge>
-                          )}
-                          {ref.transfer_status === 'rejected' && (
-                            <Badge variant="destructive">
-                              <XCircle className="w-3 h-3 mr-1" /> Non abouti
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {ref.points_awarded > 0 ? (
-                            <span className="text-green-600 font-medium">+{ref.points_awarded}</span>
-                          ) : '-'}
-                        </TableCell>
-                        <TableCell>
-                          {ref.transfer_status === 'pending' && (
-                            <div className="flex gap-1">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="text-green-600 hover:bg-green-50"
-                                onClick={() => openValidateDialog(ref)}
-                              >
-                                <CheckCircle className="w-3 h-3" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="text-red-600 hover:bg-red-50"
-                                onClick={() => rejectTransfer(ref.id)}
-                              >
-                                <XCircle className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                        )}
+                        {click.transfer_status === 'pending' && (
+                          <Badge variant="outline" className="text-orange-500 border-orange-500">
+                            <Clock className="w-3 h-3 mr-1" />
+                            En attente
+                          </Badge>
+                        )}
+                        {click.transfer_status === 'rejected' && (
+                          <Badge variant="destructive">
+                            <XCircle className="w-3 h-3 mr-1" />
+                            Non abouti
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {click.transfer_status === 'pending' && (
+                          <div className="flex gap-2">
+                            <Button size="sm" onClick={() => openValidateDialog(click)}>
+                              Valider
+                            </Button>
+                            <Button size="sm" variant="destructive" onClick={() => rejectTransfer(click.id)}>
+                              Rejeter
+                            </Button>
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
               {filteredReferrals.length === 0 && (
-                <p className="text-center text-muted-foreground py-8">
-                  Aucun parrainage trouvé
-                </p>
+                <div className="text-center py-8 text-muted-foreground">
+                  Aucun transfert trouvé
+                </div>
               )}
             </CardContent>
           </Card>
         ) : (
           <Card>
             <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Téléphone</TableHead>
-                      <TableHead>Code</TableHead>
-                      <TableHead>Niveau</TableHead>
-                      <TableHead>Points</TableHead>
-                      <TableHead>Filleuls</TableHead>
-                      <TableHead>Validés</TableHead>
-                      <TableHead>Vol. Mensuel</TableHead>
-                      <TableHead>Vol. Cumulé</TableHead>
-                      <TableHead>Inscription</TableHead>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Parrain</TableHead>
+                    <TableHead>Niveau</TableHead>
+                    <TableHead>Points</TableHead>
+                    <TableHead>Filleuls</TableHead>
+                    <TableHead>Validés</TableHead>
+                    <TableHead>Vol. Mensuel</TableHead>
+                    <TableHead>Vol. Cumulé</TableHead>
+                    <TableHead>Inscrit le</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredSponsors.map((sponsor) => (
+                    <TableRow key={sponsor.id}>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium">{sponsor.phone_number}</p>
+                          <p className="text-xs text-muted-foreground">{sponsor.referral_code}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={LEVEL_COLORS[sponsor.current_level || 'starter']}>
+                          {LEVEL_EMOJIS[sponsor.current_level || 'starter']} {sponsor.current_level || 'starter'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-bold text-primary">{sponsor.total_points}</span>
+                      </TableCell>
+                      <TableCell>{sponsor.total_referrals}</TableCell>
+                      <TableCell>{sponsor.total_validated}</TableCell>
+                      <TableCell>{formatVolume(sponsor.monthly_volume || 0)} FCFA</TableCell>
+                      <TableCell>{formatVolume(sponsor.cumulative_volume || 0)} FCFA</TableCell>
+                      <TableCell className="text-sm">
+                        {new Date(sponsor.created_at).toLocaleDateString('fr-FR')}
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredSponsors.map((sponsor) => (
-                      <TableRow key={sponsor.id}>
-                        <TableCell className="font-medium">
-                          {sponsor.phone_number}
-                        </TableCell>
-                        <TableCell className="font-mono">
-                          {sponsor.referral_code}
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={`${LEVEL_COLORS[sponsor.current_level || 'starter']} text-white`}>
-                            {LEVEL_EMOJIS[sponsor.current_level || 'starter']} {sponsor.current_level || 'starter'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <span className="font-bold text-primary">{sponsor.total_points}</span>
-                        </TableCell>
-                        <TableCell>{sponsor.total_referrals}</TableCell>
-                        <TableCell>
-                          <span className="text-green-600">{sponsor.total_validated}</span>
-                        </TableCell>
-                        <TableCell>
-                          {formatVolume(sponsor.monthly_volume || 0)} FCFA
-                        </TableCell>
-                        <TableCell>
-                          {formatVolume(sponsor.cumulative_volume || 0)} FCFA
-                        </TableCell>
-                        <TableCell className="whitespace-nowrap">
-                          {new Date(sponsor.created_at).toLocaleDateString('fr-FR')}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                  ))}
+                </TableBody>
+              </Table>
               {filteredSponsors.length === 0 && (
-                <p className="text-center text-muted-foreground py-8">
+                <div className="text-center py-8 text-muted-foreground">
                   Aucun parrain trouvé
-                </p>
+                </div>
               )}
             </CardContent>
           </Card>
         )}
 
-        {/* Dialog de validation */}
-        <Dialog open={validateDialog.open} onOpenChange={(open) => setValidateDialog({ open, click: null })}>
+        {/* Validate Dialog */}
+        <Dialog open={validateDialog.open} onOpenChange={(open) => setValidateDialog({ open, click: validateDialog.click })}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Valider le transfert</DialogTitle>
               <DialogDescription>
-                Entrez le montant du transfert pour calculer les points automatiquement.
+                Entrez le montant du transfert effectué par le filleul {validateDialog.click?.godchild_id}
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div>
-                <label className="text-sm font-medium">Montant du transfert (FCFA)</label>
-                <Input
-                  type="number"
-                  placeholder="Ex: 50000"
-                  value={transferAmount}
-                  onChange={(e) => setTransferAmount(e.target.value)}
-                  min="5000"
-                />
-              </div>
+            <div className="py-4">
+              <Input
+                type="number"
+                placeholder="Montant en FCFA"
+                value={transferAmount}
+                onChange={(e) => setTransferAmount(e.target.value)}
+              />
               {transferAmount && parseFloat(transferAmount) >= 5000 && (
-                <div className="p-3 bg-muted rounded-lg">
-                  <p className="text-sm font-medium mb-2">Prévisualisation des points :</p>
-                  <div className="space-y-1 text-sm">
+                <div className="mt-4 p-3 bg-muted rounded-lg">
+                  <p className="text-sm text-muted-foreground">Points à attribuer:</p>
+                  <p className="text-lg font-bold text-primary">
                     {(() => {
                       const amount = parseFloat(transferAmount);
-                      let basePoints = 0;
-                      if (amount >= 500000) basePoints = 150;
-                      else if (amount >= 250001) basePoints = 70;
-                      else if (amount >= 100001) basePoints = 30;
-                      else if (amount >= 50001) basePoints = 12;
-                      else if (amount >= 20001) basePoints = 5;
-                      else if (amount >= 5000) basePoints = 2;
-                      
-                      const finalPoints = Math.ceil(basePoints * 1.5);
-                      return (
-                        <>
-                          <p>Points de base : <span className="font-bold">{basePoints}</span></p>
-                          <p>Multiplicateur filleul : <span className="font-bold">× 1.5</span></p>
-                          <p className="text-primary font-bold">Points finaux : {finalPoints}</p>
-                        </>
-                      );
+                      let base = 0;
+                      if (amount >= 500000) base = 150;
+                      else if (amount >= 250001) base = 70;
+                      else if (amount >= 100001) base = 30;
+                      else if (amount >= 50001) base = 12;
+                      else if (amount >= 20001) base = 5;
+                      else if (amount >= 5000) base = 2;
+                      return `~${Math.ceil(base * 1.5)} points (calcul final côté serveur)`;
                     })()}
-                  </div>
+                  </p>
                 </div>
               )}
             </div>
@@ -764,8 +735,8 @@ const AdminReferrals = () => {
               <Button variant="outline" onClick={() => setValidateDialog({ open: false, click: null })}>
                 Annuler
               </Button>
-              <Button onClick={validateTransfer} disabled={!transferAmount || parseFloat(transferAmount) < 5000}>
-                Valider le transfert
+              <Button onClick={validateTransfer}>
+                Confirmer
               </Button>
             </DialogFooter>
           </DialogContent>
