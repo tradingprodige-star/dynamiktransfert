@@ -97,7 +97,7 @@ const AmbassadorsSection = () => {
             Profitez de codes promo exclusifs avec nos ambassadeurs de confiance
           </motion.p>
 
-          {/* Partenaire officiel en vedette */}
+          {/* Partenaire officiel en vedette - Style Saint-Valentin */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -105,21 +105,37 @@ const AmbassadorsSection = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mb-12"
           >
-            <Card className="relative overflow-hidden border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-gold-500/5 shadow-glow">
-              <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-4 py-1 text-xs font-bold rounded-bl-lg">
-                Partenaire Officiel
+            <Card className="relative overflow-hidden border-2 border-pink-400/50 bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-950/30 dark:to-rose-900/20 shadow-xl">
+              {/* Décoration Saint-Valentin */}
+              <div className="absolute top-2 left-4 text-2xl animate-pulse">💕</div>
+              <div className="absolute top-2 right-16 text-xl animate-bounce">🌹</div>
+              <div className="absolute bottom-2 left-8 text-lg opacity-60">✨</div>
+              <div className="absolute bottom-4 right-4 text-2xl animate-pulse">💝</div>
+              
+              <div className="absolute top-0 right-0 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-1 text-xs font-bold rounded-bl-lg flex items-center gap-1">
+                <span>❤️</span> Partenaire Officiel <span>❤️</span>
               </div>
               <CardContent className="p-8 flex flex-col md:flex-row items-center gap-8">
-                <div className={`w-28 h-28 rounded-full bg-gradient-to-br ${featuredPartner.color} flex items-center justify-center text-white text-3xl font-bold shadow-xl ring-4 ring-primary/20`}>
-                  {featuredPartner.name}
+                <div className="relative">
+                  <div className={`w-28 h-28 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-white text-3xl font-bold shadow-xl ring-4 ring-pink-300/50`}>
+                    {featuredPartner.name}
+                  </div>
+                  <div className="absolute -top-2 -right-2 text-2xl animate-bounce">💖</div>
                 </div>
                 <div className="flex-1 text-center md:text-left">
-                  <h3 className="text-2xl font-bold mb-2 text-foreground">{featuredPartner.name} - Centre de l'Innovation Digital</h3>
+                  <h3 className="text-2xl font-bold mb-2 text-foreground flex items-center justify-center md:justify-start gap-2">
+                    <span>💝</span> {featuredPartner.name} - Centre de l'Innovation Digital <span>💝</span>
+                  </h3>
                   <p className="text-muted-foreground mb-4">
-                    Partenaire stratégique de DYNAMIK TRANSFERT. Utilisez le code <span className="font-bold text-primary">{featuredPartner.code}</span> pour bénéficier d'avantages exclusifs sur vos transferts.
+                    Partenaire stratégique de DYNAMIK TRANSFERT. Utilisez le code <span className="font-bold text-pink-600">{featuredPartner.code}</span> pour bénéficier d'avantages exclusifs sur vos transferts.
                   </p>
+                  <div className="bg-gradient-to-r from-pink-100 to-rose-100 dark:from-pink-900/30 dark:to-rose-900/30 rounded-lg p-3 mb-4 border border-pink-200 dark:border-pink-800">
+                    <p className="text-sm text-pink-700 dark:text-pink-300 font-medium flex items-center gap-2">
+                      <span>🎁</span> Promo Saint-Valentin : 0% de frais le 14 février ! <span>🌹</span>
+                    </p>
+                  </div>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-                    <div className="bg-gradient-primary text-white px-6 py-2 rounded-full text-lg font-bold inline-block">
+                    <div className="bg-gradient-to-r from-pink-500 to-rose-600 text-white px-6 py-2 rounded-full text-lg font-bold inline-block shadow-lg">
                       {featuredPartner.code}
                     </div>
                     <Button 
@@ -127,9 +143,9 @@ const AmbassadorsSection = () => {
                       onClick={() => {
                         navigator.clipboard.writeText(featuredPartner.code);
                       }}
-                      className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                      className="border-pink-400 text-pink-600 hover:bg-pink-500 hover:text-white hover:border-pink-500"
                     >
-                      Copier le code
+                      💕 Copier le code
                     </Button>
                   </div>
                 </div>
