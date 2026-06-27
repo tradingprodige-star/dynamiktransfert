@@ -6,14 +6,12 @@ import WelcomeCode from "@/components/WelcomeCode";
 import FAQ from "@/components/FAQ";
 import ComplaintForm from "@/components/ComplaintForm";
 import Footer from "@/components/Footer";
-import FestiveDecorations from "@/components/FestiveDecorations";
 import ReferralSection from "@/components/referral/ReferralSection";
 import ReferralBanner from "@/components/referral/ReferralBanner";
 
 const Index = () => {
   return (
     <div className="min-h-screen">
-      <FestiveDecorations />
       <ReferralBanner />
       <Header />
       <Calculator />
