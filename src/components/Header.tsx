@@ -49,15 +49,15 @@ const Header = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 1.1, ease: "easeOut" }}
     >
-      <div className="mesh-orb absolute left-[-8rem] top-20 h-72 w-72 rounded-full bg-primary/14" />
-      <div className="mesh-orb absolute bottom-20 right-[-6rem] h-96 w-96 rounded-full bg-accent/14" />
+      <div className="mesh-orb absolute left-[-8rem] top-20 h-72 w-72 rounded-full bg-emerald-400/8" />
+      <div className="mesh-orb absolute bottom-20 right-[-6rem] h-80 w-80 rounded-full bg-violet-500/8" />
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:72px_72px] opacity-30" />
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
 
       <div className="container relative z-10 mx-auto px-4 py-8">
         <nav className="mb-16 flex items-center justify-between rounded-full border border-white/10 bg-white/10 px-4 py-3 shadow-2xl backdrop-blur-xl md:px-6">
           <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-base font-black text-matte-black shadow-glow">D</span>
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-base font-black text-matte-black shadow-financial">D</span>
             <span className="hidden text-sm font-semibold tracking-[0.3em] text-white/90 sm:inline">DYNAMIK</span>
           </button>
           <div className="hidden items-center gap-6 text-sm text-white/70 lg:flex">
@@ -108,7 +108,7 @@ const Header = () => {
               transition={{ delay: 0.65, duration: 0.7, ease: "easeOut" }}
             >
               <motion.div ref={magneticRef1} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
-                <Button size="xl" onClick={scrollToCalculator} className="w-full rounded-full bg-primary text-matte-black hover:bg-primary-glow sm:w-auto">
+                <Button size="xl" onClick={scrollToCalculator} className="w-full rounded-full bg-white text-slate-950 hover:bg-white/90 shadow-[0_18px_60px_rgba(0,0,0,0.25)] sm:w-auto">
                   Calculer mes frais <ArrowRight className="h-5 w-5" />
                 </Button>
               </motion.div>
@@ -141,7 +141,7 @@ const Header = () => {
                 ['24h/7', 'Support WhatsApp'],
                 ['USDT', 'Achat & rachat'],
               ].map(([value, label]) => (
-                <div key={value} className="rounded-3xl border border-white/10 bg-white/[0.07] p-4 backdrop-blur-xl">
+                <div key={value} className="rounded-3xl border border-white/10 bg-slate-950/35 p-4 backdrop-blur-xl shadow-[0_16px_50px_rgba(0,0,0,0.22)]">
                   <p className="text-2xl font-semibold text-white">{value}</p>
                   <p className="mt-1 text-xs text-white/55">{label}</p>
                 </div>
@@ -155,7 +155,7 @@ const Header = () => {
             transition={{ delay: 0.55, duration: 0.9, ease: "easeOut" }}
             className="relative hidden lg:block"
           >
-            <div className="absolute -inset-6 rounded-[3rem] bg-primary/10 blur-3xl" />
+            <div className="absolute -inset-6 rounded-[3rem] bg-emerald-400/5 blur-3xl" />
             <div className="relative overflow-hidden rounded-[2.5rem] border border-white/15 bg-slate-950/45 p-6 shadow-2xl backdrop-blur-2xl">
               <div className="mb-8 flex items-center justify-between">
                 <div>
