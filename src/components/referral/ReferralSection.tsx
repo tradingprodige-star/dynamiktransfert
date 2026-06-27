@@ -32,7 +32,7 @@ const ReferralSection = () => {
             className="text-center mb-8"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-3">
-              Programme de <span className="text-primary">Parrainage</span>
+              Programme de <span className="text-violet-digital">Parrainage</span>
             </h2>
             <p className="text-muted-foreground">
               Parrainez vos proches et gagnez des récompenses à chaque transfert effectué
@@ -61,27 +61,27 @@ const ReferralSection = () => {
             <h3 className="text-lg font-semibold text-center mb-4">Points par transfert</h3>
             <div className="grid grid-cols-3 gap-2 mb-6">
               <div className="bg-card p-3 rounded-xl border text-center">
-                <p className="font-bold text-primary">2 pts</p>
+                <p className="font-bold text-violet-digital">2 pts</p>
                 <p className="text-xs text-muted-foreground">5K - 20K</p>
               </div>
               <div className="bg-card p-3 rounded-xl border text-center">
-                <p className="font-bold text-primary">5 pts</p>
+                <p className="font-bold text-violet-digital">5 pts</p>
                 <p className="text-xs text-muted-foreground">20K - 50K</p>
               </div>
               <div className="bg-card p-3 rounded-xl border text-center">
-                <p className="font-bold text-primary">12 pts</p>
+                <p className="font-bold text-violet-digital">12 pts</p>
                 <p className="text-xs text-muted-foreground">50K - 100K</p>
               </div>
               <div className="bg-card p-3 rounded-xl border text-center">
-                <p className="font-bold text-primary">30 pts</p>
+                <p className="font-bold text-violet-digital">30 pts</p>
                 <p className="text-xs text-muted-foreground">100K - 250K</p>
               </div>
               <div className="bg-card p-3 rounded-xl border text-center">
-                <p className="font-bold text-primary">70 pts</p>
+                <p className="font-bold text-violet-digital">70 pts</p>
                 <p className="text-xs text-muted-foreground">250K - 500K</p>
               </div>
-              <div className="bg-card p-3 rounded-xl border border-primary text-center">
-                <p className="font-bold text-primary">150 pts</p>
+              <div className="bg-card p-3 rounded-xl border border-violet-digital/30 text-center">
+                <p className="font-bold text-violet-digital">150 pts</p>
                 <p className="text-xs text-muted-foreground">+500K</p>
               </div>
             </div>

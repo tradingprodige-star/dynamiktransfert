@@ -35,7 +35,7 @@ const Header = () => {
   };
 
   const scrollToCryptoPayment = () => {
-    document.getElementById('crypto-payment')?.scrollIntoView({ behavior: 'smooth' });
+    navigate('/crypto');
   };
 
   const openWhatsApp = () => {
@@ -63,7 +63,8 @@ const Header = () => {
           <div className="hidden items-center gap-6 text-sm text-white/70 lg:flex">
             <button onClick={scrollToCalculator} className="transition hover:text-white">Calculateur</button>
             <button onClick={scrollToCryptoPayment} className="transition hover:text-white">Crypto → FCFA</button>
-            <button onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })} className="transition hover:text-white">À propos</button>
+            <button onClick={() => navigate('/parrainage')} className="transition hover:text-white">Parrainage</button>
+            <button onClick={() => navigate('/a-propos')} className="transition hover:text-white">À propos</button>
           </div>
           <Button onClick={openWhatsApp} className="rounded-full bg-white text-matte-black hover:bg-white/90">
             WhatsApp
@@ -78,7 +79,7 @@ const Header = () => {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.25, duration: 0.6 }}
             >
-              <BadgeCheck className="h-4 w-4 text-primary" />
+              <BadgeCheck className="h-4 w-4 text-emerald-300" />
               Transferts, USDT et Mobile Money en Afrique
             </motion.div>
 
@@ -141,7 +142,7 @@ const Header = () => {
                 ['USDT', 'Achat & rachat'],
               ].map(([value, label]) => (
                 <div key={value} className="rounded-3xl border border-white/10 bg-white/[0.07] p-4 backdrop-blur-xl">
-                  <p className="text-2xl font-semibold text-primary">{value}</p>
+                  <p className="text-2xl font-semibold text-white">{value}</p>
                   <p className="mt-1 text-xs text-white/55">{label}</p>
                 </div>
               ))}
@@ -161,7 +162,7 @@ const Header = () => {
                   <p className="text-sm text-white/50">Flux intelligent</p>
                   <p className="text-xl font-semibold">Dynamik Pay</p>
                 </div>
-                <div className="rounded-2xl bg-primary p-3 text-matte-black">
+                <div className="rounded-2xl bg-white p-3 text-matte-black">
                   <Wallet className="h-6 w-6" />
                 </div>
               </div>
@@ -179,7 +180,7 @@ const Header = () => {
                     transition={{ duration: 3, repeat: Infinity, delay: index * 0.25 }}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="rounded-2xl bg-white/10 p-3 text-primary">
+                      <div className="rounded-2xl bg-white/10 p-3 text-emerald-300">
                         <item.icon className="h-5 w-5" />
                       </div>
                       <div>

@@ -24,13 +24,13 @@ const WelcomeCode = () => {
               Offre Spéciale Premier Transfert
             </h2>
             <p className="text-xl text-white/80">
-              Utilisez le code <span className="font-bold text-amber-300">BIENVENUE</span> et payez 0% de frais !
+              Utilisez le code <span className="font-bold text-emerald-300">BIENVENUE</span> et payez 0% de frais !
             </p>
           </div>
 
           {/* Code en évidence */}
           <div className="bg-slate-950/70 backdrop-blur-xl rounded-[2rem] p-8 mb-8 border border-white/10 shadow-financial">
-            <div className="inline-block rounded-2xl bg-slate-950/85 px-6 py-3 text-5xl md:text-6xl font-black mb-4 text-amber-200 tracking-wider border border-amber-300/20 shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
+            <div className="inline-block rounded-2xl bg-slate-950/85 px-6 py-3 text-5xl md:text-6xl font-black mb-4 text-emerald-200 tracking-wider border border-emerald-300/20 shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
               BIENVENUE
             </div>
             <p className="text-lg text-white/75 mb-6">
@@ -50,7 +50,7 @@ const WelcomeCode = () => {
                 variant="outline"
                 size="lg"
                 onClick={useCodeNow}
-                className="rounded-full border-amber-300/40 text-amber-200 hover:bg-amber-300 hover:text-matte-black bg-amber-300/10"
+                className="rounded-full border-emerald-300/40 text-emerald-200 hover:bg-emerald-300 hover:text-matte-black bg-emerald-300/10"
               >
                 Utiliser maintenant
               </Button>
@@ -69,8 +69,8 @@ const WelcomeCode = () => {
             <p className="text-lg mb-4 text-white/80">
               Nous rachetons et vendons vos USDT dans toutes les zones BECEAO et CEMAC.
             </p>
-            <div className="bg-slate-950/75 rounded-2xl p-4 mb-4 border border-amber-300/15">
-              <p className="text-2xl font-bold text-amber-200">
+            <div className="bg-slate-950/75 rounded-2xl p-4 mb-4 border border-emerald-300/15">
+              <p className="text-2xl font-bold text-emerald-200">
                 Rachat : 565 F/USDT
               </p>
             </div>

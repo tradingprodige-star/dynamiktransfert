@@ -485,7 +485,7 @@ Merci de me contacter pour plus d'informations.`;
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            Calculez vos <span className="text-primary">frais de transfert</span>
+            Calculez vos <span className="text-violet-digital">frais de transfert</span>
           </motion.h2>
           <motion.p 
             className="text-center text-muted-foreground mb-12 text-lg"
@@ -540,8 +540,8 @@ Merci de me contacter pour plus d'informations.`;
                   </Select>
                   
                   {direction === "cemac-beceao" && (
-                    <div className="mt-2 p-3 bg-primary/10 border border-primary/30 rounded-lg space-y-1">
-                      <p className="text-xs text-primary font-medium">
+                    <div className="mt-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg space-y-1">
+                      <p className="text-xs text-emerald-700 font-medium">
                         🔥 Promo spéciale jusqu'au 20 janvier 2026 !
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -770,11 +770,11 @@ Merci de me contacter pour plus d'informations.`;
                     </SelectContent>
                   </Select>
                   {(direction === "togo-europe" || direction === "cemac-europe" || direction === "beceao-europe") && (
-                    <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg">
-                      <p className="text-xs text-amber-800 dark:text-amber-200 font-medium mb-1">
+                    <div className="mt-3 p-3 bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 rounded-lg">
+                      <p className="text-xs text-slate-700 dark:text-slate-200 font-medium mb-1">
                         ⚠️ Transferts vers l'Europe :
                       </p>
-                      <ul className="text-xs text-amber-700 dark:text-amber-300 space-y-1 list-disc list-inside">
+                      <ul className="text-xs text-slate-600 dark:text-slate-300 space-y-1 list-disc list-inside">
                         <li>Limite : 1000€ max/jour</li>
                         <li>Vérification d'identité obligatoire</li>
                       </ul>
@@ -797,7 +797,7 @@ Merci de me contacter pour plus d'informations.`;
                     </p>
                   ) : (
                     <p className="text-xs text-muted-foreground mt-1">
-                      Premier transfert ? Utilisez <span className="font-bold text-primary">BIENVENUE</span>
+                      Premier transfert ? Utilisez <span className="font-bold text-violet-digital">BIENVENUE</span>
                     </p>
                   )}
                 </div>
@@ -814,7 +814,7 @@ Merci de me contacter pour plus d'informations.`;
                 <div className="pt-4 border-t border-border">
                   <button 
                     onClick={() => setShowCustomRequest(!showCustomRequest)}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"
+                    className="text-sm text-muted-foreground hover:text-violet-digital transition-colors flex items-center gap-2"
                   >
                     <span>🔍</span>
                     <span>Vous ne trouvez pas votre option de transfert ?</span>
@@ -858,20 +858,20 @@ Merci de me contacter pour plus d'informations.`;
                 {result ? (
                   <div className="space-y-6">
                     {/* Référence */}
-                    <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg text-center">
+                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-center">
                       <p className="text-xs text-muted-foreground mb-1">Référence</p>
-                      <p className="text-lg font-mono font-bold text-primary">{result.referenceNumber}</p>
+                      <p className="text-lg font-mono font-bold text-violet-digital">{result.referenceNumber}</p>
                     </div>
 
                     <div className="space-y-4">
                       <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
                         <span className="text-muted-foreground">Total à payer</span>
-                        <span className="text-2xl font-bold text-primary">
+                        <span className="text-2xl font-bold text-violet-digital">
                           {result.totalToPay.toFixed(0)} {direction === 'france-togo' ? 'EUR' : (direction?.includes('cemac') && !direction?.includes('beceao')) ? 'XAF' : 'XOF'}
                         </span>
                       </div>
                       
-                      <div className="flex justify-between items-center p-4 bg-primary/10 rounded-lg">
+                      <div className="flex justify-between items-center p-4 bg-violet-digital/10 rounded-lg">
                         <span className="text-muted-foreground">Montant reçu</span>
                         <span className="text-2xl font-bold text-accent">
                           {direction === 'france-togo' 
@@ -900,9 +900,9 @@ Merci de me contacter pour plus d'informations.`;
                       )}
 
                       {result.cashback > 0 && (
-                        <div className="flex justify-between items-center p-4 bg-primary/10 rounded-lg border border-primary/20">
+                        <div className="flex justify-between items-center p-4 bg-emerald-50 rounded-lg border border-emerald-200">
                           <span className="text-muted-foreground">Cashback</span>
-                          <span className="text-lg font-bold text-primary">
+                          <span className="text-lg font-bold text-emerald-700">
                             +{result.cashback} FCFA
                           </span>
                         </div>

@@ -8,6 +8,13 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import PromoManager from "./pages/PromoManager";
 import AdminReferrals from "./pages/AdminReferrals";
+import Crypto from "./pages/Crypto";
+import Referral from "./pages/Referral";
+import Ambassadors from "./pages/Ambassadors";
+import Offers from "./pages/Offers";
+import About from "./pages/About";
+import FaqPage from "./pages/FaqPage";
+import Complaints from "./pages/Complaints";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +26,13 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/crypto" element={<Crypto />} />
+          <Route path="/parrainage" element={<Referral />} />
+          <Route path="/ambassadeurs" element={<Ambassadors />} />
+          <Route path="/offre" element={<Offers />} />
+          <Route path="/a-propos" element={<About />} />
+          <Route path="/faq" element={<FaqPage />} />
+          <Route path="/reclamations" element={<Complaints />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/promo" element={<PromoManager />} />
           <Route path="/admin/referrals" element={<AdminReferrals />} />

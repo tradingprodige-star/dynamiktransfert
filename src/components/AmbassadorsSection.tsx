@@ -11,7 +11,7 @@ const AmbassadorsSection = () => {
     name: "CID",
     code: "CID",
     message: "Centre de l'Innovation Digital, partenaire officiel !",
-    color: "from-primary to-gold-500",
+    color: "from-slate-900 to-violet-700",
     isFeatured: true
   };
 
@@ -20,13 +20,13 @@ const AmbassadorsSection = () => {
       name: "Bienvenue",
       code: "BIENVENUE",
       message: "Premier transfert gratuit !",
-      color: "from-gold-500 to-yellow-500"
+      color: "from-slate-800 to-violet-600"
     },
     {
       name: "Corsko",
       code: "CORSKO",
       message: "Avec Corsko, transfert en force !",
-      color: "from-yellow-500 to-orange-500"
+      color: "from-violet-700 to-fuchsia-700"
     },
     {
       name: "Mr Bourses",
@@ -85,7 +85,7 @@ const AmbassadorsSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            Nos <span className="text-primary">Ambassadeurs</span>
+            Nos <span className="text-violet-digital">Ambassadeurs</span>
           </motion.h2>
           <motion.p 
             className="text-center text-muted-foreground mb-12 text-lg"
@@ -105,13 +105,13 @@ const AmbassadorsSection = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mb-12"
           >
-            <Card className="relative overflow-hidden border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-card to-gold-500/10 shadow-xl">
-              <div className="absolute top-0 right-0 bg-gradient-primary text-primary-foreground px-4 py-1 text-xs font-bold rounded-bl-lg">
+            <Card className="relative overflow-hidden border-2 border-violet-digital/20 bg-gradient-to-br from-violet-digital/10 via-card to-slate-50 shadow-xl">
+              <div className="absolute top-0 right-0 bg-slate-950 text-white px-4 py-1 text-xs font-bold rounded-bl-lg">
                 Partenaire Officiel
               </div>
               <CardContent className="p-8 flex flex-col md:flex-row items-center gap-8">
                 <div className="relative">
-                  <div className={`w-28 h-28 rounded-full bg-gradient-to-br ${featuredPartner.color} flex items-center justify-center text-white text-3xl font-bold shadow-xl ring-4 ring-primary/20`}>
+                  <div className={`w-28 h-28 rounded-full bg-gradient-to-br ${featuredPartner.color} flex items-center justify-center text-white text-3xl font-bold shadow-xl ring-4 ring-violet-digital/20`}>
                     {featuredPartner.name}
                   </div>
                 </div>
@@ -120,15 +120,15 @@ const AmbassadorsSection = () => {
                     {featuredPartner.name} - Centre de l'Innovation Digital
                   </h3>
                   <p className="text-muted-foreground mb-4">
-                    Partenaire stratégique de DYNAMIK TRANSFERT. Utilisez le code <span className="font-bold text-primary">{featuredPartner.code}</span> pour bénéficier d'avantages exclusifs sur vos transferts.
+                    Partenaire stratégique de DYNAMIK TRANSFERT. Utilisez le code <span className="font-bold text-violet-digital">{featuredPartner.code}</span> pour bénéficier d'avantages exclusifs sur vos transferts.
                   </p>
-                  <div className="bg-primary/10 rounded-lg p-3 mb-4 border border-primary/20">
-                    <p className="text-sm text-primary font-medium">
+                  <div className="bg-violet-digital/10 rounded-lg p-3 mb-4 border border-violet-digital/20">
+                    <p className="text-sm text-violet-digital font-medium">
                       Code partenaire officiel actif sur les transferts éligibles.
                     </p>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-                    <div className="bg-gradient-primary text-white px-6 py-2 rounded-full text-lg font-bold inline-block shadow-lg">
+                    <div className="bg-slate-950 text-white px-6 py-2 rounded-full text-lg font-bold inline-block shadow-lg">
                       {featuredPartner.code}
                     </div>
                     <Button 
@@ -136,7 +136,7 @@ const AmbassadorsSection = () => {
                       onClick={() => {
                         navigator.clipboard.writeText(featuredPartner.code);
                       }}
-                      className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                      className="border-violet-digital/40 text-violet-digital hover:bg-violet-digital hover:text-white"
                     >
                       Copier le code
                     </Button>
@@ -164,12 +164,12 @@ const AmbassadorsSection = () => {
                       {ambassador.name.split(' ').map(n => n.charAt(0)).join('')}
                     </div>
                     
-                    <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors">{ambassador.name}</h3>
+                    <h3 className="text-lg font-bold mb-2 group-hover:text-violet-digital transition-colors">{ambassador.name}</h3>
                     <p className="text-xs text-muted-foreground mb-4 italic">
                       "{ambassador.message}"
                     </p>
                     
-                    <div className="bg-gradient-primary text-white px-3 py-1 rounded-full text-xs font-bold mb-4 group-hover:bg-gradient-accent transition-all">
+                    <div className="bg-slate-950 text-white px-3 py-1 rounded-full text-xs font-bold mb-4 group-hover:bg-violet-digital transition-all">
                       {ambassador.code}
                     </div>
                     
@@ -179,7 +179,7 @@ const AmbassadorsSection = () => {
                       onClick={() => {
                         navigator.clipboard.writeText(ambassador.code);
                       }}
-                      className="w-full group-hover:border-primary group-hover:text-primary"
+                      className="w-full group-hover:border-violet-digital group-hover:text-violet-digital"
                     >
                       Copier
                     </Button>
@@ -202,7 +202,7 @@ const AmbassadorsSection = () => {
                 variant="secondary" 
                 size="lg"
                 onClick={requestPromoCode}
-                className="bg-white text-primary hover:bg-white/90"
+                className="bg-white text-slate-950 hover:bg-white/90"
               >
                 Demander mon code promo
               </Button>

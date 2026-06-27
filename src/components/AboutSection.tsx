@@ -12,7 +12,7 @@ const AboutSection = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 text-foreground animate-fade-in">
-            À propos de <span className="text-primary">DYNAMIK Transfert</span>
+            À propos de <span className="text-violet-digital">DYNAMIK Transfert</span>
           </h2>
           
           {/* Storytelling */}
@@ -48,7 +48,7 @@ const AboutSection = () => {
                 </p>
                 
                 <p>
-                  Cette fois, <span className="font-bold text-primary">DYNAMIK Transfert</span> n'est pas une boutique.
+                  Cette fois, <span className="font-bold text-violet-digital">DYNAMIK Transfert</span> n'est pas une boutique.
                   C'est une infrastructure complète pour :
                 </p>
                 
@@ -82,7 +82,7 @@ const AboutSection = () => {
                 </p>
                 <button
                   onClick={() => openInstagram('https://www.instagram.com/corneille_dald?igsh=Y2UyNnE3a3EyeHN3')}
-                  className="text-primary hover:text-accent transition-colors text-sm font-medium"
+                  className="text-violet-digital hover:text-accent transition-colors text-sm font-medium"
                 >
                   Suivre sur Instagram →
                 </button>
@@ -102,19 +102,19 @@ const AboutSection = () => {
                 <div className="space-y-2">
                   <button
                     onClick={() => openInstagram('https://www.instagram.com/le_prodigieu?igsh=MXE1eTV4bXY3eTMxdw%3D%3D&utm_source=qr')}
-                    className="block text-primary hover:text-accent transition-colors text-sm font-medium"
+                    className="block text-violet-digital hover:text-accent transition-colors text-sm font-medium"
                   >
                     Suivre sur Instagram →
                   </button>
                   <button
                     onClick={() => openSocialLink('https://x.com/prodigeadjote?s=21')}
-                    className="block text-primary hover:text-accent transition-colors text-sm font-medium"
+                    className="block text-violet-digital hover:text-accent transition-colors text-sm font-medium"
                   >
                     Suivre sur Twitter →
                   </button>
                   <button
                     onClick={() => openSocialLink('https://www.linkedin.com/in/prodige-adjote-052a151a0?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app')}
-                    className="block text-primary hover:text-accent transition-colors text-sm font-medium"
+                    className="block text-violet-digital hover:text-accent transition-colors text-sm font-medium"
                   >
                     Suivre sur LinkedIn →
                   </button>
@@ -123,7 +123,7 @@ const AboutSection = () => {
             </div>
             
             <div className="text-center mt-12">
-              <p className="text-lg font-semibold text-primary mb-6">
+              <p className="text-lg font-semibold text-violet-digital mb-6">
                 Bienvenue dans DYNAMIK Transfert.
               </p>
               
@@ -131,13 +131,13 @@ const AboutSection = () => {
               <div className="flex justify-center gap-6">
                 <button
                   onClick={() => openSocialLink('https://www.tiktok.com/@dynamik.transfert?_t=ZM-8zVF03dPtYb&_r=1')}
-                  className="text-primary hover:text-accent transition-colors text-sm font-medium"
+                  className="text-violet-digital hover:text-accent transition-colors text-sm font-medium"
                 >
                   TikTok DYNAMIK Transfert →
                 </button>
                 <button
                   onClick={() => openSocialLink('https://www.facebook.com/share/1B9etgN3Lr/?mibextid=wwXIfr')}
-                  className="text-primary hover:text-accent transition-colors text-sm font-medium"
+                  className="text-violet-digital hover:text-accent transition-colors text-sm font-medium"
                 >
                   Facebook DYNAMIK Transfert →
                 </button>
@@ -172,7 +172,7 @@ const AboutSection = () => {
           {/* Mission et Vision */}
           <div className="grid md:grid-cols-2 gap-8">
             <div className="text-center p-8 rounded-2xl bg-background border border-border">
-              <h4 className="text-xl font-bold mb-4 text-primary">Notre Mission</h4>
+              <h4 className="text-xl font-bold mb-4 text-violet-digital">Notre Mission</h4>
               <p className="text-muted-foreground">
                 Démocratiser les transferts d'argent en Afrique plus précisément entre l'Afrique de l'Ouest 
                 Et L'Afrique centrale en offrant une solution accessible, transparente et économique.

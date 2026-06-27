@@ -92,7 +92,7 @@ const CryptoPayment = () => {
             className="space-y-8"
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-white/80 backdrop-blur-xl">
-              <Wallet className="h-4 w-4 text-primary" />
+              <Wallet className="h-4 w-4 text-emerald-300" />
               Paiement crypto vers FCFA Mobile Money
             </div>
 
@@ -112,7 +112,7 @@ const CryptoPayment = () => {
                 { icon: Landmark, title: "FCFA", text: "Togo, Bénin, Burkina, CI" },
               ].map((item) => (
                 <div key={item.title} className="rounded-3xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.1]">
-                  <item.icon className="mb-4 h-6 w-6 text-primary" />
+                  <item.icon className="mb-4 h-6 w-6 text-emerald-300" />
                   <p className="text-xl font-semibold">{item.title}</p>
                   <p className="mt-1 text-sm text-white/60">{item.text}</p>
                 </div>
@@ -125,9 +125,9 @@ const CryptoPayment = () => {
                   <p className="text-sm text-white/50">Flux du paiement</p>
                   <p className="mt-1 font-medium">Wallet crypto → DYNAMIK → Mobile Money</p>
                 </div>
-                <div className="flex items-center gap-2 text-primary">
+                <div className="flex items-center gap-2 text-emerald-300">
                   <Bitcoin className="h-6 w-6" />
-                  <div className="h-px w-10 bg-primary/50" />
+                  <div className="h-px w-10 bg-emerald-300/50" />
                   <Smartphone className="h-6 w-6" />
                 </div>
               </div>
@@ -237,12 +237,12 @@ const CryptoPayment = () => {
                     </div>
                     <div>
                       <p className="text-xs uppercase tracking-[0.2em] text-white/40">À payer</p>
-                      <p className="mt-1 text-xl font-semibold text-amber-200">{cryptoAmount.toFixed(selectedCrypto.value.includes("btc") ? 8 : 2)} {selectedCrypto.value.includes("btc") ? "BTC" : "USDT"}</p>
+                      <p className="mt-1 text-xl font-semibold text-emerald-300">{cryptoAmount.toFixed(selectedCrypto.value.includes("btc") ? 8 : 2)} {selectedCrypto.value.includes("btc") ? "BTC" : "USDT"}</p>
                     </div>
                   </div>
                   <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-white/10 p-3 text-sm text-white/70">
                     <span>Référence : {reference || currentReference}</span>
-                    <button onClick={copyReference} className="inline-flex items-center gap-1 text-amber-200 hover:text-amber-100">
+                    <button onClick={copyReference} className="inline-flex items-center gap-1 text-emerald-300 hover:text-emerald-200">
                       <Copy className="h-4 w-4" /> Copier
                     </button>
                   </div>

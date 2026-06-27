@@ -14,7 +14,7 @@ const Footer = () => {
           {/* Logo et description */}
           <div className="text-center mb-8">
             <h3 className="text-2xl font-bold mb-2">
-              DYNAMIK <span className="text-primary">TRANSFERT</span>
+              DYNAMIK <span className="text-violet-digital">TRANSFERT</span>
             </h3>
             <p className="text-muted-foreground max-w-md mx-auto">
               La solution de transfert d'argent la plus simple et économique d'Afrique centrale.
@@ -25,7 +25,7 @@ const Footer = () => {
           <div className="flex flex-wrap justify-center gap-6 mb-8">
             <button
               onClick={() => openLink('https://www.instagram.com/dynamik_shop?igsh=MXU0NnFxMWllb3N0')}
-              className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+              className="flex items-center gap-2 text-muted-foreground hover:text-violet-digital transition-colors"
             >
               <Instagram size={20} />
               <span>Instagram</span>
@@ -33,7 +33,7 @@ const Footer = () => {
             
             <button
               onClick={() => openLink('https://wa.me/22899771419?text=Bonjour%20DYNAMIK%20TRANSFERT')}
-              className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+              className="flex items-center gap-2 text-muted-foreground hover:text-violet-digital transition-colors"
             >
               <MessageCircle size={20} />
               <span>WhatsApp</span>
@@ -41,7 +41,7 @@ const Footer = () => {
             
             <button
               onClick={() => openLink('https://publuu.com/flip-book/939638/_0_')}
-              className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+              className="flex items-center gap-2 text-muted-foreground hover:text-violet-digital transition-colors"
             >
               <FileText size={20} />
               <span>Termes (FR)</span>
@@ -49,15 +49,15 @@ const Footer = () => {
             
             <button
               onClick={() => openLink('https://publuu.com/flip-book/939638/2062188')}
-              className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+              className="flex items-center gap-2 text-muted-foreground hover:text-violet-digital transition-colors"
             >
               <FileText size={20} />
               <span>Terms (EN)</span>
             </button>
             
             <button
-              onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
-              className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+              onClick={() => { window.location.href = '/a-propos'; }}
+              className="flex items-center gap-2 text-muted-foreground hover:text-violet-digital transition-colors"
             >
               <Users size={20} />
               <span>À propos</span>
@@ -70,7 +70,7 @@ const Footer = () => {
           {/* Informations légales */}
           <div className="text-center space-y-2">
             <p className="text-muted-foreground">
-              Propulsé par <span className="font-bold text-primary">DYNAMIK</span> • {currentYear}
+              Propulsé par <span className="font-bold text-violet-digital">DYNAMIK</span> • {currentYear}
             </p>
             <p className="text-sm text-muted-foreground">
               Service de transfert d'argent agréé • Sécurisé et régulé
@@ -83,7 +83,7 @@ const Footer = () => {
               <p className="text-sm text-muted-foreground mb-1">Support client 24/7</p>
               <button
                 onClick={() => openLink('https://wa.me/22899771419?text=Bonjour%20DYNAMIK%20TRANSFERT')}
-                className="text-primary font-bold hover:underline"
+                className="text-violet-digital font-bold hover:underline"
               >
                 Contactez-nous sur WhatsApp
               </button>
