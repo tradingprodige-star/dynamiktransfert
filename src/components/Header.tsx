@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import { ArrowRight, BadgeCheck, Globe2, ShieldCheck, Smartphone, Wallet } from "lucide-react";
+import { ArrowRight, Globe2, ShieldCheck, Smartphone, Wallet } from "lucide-react";
 
 const Header = () => {
   const scrollRevealRef = useScrollReveal();
@@ -58,7 +58,7 @@ const Header = () => {
         <nav className="mb-16 flex items-center justify-between rounded-full border border-white/10 bg-white/10 px-4 py-3 shadow-2xl backdrop-blur-xl md:px-6">
           <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-base font-black text-matte-black shadow-financial">D</span>
-            <span className="hidden text-sm font-semibold tracking-[0.3em] text-white/90 sm:inline">DYNAMIK</span>
+            <span className="hidden text-sm font-semibold tracking-[0.24em] text-white/90 sm:inline">DYNAMIK TRANSFERT</span>
           </button>
           <div className="hidden items-center gap-6 text-sm text-white/70 lg:flex">
             <button onClick={scrollToCalculator} className="transition hover:text-white">Calculateur</button>
@@ -74,13 +74,13 @@ const Header = () => {
         <div className="grid min-h-[72vh] items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="scroll-reveal max-w-4xl" ref={scrollRevealRef}>
             <motion.div
-              className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-white/80 backdrop-blur-xl"
+              className="mb-7 inline-flex items-center gap-2 text-base font-semibold tracking-[0.16em] text-primary md:text-lg"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.25, duration: 0.6 }}
             >
-              <BadgeCheck className="h-4 w-4 text-emerald-300" />
-              Transferts, USDT et Mobile Money en Afrique
+              <span className="h-px w-10 bg-primary/70" />
+              TRANSFERTS USDT & MOBILE MONEY EN AFRIQUE
             </motion.div>
 
             <motion.h1
@@ -89,7 +89,9 @@ const Header = () => {
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.35, duration: 0.8, ease: "easeOut" }}
             >
-              Envoyez. Recevez. Multipliez.
+              <span className="text-white">Envoyez.</span>{" "}
+              <span className="text-primary">Recevez.</span>{" "}
+              <span className="text-white">Multipliez.</span>
             </motion.h1>
 
             <motion.p
@@ -108,7 +110,7 @@ const Header = () => {
               transition={{ delay: 0.65, duration: 0.7, ease: "easeOut" }}
             >
               <motion.div ref={magneticRef1} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
-                <Button size="xl" onClick={scrollToCalculator} className="w-full rounded-full bg-white text-slate-950 hover:bg-white/90 shadow-[0_18px_60px_rgba(0,0,0,0.25)] sm:w-auto">
+                <Button size="xl" onClick={scrollToCalculator} className="w-full rounded-full bg-primary text-slate-950 hover:bg-primary-glow shadow-[0_18px_60px_rgba(245,187,0,0.22)] sm:w-auto">
                   Calculer mes frais <ArrowRight className="h-5 w-5" />
                 </Button>
               </motion.div>
@@ -142,7 +144,7 @@ const Header = () => {
                 ['USDT', 'Achat & rachat'],
               ].map(([value, label]) => (
                 <div key={value} className="rounded-3xl border border-white/10 bg-slate-950/35 p-4 backdrop-blur-xl shadow-[0_16px_50px_rgba(0,0,0,0.22)]">
-                  <p className="text-2xl font-semibold text-white">{value}</p>
+                  <p className="text-2xl font-semibold text-primary">{value}</p>
                   <p className="mt-1 text-xs text-white/55">{label}</p>
                 </div>
               ))}
@@ -162,7 +164,7 @@ const Header = () => {
                   <p className="text-sm text-white/50">Flux intelligent</p>
                   <p className="text-xl font-semibold">Dynamik Pay</p>
                 </div>
-                <div className="rounded-2xl bg-white p-3 text-matte-black">
+                <div className="rounded-2xl bg-primary p-3 text-matte-black shadow-[0_14px_40px_rgba(245,187,0,0.18)]">
                   <Wallet className="h-6 w-6" />
                 </div>
               </div>
@@ -180,7 +182,7 @@ const Header = () => {
                     transition={{ duration: 3, repeat: Infinity, delay: index * 0.25 }}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="rounded-2xl bg-white/10 p-3 text-emerald-300">
+                      <div className="rounded-2xl bg-primary/12 p-3 text-primary">
                         <item.icon className="h-5 w-5" />
                       </div>
                       <div>

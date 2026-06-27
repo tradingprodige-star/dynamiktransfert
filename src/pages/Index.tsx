@@ -76,6 +76,13 @@ const serviceSections = [
   },
 ];
 
+const ambassadorPreview = [
+  { name: "CID", code: "CID", label: "Partenaire officiel", gradient: "from-primary to-amber-300" },
+  { name: "Bienvenue", code: "BIENVENUE", label: "Premier transfert", gradient: "from-amber-300 to-primary" },
+  { name: "Corsko", code: "CORSKO", label: "Ambassadeur", gradient: "from-violet-500 to-primary" },
+  { name: "Mr Bourses", code: "MR_BOURSES", label: "Ambassadeur", gradient: "from-emerald-400 to-primary" },
+];
+
 const accentClasses = {
   emerald: {
     icon: "bg-emerald-400/12 text-emerald-300 border-emerald-300/20",
@@ -100,6 +107,49 @@ const Index = () => {
       <ReferralBanner />
       <Header />
       <Calculator />
+
+      <section id="ambassadeurs-apercu" className="relative overflow-hidden bg-background py-20">
+        <div className="absolute left-10 top-10 h-56 w-56 rounded-full bg-primary/[0.10] blur-3xl" />
+        <div className="absolute bottom-0 right-10 h-64 w-64 rounded-full bg-violet-digital/[0.08] blur-3xl" />
+        <div className="container relative z-10 mx-auto px-4">
+          <div className="mx-auto mb-12 max-w-3xl text-center">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.24em] text-violet-digital">Ambassadeurs DYNAMIK</p>
+            <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-5xl">
+              Les codes partenaires visibles dès l’accueil.
+            </h2>
+            <p className="mt-4 text-lg leading-8 text-muted-foreground">
+              Les utilisateurs voient rapidement les ambassadeurs actifs, puis peuvent ouvrir la page complète pour copier les codes ou demander leur propre code.
+            </p>
+          </div>
+
+          <div className="mx-auto grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {ambassadorPreview.map((ambassador) => (
+              <div
+                key={ambassador.code}
+                className="group relative overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-card transition-all duration-500 hover:-translate-y-2 hover:shadow-financial"
+              >
+                <div className={`absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br ${ambassador.gradient} opacity-20 blur-2xl transition-opacity group-hover:opacity-35`} />
+                <div className={`mb-5 flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br ${ambassador.gradient} text-lg font-black text-slate-950 shadow-[0_14px_38px_rgba(245,187,0,0.22)]`}>
+                  {ambassador.name.split(" ").map((part) => part[0]).join("")}
+                </div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">{ambassador.label}</p>
+                <h3 className="mt-2 text-xl font-semibold text-foreground">{ambassador.name}</h3>
+                <div className="mt-5 rounded-2xl border border-primary/20 bg-primary/[0.10] px-4 py-3 text-center font-mono text-sm font-bold text-slate-950">
+                  {ambassador.code}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 text-center">
+            <Button asChild className="rounded-full bg-slate-950 text-white hover:bg-slate-800">
+              <Link to="/ambassadeurs">
+                Voir tous les ambassadeurs <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
 
       <section id="services" className="relative overflow-hidden bg-slate-950 py-24 text-white">
         <div className="absolute left-0 top-10 h-80 w-80 rounded-full bg-emerald-400/[0.06] blur-3xl" />
