@@ -19,15 +19,16 @@ const generateReferenceNumber = (): string => {
 const Calculator = () => {
   const scrollRevealRef = useScrollReveal();
   const [amount, setAmount] = useState("");
-  const [direction, setDirection] = useState("");
+  const [direction, setDirection] = useState("france-togo");
   const [destination, setDestination] = useState("");
   const [destinationCountry, setDestinationCountry] = useState("");
   const [senderMobileMoney, setSenderMobileMoney] = useState("");
   const [receiverMobileMoney, setReceiverMobileMoney] = useState("");
   const [europeReceiveMethod, setEuropeReceiveMethod] = useState("");
-  const [deliveryTime, setDeliveryTime] = useState("");
+  const [deliveryTime, setDeliveryTime] = useState("instant");
   const [promoCode, setPromoCode] = useState("");
-  const [motif, setMotif] = useState("");
+  const [motif, setMotif] = useState("famille");
+  const [formError, setFormError] = useState("");
   const [customRequest, setCustomRequest] = useState("");
   const [showCustomRequest, setShowCustomRequest] = useState(false);
   const [promoCodes, setPromoCodes] = useState<Array<{
@@ -209,13 +210,35 @@ const Calculator = () => {
   ];
 
   const calculateTransfer = () => {
-    if (!amount || !direction || !deliveryTime) return;
+    setFormError("");
+
+    if (!amount || parseFloat(amount) <= 0) {
+      setFormError("Entrez un montant valide pour lancer la simulation.");
+      return;
+    }
+
+    if (!direction || !deliveryTime) {
+      setFormError("Choisissez la direction du transfert et le délai de réception.");
+      return;
+    }
     
     // Validations spécifiques
-    if (direction === "cemac-beceao" && (!destination || !destinationCountry || !senderMobileMoney || !receiverMobileMoney)) return;
-    if (direction === "beceao-beceao" && (!destination || !destinationCountry || !senderMobileMoney || !receiverMobileMoney)) return;
-    if ((direction === "cemac-europe" || direction === "beceao-europe") && (!destination || !senderMobileMoney || !europeReceiveMethod)) return;
-    if (direction !== "cemac-beceao" && direction !== "beceao-beceao" && direction !== "france-togo" && direction !== "cemac-europe" && direction !== "beceao-europe" && !destination) return;
+    if (direction === "cemac-beceao" && (!destination || !destinationCountry || !senderMobileMoney || !receiverMobileMoney)) {
+      setFormError("Complétez le pays d’origine, le pays de réception et les moyens Mobile Money.");
+      return;
+    }
+    if (direction === "beceao-beceao" && (!destination || !destinationCountry || !senderMobileMoney || !receiverMobileMoney)) {
+      setFormError("Complétez le pays d’origine, le pays de réception et les moyens Mobile Money.");
+      return;
+    }
+    if ((direction === "cemac-europe" || direction === "beceao-europe") && (!destination || !senderMobileMoney || !europeReceiveMethod)) {
+      setFormError("Complétez le pays d’origine, le Mobile Money expéditeur et le mode de réception en Europe.");
+      return;
+    }
+    if (direction !== "cemac-beceao" && direction !== "beceao-beceao" && direction !== "france-togo" && direction !== "cemac-europe" && direction !== "beceao-europe" && !destination) {
+      setFormError("Choisissez le pays de destination pour calculer les frais.");
+      return;
+    }
 
     const amountNum = parseFloat(amount);
     let baseFeeRate = 0;
@@ -470,7 +493,8 @@ Merci de me contacter pour plus d'informations.`;
     setSenderMobileMoney("");
     setReceiverMobileMoney("");
     setEuropeReceiveMethod("");
-    setDeliveryTime("");
+    setDeliveryTime(value === "france-togo" ? "instant" : "");
+    setFormError("");
     setResult(null);
   };
 
@@ -809,6 +833,12 @@ Merci de me contacter pour plus d'informations.`;
                 >
                   Calculer mes frais
                 </Button>
+
+                {formError && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                    {formError}
+                  </div>
+                )}
 
                 {/* Option demande personnalisée */}
                 <div className="pt-4 border-t border-border">
