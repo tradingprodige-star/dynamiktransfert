@@ -17,7 +17,7 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 15%;
 
-    --primary: 46 100% 56%;
+    --primary: 45 96% 49%;
     --primary-foreground: 222 47% 9%;
 
     --secondary: 210 20% 95%;
@@ -37,8 +37,8 @@ All colors MUST be HSL.
     --ring: 48 100% 62%;
 
     /* Custom DYNAMIK colors - Palette complète */
-    --primary-glow: 45 100% 72%;
-    --accent-glow: 266 100% 78%;
+    --primary-glow: 43 92% 58%;
+    --accent-glow: 266 74% 65%;
     --violet-digital: 263 76% 48%;
     
     /* Couleurs sérieuses pour la crédibilité */
@@ -48,13 +48,13 @@ All colors MUST be HSL.
     --matte-black: 222 47% 6%;
     
     /* Gradients avec les nouvelles couleurs */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)) 45%, hsl(var(--accent)));
+    --gradient-primary: linear-gradient(135deg, hsl(222 47% 8%), hsl(224 53% 13%) 45%, hsl(263 55% 31%));
     --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--violet-digital)));
-    --gradient-hero: radial-gradient(circle at 20% 10%, hsl(var(--primary) / 0.32), transparent 30%), radial-gradient(circle at 82% 20%, hsl(var(--accent) / 0.38), transparent 28%), linear-gradient(135deg, hsl(var(--matte-black)) 0%, hsl(var(--navy-blue)) 55%, hsl(var(--charcoal-gray)) 100%);
+    --gradient-hero: radial-gradient(circle at 20% 10%, hsl(var(--primary) / 0.16), transparent 30%), radial-gradient(circle at 82% 20%, hsl(var(--accent) / 0.18), transparent 28%), linear-gradient(135deg, hsl(var(--matte-black)) 0%, hsl(var(--navy-blue)) 55%, hsl(var(--charcoal-gray)) 100%);
     --gradient-dark: linear-gradient(135deg, hsl(var(--matte-black)), hsl(var(--navy-blue)) 60%, hsl(var(--charcoal-gray)));
     
     /* Shadows avec les nouvelles couleurs */
-    --shadow-glow: 0 0 50px hsl(var(--primary) / 0.35), 0 0 90px hsl(var(--accent) / 0.16);
+    --shadow-glow: 0 0 28px hsl(var(--primary) / 0.18), 0 0 55px hsl(var(--accent) / 0.10);
     --shadow-card: 0 24px 80px -35px hsl(var(--charcoal-gray) / 0.35);
     --shadow-financial: 0 28px 80px -32px hsl(var(--navy-blue) / 0.55);
 
@@ -128,8 +128,8 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground antialiased;
     background:
-      radial-gradient(circle at top left, hsl(var(--primary) / 0.12), transparent 28rem),
-      radial-gradient(circle at top right, hsl(var(--accent) / 0.12), transparent 28rem),
+      radial-gradient(circle at top left, hsl(var(--primary) / 0.06), transparent 28rem),
+      radial-gradient(circle at top right, hsl(var(--accent) / 0.07), transparent 28rem),
       hsl(var(--background));
   }
 }

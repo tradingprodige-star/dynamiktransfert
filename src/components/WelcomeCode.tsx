@@ -10,27 +10,30 @@ const WelcomeCode = () => {
   };
 
   return (
-    <section className="py-16 bg-gradient-primary slow-blink">
+    <section className="relative overflow-hidden py-20 bg-gradient-dark">
+      <div className="absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+      <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-accent/10 blur-3xl" />
+
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto text-center text-white">
+        <div className="relative z-10 max-w-4xl mx-auto text-center text-white">
           <div className="mb-8">
-            <div className="inline-block p-4 bg-white/20 rounded-full mb-4">
+            <div className="inline-block p-4 bg-white/10 rounded-full mb-4 border border-white/10 shadow-financial">
               <span className="text-4xl">🎁</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Offre Spéciale Premier Transfert
             </h2>
-            <p className="text-xl opacity-90">
-              Utilisez le code <span className="font-bold text-primary-glow">BIENVENUE</span> et payez 0% de frais !
+            <p className="text-xl text-white/80">
+              Utilisez le code <span className="font-bold text-amber-300">BIENVENUE</span> et payez 0% de frais !
             </p>
           </div>
 
           {/* Code en évidence */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 mb-8 border border-white/20">
-            <div className="text-6xl font-bold mb-4 text-primary-glow tracking-wider">
+          <div className="bg-slate-950/70 backdrop-blur-xl rounded-[2rem] p-8 mb-8 border border-white/10 shadow-financial">
+            <div className="inline-block rounded-2xl bg-slate-950/85 px-6 py-3 text-5xl md:text-6xl font-black mb-4 text-amber-200 tracking-wider border border-amber-300/20 shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
               BIENVENUE
             </div>
-            <p className="text-lg opacity-80 mb-6">
+            <p className="text-lg text-white/75 mb-6">
               Valable pour votre premier transfert uniquement
             </p>
             
@@ -39,7 +42,7 @@ const WelcomeCode = () => {
                 variant="secondary"
                 size="lg"
                 onClick={copyCode}
-                className="bg-white text-primary hover:bg-white/90"
+                className="rounded-full bg-white text-matte-black hover:bg-white/90"
               >
                 Copier le code
               </Button>
@@ -47,7 +50,7 @@ const WelcomeCode = () => {
                 variant="outline"
                 size="lg"
                 onClick={useCodeNow}
-                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground bg-primary/10"
+                className="rounded-full border-amber-300/40 text-amber-200 hover:bg-amber-300 hover:text-matte-black bg-amber-300/10"
               >
                 Utiliser maintenant
               </Button>
@@ -55,40 +58,40 @@ const WelcomeCode = () => {
           </div>
 
           {/* Conditions */}
-          <div className="text-sm opacity-70">
+          <div className="text-sm text-white/60">
             <p>* Offre valable une seule fois par client</p>
             <p>* Applicable sur tous les transferts vers le Gabon, Togo et zone CEMAC</p>
           </div>
           
           {/* Services USDT */}
-          <div className="mt-12 bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-            <h3 className="text-xl font-bold mb-3">💰 Services USDT</h3>
-            <p className="text-lg mb-4">
+          <div className="mt-12 bg-white/[0.06] backdrop-blur-xl rounded-[2rem] p-6 border border-white/10 shadow-financial">
+            <h3 className="text-xl font-bold mb-3 text-white">💰 Services USDT</h3>
+            <p className="text-lg mb-4 text-white/80">
               Nous rachetons et vendons vos USDT dans toutes les zones BECEAO et CEMAC.
             </p>
-            <div className="bg-white/20 rounded-lg p-4 mb-4">
-              <p className="text-2xl font-bold text-primary-glow">
+            <div className="bg-slate-950/75 rounded-2xl p-4 mb-4 border border-amber-300/15">
+              <p className="text-2xl font-bold text-amber-200">
                 Rachat : 565 F/USDT
               </p>
             </div>
-            <div className="flex justify-center gap-4 text-sm opacity-70 mb-4">
-              <span>Partenaires officiels :</span>
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-white/70 mb-4">
+              <span className="text-white/60">Partenaires officiels :</span>
               <button 
                 onClick={() => window.open('https://wa.me/22899060652?text=' + encodeURIComponent('Bonjour Turboexchange ! Je viens de la part de DYNAMIK TRANSFERT. Votre service m\'a été recommandé pour des échanges rapides, fiables et 100% sécurisés. J\'aimerais en savoir plus sur vos services d\'échange.'), '_blank')}
-                className="text-[#25D366] hover:underline font-medium"
+                className="text-emerald-300 hover:text-emerald-200 hover:underline font-medium"
               >
                 Turboexchange
               </button>
               <span>•</span>
               <button 
                 onClick={() => window.open('https://wa.me/22893941948?text=' + encodeURIComponent('Bonjour Jones Exchange ! Je viens de la part de DYNAMIK TRANSFERT. Votre service m\'a été recommandé pour des échanges rapides, fiables et 100% sécurisés. J\'aimerais en savoir plus sur vos services d\'échange.'), '_blank')}
-                className="text-[#25D366] hover:underline font-medium"
+                className="text-emerald-300 hover:text-emerald-200 hover:underline font-medium"
               >
                 Jones Exchange
               </button>
             </div>
             
-            <p className="text-sm opacity-80 mt-4">
+            <p className="text-sm text-white/60 mt-4">
               Taux mis à jour quotidiennement • Service disponible 24/7
             </p>
           </div>

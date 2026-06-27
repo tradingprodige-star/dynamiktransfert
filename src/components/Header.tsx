@@ -49,9 +49,9 @@ const Header = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 1.1, ease: "easeOut" }}
     >
-      <div className="mesh-orb absolute left-[-8rem] top-20 h-72 w-72 rounded-full bg-primary/30" />
-      <div className="mesh-orb absolute bottom-20 right-[-6rem] h-96 w-96 rounded-full bg-accent/30" />
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px)] bg-[size:72px_72px] opacity-40" />
+      <div className="mesh-orb absolute left-[-8rem] top-20 h-72 w-72 rounded-full bg-primary/14" />
+      <div className="mesh-orb absolute bottom-20 right-[-6rem] h-96 w-96 rounded-full bg-accent/14" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:72px_72px] opacity-30" />
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
 
       <div className="container relative z-10 mx-auto px-4 py-8">
@@ -154,8 +154,8 @@ const Header = () => {
             transition={{ delay: 0.55, duration: 0.9, ease: "easeOut" }}
             className="relative hidden lg:block"
           >
-            <div className="absolute -inset-6 rounded-[3rem] bg-gradient-primary opacity-25 blur-3xl" />
-            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/15 bg-white/[0.09] p-6 shadow-2xl backdrop-blur-2xl">
+            <div className="absolute -inset-6 rounded-[3rem] bg-primary/10 blur-3xl" />
+            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/15 bg-slate-950/45 p-6 shadow-2xl backdrop-blur-2xl">
               <div className="mb-8 flex items-center justify-between">
                 <div>
                   <p className="text-sm text-white/50">Flux intelligent</p>

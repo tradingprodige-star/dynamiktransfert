@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Bitcoin, CheckCircle2, Copy, CreditCard, Landmark, LockKeyhole, QrCode, Smartphone, Timer, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -76,10 +76,10 @@ const CryptoPayment = () => {
 
   return (
     <section id="crypto-payment" className="relative overflow-hidden py-24 bg-matte-black text-off-white">
-      <div className="absolute inset-0 opacity-60">
-        <div className="absolute -top-40 left-10 h-80 w-80 rounded-full bg-primary/20 blur-3xl" />
-        <div className="absolute bottom-0 right-10 h-96 w-96 rounded-full bg-accent/20 blur-3xl" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.12),transparent_35%)]" />
+      <div className="absolute inset-0 opacity-45">
+        <div className="absolute -top-40 left-10 h-80 w-80 rounded-full bg-primary/12 blur-3xl" />
+        <div className="absolute bottom-0 right-10 h-96 w-96 rounded-full bg-accent/12 blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.06),transparent_35%)]" />
       </div>
 
       <div className="container relative z-10 mx-auto px-4">
@@ -237,12 +237,12 @@ const CryptoPayment = () => {
                     </div>
                     <div>
                       <p className="text-xs uppercase tracking-[0.2em] text-white/40">À payer</p>
-                      <p className="mt-1 text-xl font-semibold text-primary">{cryptoAmount.toFixed(selectedCrypto.value.includes("btc") ? 8 : 2)} {selectedCrypto.value.includes("btc") ? "BTC" : "USDT"}</p>
+                      <p className="mt-1 text-xl font-semibold text-amber-200">{cryptoAmount.toFixed(selectedCrypto.value.includes("btc") ? 8 : 2)} {selectedCrypto.value.includes("btc") ? "BTC" : "USDT"}</p>
                     </div>
                   </div>
                   <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-white/10 p-3 text-sm text-white/70">
                     <span>Référence : {reference || currentReference}</span>
-                    <button onClick={copyReference} className="inline-flex items-center gap-1 text-primary hover:text-primary-glow">
+                    <button onClick={copyReference} className="inline-flex items-center gap-1 text-amber-200 hover:text-amber-100">
                       <Copy className="h-4 w-4" /> Copier
                     </button>
                   </div>
