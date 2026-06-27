@@ -8,17 +8,17 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 220 15% 15%;
+    --background: 220 26% 97%;
+    --foreground: 222 47% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 15% 15%;
+    --card-foreground: 222 47% 9%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 15%;
 
-    --primary: 48 100% 62%;
-    --primary-foreground: 220 15% 15%;
+    --primary: 46 100% 56%;
+    --primary-foreground: 222 47% 9%;
 
     --secondary: 210 20% 95%;
     --secondary-foreground: 220 15% 15%;
@@ -26,7 +26,7 @@ All colors MUST be HSL.
     --muted: 210 15% 90%;
     --muted-foreground: 220 10% 45%;
 
-    --accent: 320 100% 71%;
+    --accent: 267 76% 58%;
     --accent-foreground: 210 20% 98%;
 
     --destructive: 0 84.2% 60.2%;
@@ -37,28 +37,28 @@ All colors MUST be HSL.
     --ring: 48 100% 62%;
 
     /* Custom DYNAMIK colors - Palette complète */
-    --primary-glow: 45 100% 70%;
-    --accent-glow: 325 100% 80%;
-    --violet-digital: 267 63% 46%;
+    --primary-glow: 45 100% 72%;
+    --accent-glow: 266 100% 78%;
+    --violet-digital: 263 76% 48%;
     
     /* Couleurs sérieuses pour la crédibilité */
-    --navy-blue: 220 30% 25%;
-    --charcoal-gray: 220 15% 20%;
+    --navy-blue: 223 57% 12%;
+    --charcoal-gray: 222 37% 9%;
     --off-white: 210 20% 98%;
-    --matte-black: 220 15% 10%;
+    --matte-black: 222 47% 6%;
     
     /* Gradients avec les nouvelles couleurs */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)) 45%, hsl(var(--accent)));
     --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--violet-digital)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 50%, hsl(var(--violet-digital)) 100%);
-    --gradient-dark: linear-gradient(135deg, hsl(var(--navy-blue)), hsl(var(--charcoal-gray)));
+    --gradient-hero: radial-gradient(circle at 20% 10%, hsl(var(--primary) / 0.32), transparent 30%), radial-gradient(circle at 82% 20%, hsl(var(--accent) / 0.38), transparent 28%), linear-gradient(135deg, hsl(var(--matte-black)) 0%, hsl(var(--navy-blue)) 55%, hsl(var(--charcoal-gray)) 100%);
+    --gradient-dark: linear-gradient(135deg, hsl(var(--matte-black)), hsl(var(--navy-blue)) 60%, hsl(var(--charcoal-gray)));
     
     /* Shadows avec les nouvelles couleurs */
-    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.4);
-    --shadow-card: 0 10px 30px -10px hsl(var(--charcoal-gray) / 0.15);
-    --shadow-financial: 0 5px 25px -5px hsl(var(--navy-blue) / 0.3);
+    --shadow-glow: 0 0 50px hsl(var(--primary) / 0.35), 0 0 90px hsl(var(--accent) / 0.16);
+    --shadow-card: 0 24px 80px -35px hsl(var(--charcoal-gray) / 0.35);
+    --shadow-financial: 0 28px 80px -32px hsl(var(--navy-blue) / 0.55);
 
-    --radius: 0.5rem;
+    --radius: 1.25rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -121,8 +121,16 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    background:
+      radial-gradient(circle at top left, hsl(var(--primary) / 0.12), transparent 28rem),
+      radial-gradient(circle at top right, hsl(var(--accent) / 0.12), transparent 28rem),
+      hsl(var(--background));
   }
 }
 
@@ -137,6 +145,44 @@ All colors MUST be HSL.
   
   .card-hover {
     @apply transition-all duration-300 hover:shadow-glow hover:-translate-y-1;
+  }
+
+  .premium-page {
+    background:
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(220 33% 98%) 45%, hsl(var(--background)) 100%);
+  }
+
+  .premium-card {
+    @apply border border-white/70 bg-white/85 shadow-card backdrop-blur-xl;
+  }
+
+  .premium-pill {
+    @apply rounded-full px-5 py-2 text-sm font-semibold tracking-wide;
+  }
+
+  .premium-heading {
+    @apply tracking-tight text-foreground;
+  }
+
+  .flow-line {
+    background: linear-gradient(90deg, transparent, hsl(var(--primary)), hsl(var(--accent)), transparent);
+    background-size: 200% 100%;
+    animation: flowLine 2.8s linear infinite;
+  }
+
+  @keyframes flowLine {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .mesh-orb {
+    filter: blur(42px);
+    animation: meshFloat 7s ease-in-out infinite;
+  }
+
+  @keyframes meshFloat {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(18px, -18px, 0) scale(1.08); }
   }
 
   /* Advanced Motion Design & Anticipatory UX */
