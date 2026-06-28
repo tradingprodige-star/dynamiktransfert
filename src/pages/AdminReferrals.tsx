@@ -213,7 +213,7 @@ const AdminReferrals = () => {
 
       setStats({ totalSponsors, totalClicks, totalValidated, totalPoints, totalVolume });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error loading data:', error);
       toast({ title: "Erreur de chargement", variant: "destructive" });
     } finally {
@@ -260,9 +260,10 @@ const AdminReferrals = () => {
       setValidateDialog({ open: false, click: null });
       loadData();
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error validating:', error);
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      const message = error instanceof Error ? error.message : "Une erreur est survenue";
+      toast({ title: "Erreur", description: message, variant: "destructive" });
     }
   };
 
@@ -277,9 +278,10 @@ const AdminReferrals = () => {
 
       toast({ title: "Transfert marqué comme non abouti" });
       loadData();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error rejecting:', error);
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      const message = error instanceof Error ? error.message : "Une erreur est survenue";
+      toast({ title: "Erreur", description: message, variant: "destructive" });
     }
   };
 

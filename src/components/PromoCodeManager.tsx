@@ -77,7 +77,7 @@ const PromoCodeManager = () => {
 
       if (error) throw error;
       setPromoCodes(data || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur lors du chargement des codes promo:', error);
     }
   };
@@ -93,7 +93,7 @@ const PromoCodeManager = () => {
 
       if (error) throw error;
       setUsedCodes(data || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur lors du chargement de l\'usage:', error);
     }
   };
@@ -220,10 +220,11 @@ const PromoCodeManager = () => {
       loadUserUsage();
       setPromoCode("");
 
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Une erreur est survenue";
       toast({
         title: "Erreur",
-        description: error.message || "Une erreur est survenue",
+        description: message,
         variant: "destructive"
       });
     } finally {

@@ -116,11 +116,12 @@ Partagez ce lien avec vos proches et gagnez des points à chaque transfert effec
           description: "Votre code parrain a été créé avec succès. Vérifiez WhatsApp !",
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error:', error);
+      const message = error instanceof Error ? error.message : "Une erreur est survenue";
       toast({
         title: "Erreur",
-        description: error.message || "Une erreur est survenue",
+        description: message,
         variant: "destructive"
       });
     } finally {

@@ -378,8 +378,8 @@ const Calculator = () => {
     let sendCurrency = 'XOF';
     let receiveCurrency = 'XOF';
     let displayAmountReceived = result.amountReceived;
-    let displayFees = result.fees;
-    let displayTotalToPay = result.totalToPay;
+    const displayFees = result.fees;
+    const displayTotalToPay = result.totalToPay;
     
     if (direction === 'france-togo') {
       sendCurrency = 'EUR';

@@ -111,10 +111,11 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
         onSuccess();
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Une erreur est survenue";
       toast({
         title: "Erreur d'inscription",
-        description: error.message || "Une erreur est survenue",
+        description: message,
         variant: "destructive"
       });
     } finally {
@@ -159,12 +160,13 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
 
       onSuccess();
 
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Une erreur est survenue";
       toast({
         title: "Erreur de connexion",
-        description: error.message === 'Invalid login credentials' 
+        description: message === 'Invalid login credentials'
           ? "Email ou mot de passe incorrect" 
-          : error.message || "Une erreur est survenue",
+          : message,
         variant: "destructive"
       });
     } finally {
