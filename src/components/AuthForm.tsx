@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { PhoneInput } from 'react-international-phone';
 import 'react-international-phone/style.css';
+import { getStoredReferralCode, persistReferralCode } from '@/lib/dynamik';
 
 interface AuthFormProps {
   onSuccess: () => void;
@@ -19,6 +20,47 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const referralCode = getStoredReferralCode();
+
+  const applyReferralAfterSignup = async (userId: string, phone: string) => {
+    const code = persistReferralCode(referralCode);
+    if (!code) return;
+
+    // Lien de parrainage: crée une ligne visible côté super-admin.
+    const { error: referralError } = await supabase.rpc('record_referral_interest', {
+      _referral_code: code,
+      _godchild_id: userId,
+      _godchild_phone: phone,
+      _source: 'signup',
+      _country_from: null,
+      _country_to: null,
+    });
+
+    if (referralError) {
+      console.info('Referral tracking fallback skipped:', referralError.message);
+    }
+
+    // Code promo lié: marque le code comme utilisé par ce nouvel inscrit, si le code existe dans promo_codes.
+    const { data: promo } = await supabase
+      .from('promo_codes')
+      .select('id, current_uses')
+      .eq('code', code)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (!promo) return;
+
+    const { error: usageError } = await supabase
+      .from('promo_code_usage')
+      .insert({ user_id: userId, promo_code_id: promo.id });
+
+    if (!usageError) {
+      await supabase
+        .from('promo_codes')
+        .update({ current_uses: (promo.current_uses || 0) + 1 })
+        .eq('id', promo.id);
+    }
+  };
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -103,6 +145,8 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
           console.error('Profile creation error:', profileError);
         }
 
+        await applyReferralAfterSignup(authData.user.id, sanitizedPhone);
+
         toast({
           title: "Inscription réussie !",
           description: "Vérifiez votre email pour confirmer votre compte",
@@ -182,7 +226,13 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="signin" className="w-full">
+        {referralCode && (
+          <div className="mb-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-800 dark:text-emerald-200">
+            Code parrain détecté : <span className="font-bold">{referralCode}</span>. Il sera appliqué automatiquement à votre inscription.
+          </div>
+        )}
+
+        <Tabs defaultValue={referralCode ? "signup" : "signin"} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="signin">Connexion</TabsTrigger>
             <TabsTrigger value="signup">Inscription</TabsTrigger>

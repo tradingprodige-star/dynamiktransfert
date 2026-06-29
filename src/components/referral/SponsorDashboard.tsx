@@ -11,6 +11,7 @@ import {
   Flame, Star, Crown, Zap, Award
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { makeReferralLink, whatsappUrl } from '@/lib/dynamik';
 
 interface SponsorData {
   id: string;
@@ -123,7 +124,7 @@ const SponsorDashboard = ({ sponsor, onBack }: SponsorDashboardProps) => {
   };
 
   const shareLink = async () => {
-    const shareUrl = `https://dynamiktransfert.lovable.app/?ref=${sponsor.referral_code}`;
+    const shareUrl = makeReferralLink(sponsor.referral_code);
     const shareText = `🎁 Rejoins DYNAMIK Transfert avec mon code parrain ${sponsor.referral_code} et bénéficie d'avantages exclusifs !`;
 
     if (navigator.share) {
@@ -137,8 +138,8 @@ const SponsorDashboard = ({ sponsor, onBack }: SponsorDashboardProps) => {
         // User cancelled
       }
     } else {
-      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + '\n' + shareUrl)}`;
-      window.open(whatsappUrl, '_blank');
+      const shareWhatsAppUrl = `https://wa.me/?text=${encodeURIComponent(shareText + '\n' + shareUrl)}`;
+      window.open(shareWhatsAppUrl, '_blank');
     }
   };
 
@@ -162,11 +163,10 @@ const SponsorDashboard = ({ sponsor, onBack }: SponsorDashboardProps) => {
 
 Merci de confirmer ma demande.`;
 
-    const whatsappUrl = `https://wa.me/22899771419?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    window.open(whatsappUrl(message), '_blank');
   };
 
-  const referralLink = `https://dynamiktransfert.lovable.app/?ref=${sponsor.referral_code}`;
+  const referralLink = makeReferralLink(sponsor.referral_code);
 
   const getStatusBadge = (status: string) => {
     switch (status) {

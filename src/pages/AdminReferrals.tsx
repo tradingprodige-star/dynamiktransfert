@@ -32,7 +32,7 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   Users, TrendingUp, CheckCircle, Clock, XCircle, 
   Search, Download, RefreshCw, ArrowLeft, Shield,
-  Crown, Award, Wallet, LogOut
+  Crown, Award, Wallet, LogOut, TicketPercent
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -71,12 +71,30 @@ interface Sponsor {
   created_at: string;
 }
 
+interface PromoUsage {
+  id: string;
+  used_at: string;
+  user_id: string;
+  promo_code_id: string;
+  promo_codes?: {
+    code: string;
+    type: string;
+    discount_percentage: number;
+    ambassador_name: string | null;
+    current_uses: number;
+  };
+  users?: {
+    phone_number: string;
+  };
+}
+
 interface Stats {
   totalSponsors: number;
   totalClicks: number;
   totalValidated: number;
   totalPoints: number;
   totalVolume: number;
+  totalPromoUses: number;
 }
 
 const LEVEL_COLORS: Record<string, string> = {
@@ -98,12 +116,13 @@ const LEVEL_EMOJIS: Record<string, string> = {
 const AdminReferrals = () => {
   const [referrals, setReferrals] = useState<ReferralClick[]>([]);
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
-  const [stats, setStats] = useState<Stats>({ totalSponsors: 0, totalClicks: 0, totalValidated: 0, totalPoints: 0, totalVolume: 0 });
+  const [promoUsages, setPromoUsages] = useState<PromoUsage[]>([]);
+  const [stats, setStats] = useState<Stats>({ totalSponsors: 0, totalClicks: 0, totalValidated: 0, totalPoints: 0, totalVolume: 0, totalPromoUses: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [levelFilter, setLevelFilter] = useState('all');
-  const [activeTab, setActiveTab] = useState<'referrals' | 'sponsors'>('referrals');
+  const [activeTab, setActiveTab] = useState<'referrals' | 'sponsors' | 'promo'>('referrals');
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [validateDialog, setValidateDialog] = useState<{ open: boolean; click: ReferralClick | null }>({ open: false, click: null });
@@ -204,6 +223,33 @@ const AdminReferrals = () => {
         setSponsors(sponsorsData as Sponsor[]);
       }
 
+      // Charger les utilisations de codes promo avec les profils utilisateurs
+      const { data: promoUsageData, error: promoUsageError } = await supabase
+        .from('promo_code_usage')
+        .select(`
+          id,
+          used_at,
+          user_id,
+          promo_code_id,
+          promo_codes (
+            code,
+            type,
+            discount_percentage,
+            ambassador_name,
+            current_uses
+          ),
+          users (
+            phone_number
+          )
+        `)
+        .order('used_at', { ascending: false });
+
+      if (promoUsageError) {
+        console.info('Promo usage loading skipped:', promoUsageError.message);
+      } else {
+        setPromoUsages((promoUsageData || []) as PromoUsage[]);
+      }
+
       // Calculer les stats
       const totalSponsors = sponsorsData?.length || 0;
       const totalPoints = sponsorsData?.reduce((sum, s) => sum + (s.total_points || 0), 0) || 0;
@@ -211,7 +257,9 @@ const AdminReferrals = () => {
       const totalClicks = clicksData?.length || 0;
       const totalValidated = clicksData?.filter(c => c.transfer_status === 'validated').length || 0;
 
-      setStats({ totalSponsors, totalClicks, totalValidated, totalPoints, totalVolume });
+      const totalPromoUses = promoUsageData?.length || 0;
+
+      setStats({ totalSponsors, totalClicks, totalValidated, totalPoints, totalVolume, totalPromoUses });
 
     } catch (error: unknown) {
       console.error('Error loading data:', error);
@@ -307,7 +355,7 @@ const AdminReferrals = () => {
       a.href = url;
       a.download = `dynamik-referrals-${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
-    } else {
+    } else if (activeTab === 'sponsors') {
       const headers = ['Tel', 'Code', 'Niveau', 'Points', 'Filleuls', 'Validés', 'Volume Mensuel', 'Volume Cumulé', 'Date inscription'];
       const rows = filteredSponsors.map(s => [
         s.phone_number,
@@ -327,6 +375,23 @@ const AdminReferrals = () => {
       const a = document.createElement('a');
       a.href = url;
       a.download = `dynamik-sponsors-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+    } else {
+      const headers = ['Date', 'Code promo', 'Type', 'Partenaire', 'Utilisateur', 'Réduction'];
+      const rows = filteredPromoUsages.map((usage) => [
+        new Date(usage.used_at).toLocaleDateString('fr-FR'),
+        usage.promo_codes?.code || '',
+        usage.promo_codes?.type || '',
+        usage.promo_codes?.ambassador_name || '',
+        usage.users?.phone_number || usage.user_id,
+        usage.promo_codes?.discount_percentage ? `${usage.promo_codes.discount_percentage}%` : '',
+      ]);
+      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `dynamik-codes-promo-${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
     }
   };
@@ -350,6 +415,19 @@ const AdminReferrals = () => {
     const matchesLevel = levelFilter === 'all' || s.current_level === levelFilter;
     
     return matchesSearch && matchesLevel;
+  });
+
+  const filteredPromoUsages = promoUsages.filter((usage) => {
+    const code = usage.promo_codes?.code || '';
+    const partner = usage.promo_codes?.ambassador_name || '';
+    const phone = usage.users?.phone_number || '';
+
+    return (
+      code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      partner.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      phone.includes(searchTerm) ||
+      usage.user_id.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   });
 
   const formatVolume = (amount: number) => {
@@ -433,7 +511,7 @@ const AdminReferrals = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
           <Card>
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
@@ -489,6 +567,17 @@ const AdminReferrals = () => {
               </div>
             </CardContent>
           </Card>
+          <Card>
+            <CardContent className="pt-4">
+              <div className="flex items-center gap-3">
+                <TicketPercent className="w-8 h-8 text-violet-600" />
+                <div>
+                  <p className="text-2xl font-bold">{stats.totalPromoUses}</p>
+                  <p className="text-xs text-muted-foreground">Codes utilisés</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Tabs */}
@@ -505,6 +594,12 @@ const AdminReferrals = () => {
           >
             Parrains ({sponsors.length})
           </Button>
+          <Button
+            variant={activeTab === 'promo' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('promo')}
+          >
+            Codes promo ({promoUsages.length})
+          </Button>
         </div>
 
         {/* Filters */}
@@ -512,7 +607,7 @@ const AdminReferrals = () => {
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder={activeTab === 'referrals' ? "Rechercher par code, téléphone..." : "Rechercher par téléphone, code..."}
+              placeholder={activeTab === 'promo' ? "Rechercher code, partenaire, utilisateur..." : activeTab === 'referrals' ? "Rechercher par code, téléphone..." : "Rechercher par téléphone, code..."}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -531,7 +626,7 @@ const AdminReferrals = () => {
                 <SelectItem value="rejected">Non aboutis</SelectItem>
               </SelectContent>
             </Select>
-          ) : (
+          ) : activeTab === 'sponsors' ? (
             <Select value={levelFilter} onValueChange={setLevelFilter}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Niveau" />
@@ -545,7 +640,7 @@ const AdminReferrals = () => {
                 <SelectItem value="elite">🏆 Elite</SelectItem>
               </SelectContent>
             </Select>
-          )}
+          ) : null}
         </div>
 
         {/* Content */}
@@ -645,7 +740,7 @@ const AdminReferrals = () => {
               )}
             </CardContent>
           </Card>
-        ) : (
+        ) : activeTab === 'sponsors' ? (
           <Card>
             <CardContent className="p-0">
               <Table>
@@ -692,6 +787,52 @@ const AdminReferrals = () => {
               {filteredSponsors.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
                   Aucun parrain trouvé
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Code promo</TableHead>
+                    <TableHead>Partenaire / parrain</TableHead>
+                    <TableHead>Utilisateur inscrit</TableHead>
+                    <TableHead>Réduction</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredPromoUsages.map((usage) => (
+                    <TableRow key={usage.id}>
+                      <TableCell className="text-sm">
+                        {new Date(usage.used_at).toLocaleDateString('fr-FR')}
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium">{usage.promo_codes?.code || 'Code supprimé'}</p>
+                          <p className="text-xs text-muted-foreground">{usage.promo_codes?.type || '-'}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>{usage.promo_codes?.ambassador_name || '—'}</TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="text-sm">{usage.users?.phone_number || 'Profil non lié'}</p>
+                          <p className="text-xs text-muted-foreground">{usage.user_id}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge>{usage.promo_codes?.discount_percentage || 0}%</Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              {filteredPromoUsages.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  Aucune utilisation de code promo trouvée
                 </div>
               )}
             </CardContent>

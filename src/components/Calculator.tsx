@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { supabase } from "@/integrations/supabase/client";
-import { PARTNER_CODES, whatsappUrl } from "@/lib/dynamik";
+import { getStoredReferralCode, PARTNER_CODES, persistReferralCode, whatsappUrl } from "@/lib/dynamik";
 
 // Génération d'un numéro de référence unique
 const generateReferenceNumber = (): string => {
@@ -92,11 +92,9 @@ const Calculator = () => {
       }
     };
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const referralCode = urlParams.get('ref') || localStorage.getItem('referralCode') || '';
+    const referralCode = persistReferralCode(getStoredReferralCode());
     if (referralCode) {
-      localStorage.setItem('referralCode', referralCode.toUpperCase());
-      setPromoCode(referralCode.toUpperCase());
+      setPromoCode(referralCode);
     }
 
     fetchPromoCodes();
@@ -336,7 +334,7 @@ const Calculator = () => {
       const matchedPromo = promoCodes.find(p => p.code.toUpperCase() === promoCode.toUpperCase());
       
       if (matchedPromo) {
-        if (matchedPromo.type === "welcome") {
+        if (matchedPromo.type === "welcome" || matchedPromo.type === "event") {
           baseFeeRate = 0;
           promoEffect = `Code BIENVENUE : 0% de frais`;
         } else if (matchedPromo.type === "ambassador") {
@@ -344,6 +342,10 @@ const Calculator = () => {
           cashback = Math.round(feesAmount * (matchedPromo.discount_percentage / 100));
           promoEffect = `Cashback ambassadeur : ${matchedPromo.discount_percentage}% des frais`;
         }
+      } else if (promoCode.toUpperCase().startsWith("DYNA-")) {
+        const feesAmount = amountNum * baseFeeRate;
+        cashback = Math.round(feesAmount * 0.1);
+        promoEffect = "Cashback parrainage : 10% des frais";
       }
     }
 
@@ -364,7 +366,27 @@ const Calculator = () => {
     });
   };
 
-  const sendToWhatsApp = () => {
+  const recordReferralUsage = async (referralCode: string) => {
+    if (!referralCode || !result) return;
+
+    const countryFrom = direction.includes("france") ? "france" : destination || null;
+    const countryTo = direction.includes("europe") ? "europe" : destinationCountry || (direction === "france-togo" ? "togo" : null);
+
+    const { error } = await supabase.rpc('record_referral_interest', {
+      _referral_code: referralCode,
+      _godchild_id: result.referenceNumber,
+      _godchild_phone: null,
+      _source: 'whatsapp_request',
+      _country_from: countryFrom,
+      _country_to: countryTo,
+    });
+
+    if (error) {
+      console.info('Referral tracking unavailable:', error.message);
+    }
+  };
+
+  const sendToWhatsApp = async () => {
     if (!result) return;
     
     let directionText = "";
@@ -436,8 +458,8 @@ const Calculator = () => {
     }
     
     // Récupérer le code parrain depuis l'URL ou localStorage
-    const urlParams = new URLSearchParams(window.location.search);
-    const referralCode = urlParams.get('ref') || localStorage.getItem('referralCode') || '';
+    const referralCode = getStoredReferralCode();
+    await recordReferralUsage(referralCode);
     
     let message = `🎄✨ DYNAMIK Transfert - Demande de transfert ✨🎄
 

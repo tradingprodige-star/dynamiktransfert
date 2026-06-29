@@ -401,6 +401,17 @@ export type Database = {
         Returns: number
       }
       generate_referral_code: { Args: never; Returns: string }
+      record_referral_interest: {
+        Args: {
+          _referral_code: string
+          _godchild_id: string
+          _godchild_phone?: string | null
+          _source?: string | null
+          _country_from?: string | null
+          _country_to?: string | null
+        }
+        Returns: boolean
+      }
       get_level_bonus_percentage: {
         Args: { _monthly_volume: number }
         Returns: number

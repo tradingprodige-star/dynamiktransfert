@@ -107,6 +107,17 @@ Ce lien remplit automatiquement le code promo dans le calculateur. Partagez-le a
 
         setNewSponsor(newData as SponsorData);
         
+        // Créer aussi le code promo lié au lien de parrainage (si la politique DB le permet).
+        await supabase
+          .from('promo_codes')
+          .upsert({
+            code: codeData,
+            type: 'ambassador',
+            discount_percentage: 10,
+            ambassador_name: phone,
+            is_active: true,
+          }, { onConflict: 'code' });
+
         // Envoyer la notification WhatsApp
         sendWhatsAppConfirmation(phone, codeData);
         

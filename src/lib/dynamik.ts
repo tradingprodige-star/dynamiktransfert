@@ -15,7 +15,24 @@ export const getReferralBaseUrl = () => {
   return window.location.origin || DYNAMIK_CONTACTS.productionUrl;
 };
 
-export const makeReferralLink = (code: string) => `${getReferralBaseUrl()}/?ref=${encodeURIComponent(code)}`;
+export const makeReferralLink = (code: string) => `${getReferralBaseUrl()}/?ref=${encodeURIComponent(normalizeReferralCode(code))}`;
+
+export const normalizeReferralCode = (code: string | null | undefined) =>
+  (code || "").trim().toUpperCase();
+
+export const getStoredReferralCode = () => {
+  if (typeof window === "undefined") return "";
+  const urlParams = new URLSearchParams(window.location.search);
+  return normalizeReferralCode(urlParams.get("ref") || localStorage.getItem("referralCode"));
+};
+
+export const persistReferralCode = (code: string | null | undefined) => {
+  const normalized = normalizeReferralCode(code);
+  if (typeof window !== "undefined" && normalized) {
+    localStorage.setItem("referralCode", normalized);
+  }
+  return normalized;
+};
 
 export const qrCodeUrl = (payload: string) =>
   `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=${encodeURIComponent(payload)}`;
