@@ -2,11 +2,12 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useCursorMagnetic } from "@/hooks/useCursorMagnetic";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import { ArrowRight, Globe2, ShieldCheck, Smartphone, Wallet } from "lucide-react";
+import { ArrowRight, Globe2, Menu, ShieldCheck, Smartphone, Wallet, X } from "lucide-react";
+import { navItems, whatsappUrl } from "@/lib/dynamik";
 
 const Header = () => {
   const scrollRevealRef = useScrollReveal();
@@ -15,6 +16,7 @@ const Header = () => {
   const magneticRef3 = useCursorMagnetic(0.3);
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -22,7 +24,7 @@ const Header = () => {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (_event, session) => {
         setUser(session?.user ?? null);
       }
     );
@@ -31,15 +33,12 @@ const Header = () => {
   }, []);
 
   const scrollToCalculator = () => {
-    document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const scrollToCryptoPayment = () => {
-    navigate('/crypto');
+    setMobileOpen(false);
+    document.getElementById("calculator")?.scrollIntoView({ behavior: "smooth" });
   };
 
   const openWhatsApp = () => {
-    window.open('https://wa.me/22899771419?text=Bonjour%20DYNAMIK%20TRANSFERT', '_blank');
+    window.open(whatsappUrl("Bonjour DYNAMIK TRANSFERT, je souhaite être accompagné pour un transfert."), "_blank");
   };
 
   return (
@@ -55,21 +54,48 @@ const Header = () => {
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
 
       <div className="container relative z-10 mx-auto px-4 py-8">
-        <nav className="mb-16 flex items-center justify-between rounded-full border border-white/10 bg-white/10 px-4 py-3 shadow-2xl backdrop-blur-xl md:px-6">
-          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-3">
+        <nav className="mb-16 flex items-center justify-between rounded-[2rem] border border-white/10 bg-white/10 px-4 py-3 shadow-2xl backdrop-blur-xl md:rounded-full md:px-6">
+          <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-base font-black text-matte-black shadow-financial">D</span>
             <span className="hidden text-sm font-semibold tracking-[0.24em] text-white/90 sm:inline">DYNAMIK TRANSFERT</span>
           </button>
-          <div className="hidden items-center gap-6 text-sm text-white/70 lg:flex">
+          <div className="hidden items-center gap-5 text-sm text-white/70 lg:flex">
             <button onClick={scrollToCalculator} className="transition hover:text-white">Calculateur</button>
-            <button onClick={scrollToCryptoPayment} className="transition hover:text-white">Crypto → FCFA</button>
-            <button onClick={() => navigate('/parrainage')} className="transition hover:text-white">Parrainage</button>
-            <button onClick={() => navigate('/a-propos')} className="transition hover:text-white">À propos</button>
+            <button onClick={() => navigate("/crypto")} className="transition hover:text-white">Crypto → FCFA</button>
+            <button onClick={() => navigate("/partenariats")} className="transition hover:text-white">Partenariats</button>
+            <button onClick={() => navigate("/a-propos")} className="transition hover:text-white">À propos</button>
+            <button onClick={() => navigate("/termes")} className="transition hover:text-white">Termes</button>
           </div>
-          <Button onClick={openWhatsApp} className="rounded-full bg-white text-matte-black hover:bg-white/90">
-            WhatsApp
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button onClick={openWhatsApp} className="hidden rounded-full bg-white text-matte-black hover:bg-white/90 sm:inline-flex">
+              WhatsApp
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => setMobileOpen((value) => !value)}
+              className="rounded-full border-white/20 bg-white/10 text-white hover:bg-white hover:text-slate-950 lg:hidden"
+              aria-label="Ouvrir le menu"
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
         </nav>
+
+        {mobileOpen && (
+          <div className="mb-8 rounded-[1.75rem] border border-white/10 bg-slate-950/90 p-4 shadow-2xl backdrop-blur-xl lg:hidden">
+            <div className="grid gap-2">
+              <button onClick={scrollToCalculator} className="rounded-2xl px-4 py-3 text-left text-white/80 hover:bg-white/10 hover:text-white">Calculateur</button>
+              {navItems.filter((item) => item.to !== "/").map((item) => (
+                <Link key={item.to} to={item.to} onClick={() => setMobileOpen(false)} className="rounded-2xl px-4 py-3 text-white/80 hover:bg-white/10 hover:text-white">
+                  {item.label}
+                </Link>
+              ))}
+              <button onClick={openWhatsApp} className="rounded-2xl bg-emerald-400 px-4 py-3 text-left font-semibold text-slate-950">WhatsApp immédiat</button>
+            </div>
+          </div>
+        )}
 
         <div className="grid min-h-[72vh] items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="scroll-reveal max-w-4xl" ref={scrollRevealRef}>
@@ -100,7 +126,7 @@ const Header = () => {
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
             >
-              DYNAMIK TRANSFERT modernise les transferts FCFA, les échanges USDT et les paiements Mobile Money avec une expérience rapide, claire et premium.
+              DYNAMIK TRANSFERT accompagne les transferts FCFA, les échanges USDT et les paiements Mobile Money avec un parcours clair, un suivi WhatsApp et une validation humaine.
             </motion.p>
 
             <motion.div
@@ -115,18 +141,18 @@ const Header = () => {
                 </Button>
               </motion.div>
               <motion.div ref={magneticRef2} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
-                <Button size="xl" onClick={scrollToCryptoPayment} className="w-full rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-xl hover:bg-white/20 sm:w-auto">
+                <Button size="xl" onClick={() => navigate("/crypto")} className="w-full rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-xl hover:bg-white/20 sm:w-auto">
                   Crypto vers FCFA
                 </Button>
               </motion.div>
               <motion.div ref={magneticRef3} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
                 {user ? (
-                  <Button size="xl" variant="outline" onClick={() => navigate('/promo')} className="w-full rounded-full border-white/25 bg-transparent text-white hover:bg-white hover:text-matte-black sm:w-auto">
+                  <Button size="xl" variant="outline" onClick={() => navigate("/promo")} className="w-full rounded-full border-white/25 bg-transparent text-white hover:bg-white hover:text-matte-black sm:w-auto">
                     Mes codes promo
                   </Button>
                 ) : (
-                  <Button size="xl" variant="outline" onClick={() => navigate('/auth')} className="w-full rounded-full border-white/25 bg-transparent text-white hover:bg-white hover:text-matte-black sm:w-auto">
-                    Se connecter
+                  <Button size="xl" variant="outline" onClick={() => navigate("/partenariats")} className="w-full rounded-full border-white/25 bg-transparent text-white hover:bg-white hover:text-matte-black sm:w-auto">
+                    Partenariats
                   </Button>
                 )}
               </motion.div>
@@ -139,9 +165,9 @@ const Header = () => {
               transition={{ delay: 0.85, duration: 0.7 }}
             >
               {[
-                ['< 10 min', 'Estimation rapide'],
-                ['24h/7', 'Support WhatsApp'],
-                ['USDT', 'Achat & rachat'],
+                ["< 10 min", "Estimation rapide"],
+                ["24h/7", "Support WhatsApp"],
+                ["USDT", "BMIPAY"],
               ].map(([value, label]) => (
                 <div key={value} className="rounded-3xl border border-white/10 bg-slate-950/35 p-4 backdrop-blur-xl shadow-[0_16px_50px_rgba(0,0,0,0.22)]">
                   <p className="text-2xl font-semibold text-primary">{value}</p>
@@ -161,7 +187,7 @@ const Header = () => {
             <div className="relative overflow-hidden rounded-[2.5rem] border border-white/15 bg-slate-950/45 p-6 shadow-2xl backdrop-blur-2xl">
               <div className="mb-8 flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-white/50">Flux intelligent</p>
+                  <p className="text-sm text-white/50">Flux de transfert</p>
                   <p className="text-xl font-semibold">Dynamik Pay</p>
                 </div>
                 <div className="rounded-2xl bg-primary p-3 text-matte-black shadow-[0_14px_40px_rgba(245,187,0,0.18)]">
@@ -171,9 +197,9 @@ const Header = () => {
 
               <div className="space-y-4">
                 {[
-                  { icon: Globe2, title: 'France / CEMAC / BECEAO', text: 'Choix de la direction' },
-                  { icon: Smartphone, title: 'Mobile Money', text: 'T-Money, Moov, Wave, MTN, Orange' },
-                  { icon: ShieldCheck, title: 'Validation DYNAMIK', text: 'Référence et suivi WhatsApp' },
+                  { icon: Globe2, title: "France / CEMAC / BECEAO", text: "Choix de la direction" },
+                  { icon: Smartphone, title: "Mobile Money", text: "T-Money, Moov, Wave, MTN, Orange" },
+                  { icon: ShieldCheck, title: "Validation DYNAMIK", text: "Référence et suivi WhatsApp" },
                 ].map((item, index) => (
                   <motion.div
                     key={item.title}

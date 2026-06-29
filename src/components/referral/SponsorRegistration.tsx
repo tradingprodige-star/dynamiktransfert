@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Gift, Users, TrendingUp, Copy, Share2, Check, Loader2 } from 'lucide-react';
 import { PhoneInput } from 'react-international-phone';
 import 'react-international-phone/style.css';
+import { makeReferralLink } from '@/lib/dynamik';
 
 interface SponsorData {
   id: string;
@@ -44,11 +45,9 @@ Votre inscription au programme de parrainage est confirmée.
 📌 Votre code parrain : ${referralCode}
 
 🔗 Votre lien de parrainage :
-https://dynamiktransfert.lovable.app/?ref=${referralCode}
+${makeReferralLink(referralCode)}
 
-Partagez ce lien avec vos proches et gagnez des points à chaque transfert effectué !
-
-✨ DYNAMIK TRANSFERT - Bonne et heureuse année 2026 !`;
+Ce lien remplit automatiquement le code promo dans le calculateur. Partagez-le avec vos proches et gagnez des points à chaque transfert validé.`;
     
     const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -142,7 +141,7 @@ Partagez ce lien avec vos proches et gagnez des points à chaque transfert effec
   const shareLink = async () => {
     if (!newSponsor) return;
     
-    const shareUrl = `https://dynamiktransfert.lovable.app/?ref=${newSponsor.referral_code}`;
+    const shareUrl = makeReferralLink(newSponsor.referral_code);
     const shareText = `🎁 Rejoins DYNAMIK Transfert avec mon code parrain ${newSponsor.referral_code} et bénéficie d'avantages exclusifs sur tes transferts d'argent !`;
 
     if (navigator.share) {
@@ -163,7 +162,7 @@ Partagez ce lien avec vos proches et gagnez des points à chaque transfert effec
   };
 
   if (newSponsor) {
-    const referralLink = `https://dynamiktransfert.lovable.app/?ref=${newSponsor.referral_code}`;
+    const referralLink = makeReferralLink(newSponsor.referral_code);
 
     return (
       <motion.div

@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { supabase } from "@/integrations/supabase/client";
+import { PARTNER_CODES, whatsappUrl } from "@/lib/dynamik";
 
 // Génération d'un numéro de référence unique
 const generateReferenceNumber = (): string => {
@@ -37,7 +38,15 @@ const Calculator = () => {
     type: string;
     discount_percentage: number;
     ambassador_name?: string;
-  }>>([]);
+  }>>(
+    PARTNER_CODES.map((partner) => ({
+      id: partner.code,
+      code: partner.code,
+      type: partner.type,
+      discount_percentage: partner.discount,
+      ambassador_name: partner.name,
+    }))
+  );
   const [result, setResult] = useState<{
     totalToPay: number;
     amountReceived: number;
@@ -59,16 +68,36 @@ const Calculator = () => {
         
         if (error) {
           console.error('Error fetching promo codes:', error);
-          setPromoCodes([]);
           return;
         }
         
-        setPromoCodes(data || []);
+        if (data?.length) {
+          const fallbackCodes = PARTNER_CODES.map((partner) => ({
+            id: partner.code,
+            code: partner.code,
+            type: partner.type,
+            discount_percentage: partner.discount,
+            ambassador_name: partner.name,
+          }));
+          const merged = [...data];
+          fallbackCodes.forEach((fallback) => {
+            if (!merged.some((item) => item.code.toUpperCase() === fallback.code.toUpperCase())) {
+              merged.push(fallback);
+            }
+          });
+          setPromoCodes(merged);
+        }
       } catch (error) {
         console.error('Error fetching promo codes:', error);
-        setPromoCodes([]);
       }
     };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const referralCode = urlParams.get('ref') || localStorage.getItem('referralCode') || '';
+    if (referralCode) {
+      localStorage.setItem('referralCode', referralCode.toUpperCase());
+      setPromoCode(referralCode.toUpperCase());
+    }
 
     fetchPromoCodes();
   }, []);
@@ -464,8 +493,7 @@ Merci de votre confiance !
 🔖 Conservez votre référence : ${result.referenceNumber}`;
 
     const finalMessage = `Bonjour DYNAMIK TRANSFERT, ${message}`;
-    const whatsappUrl = `https://wa.me/22899771419?text=${encodeURIComponent(finalMessage)}`;
-    window.open(whatsappUrl, '_blank');
+    window.open(whatsappUrl(finalMessage), '_blank');
   };
 
   const sendCustomRequest = () => {
@@ -481,8 +509,7 @@ ${customRequest}
 
 Merci de me contacter pour plus d'informations.`;
 
-    const whatsappUrl = `https://wa.me/22899771419?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    window.open(whatsappUrl(message), '_blank');
   };
 
   // Reset des champs dépendants lors du changement de direction

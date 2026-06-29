@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BMIPAY_USDT_NOTICE, qrCodeUrl, whatsappUrl } from "@/lib/dynamik";
 
 const countries = [
   { value: "togo", label: "Togo", prefix: "+228", networks: ["T-Money", "Moov Money"] },
@@ -63,9 +64,9 @@ const CryptoPayment = () => {
     const safeReference = reference || generatePaymentReference();
     setReference(safeReference);
 
-    const message = `Bonjour DYNAMIK TRANSFERT, je veux créer un paiement crypto vers Mobile Money.\n\nRéférence: ${safeReference}\nPays bénéficiaire: ${selectedCountry.label}\nNuméro bénéficiaire: ${selectedCountry.prefix} ${safePhone}\nRéseau Mobile Money: ${network}\nMontant à recevoir: ${beneficiaryReceives.toLocaleString("fr-FR")} FCFA\nFrais estimés: ${serviceFee.toLocaleString("fr-FR")} FCFA\nCrypto utilisée: ${selectedCrypto.label}\nRéseau crypto: ${selectedCrypto.network}\nMontant crypto estimé: ${cryptoAmount.toFixed(selectedCrypto.value.includes("btc") ? 8 : 2)} ${selectedCrypto.value.includes("btc") ? "BTC" : "USDT"}\n\nMerci de me générer l'adresse/QR de paiement et confirmer le taux final.`;
+    const message = `Bonjour DYNAMIK TRANSFERT, je veux créer un paiement crypto vers Mobile Money.\n\nRéférence: ${safeReference}\nPays bénéficiaire: ${selectedCountry.label}\nNuméro bénéficiaire: ${selectedCountry.prefix} ${safePhone}\nRéseau Mobile Money: ${network}\nMontant à recevoir: ${beneficiaryReceives.toLocaleString("fr-FR")} FCFA\nFrais estimés: ${serviceFee.toLocaleString("fr-FR")} FCFA\nCrypto utilisée: ${selectedCrypto.label}\nRéseau crypto: ${selectedCrypto.network}\nMontant crypto estimé: ${cryptoAmount.toFixed(selectedCrypto.value.includes("btc") ? 8 : 2)} ${selectedCrypto.value.includes("btc") ? "BTC" : "USDT"}\n\nUSDT propulsé par la technologie de BMIPAY. Merci de m'envoyer immédiatement l'adresse correcte, le réseau exact et le QR Code de paiement.`;
 
-    window.open(`https://wa.me/22899771419?text=${encodeURIComponent(message)}`, "_blank");
+    window.open(whatsappUrl(message), "_blank");
   };
 
   const copyReference = () => {
@@ -101,7 +102,7 @@ const CryptoPayment = () => {
                 Payez en crypto. Le bénéficiaire reçoit en FCFA.
               </h2>
               <p className="max-w-2xl text-lg leading-8 text-white/70">
-                Une expérience inspirée des meilleurs tunnels crypto-to-cash : choisissez le pays, le réseau Mobile Money, le montant à recevoir et générez une demande de paiement prête à valider par l'équipe DYNAMIK.
+                USDT propulsé par la technologie de BMIPAY. Choisissez le pays, le réseau Mobile Money et le montant à recevoir ; la demande s’ouvre immédiatement sur WhatsApp pour confirmer l’adresse, le réseau et le QR Code.
               </p>
             </div>
 
@@ -245,6 +246,19 @@ const CryptoPayment = () => {
                     <button onClick={copyReference} className="inline-flex items-center gap-1 text-emerald-300 hover:text-emerald-200">
                       <Copy className="h-4 w-4" /> Copier
                     </button>
+                  </div>
+                  <div className="mt-4 grid gap-4 rounded-2xl border border-white/10 bg-white/[0.06] p-4 sm:grid-cols-[auto_1fr]">
+                    <img
+                      src={qrCodeUrl(`${selectedCrypto.label} | ${selectedCrypto.network} | ${reference || currentReference}`)}
+                      alt="QR Code référence paiement USDT"
+                      className="h-24 w-24 rounded-xl bg-white p-2"
+                    />
+                    <div className="text-sm text-white/70">
+                      <p className="font-semibold text-white">{BMIPAY_USDT_NOTICE.title}</p>
+                      <p className="mt-1">Réseau choisi : <span className="text-emerald-300">{selectedCrypto.network}</span></p>
+                      <p className="mt-1">Adresse USDT : confirmée sur WhatsApp avant paiement.</p>
+                      <p className="mt-1 text-xs text-white/45">Ne payez qu’après confirmation du réseau et de l’adresse par DYNAMIK.</p>
+                    </div>
                   </div>
                 </div>
 

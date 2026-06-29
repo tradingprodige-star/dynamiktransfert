@@ -15,6 +15,8 @@ import Offers from "./pages/Offers";
 import About from "./pages/About";
 import FaqPage from "./pages/FaqPage";
 import Complaints from "./pages/Complaints";
+import Partnerships from "./pages/Partnerships";
+import Terms from "./pages/Terms";
 
 const queryClient = new QueryClient();
 
@@ -29,8 +31,10 @@ const App = () => (
           <Route path="/crypto" element={<Crypto />} />
           <Route path="/parrainage" element={<Referral />} />
           <Route path="/ambassadeurs" element={<Ambassadors />} />
+          <Route path="/partenariats" element={<Partnerships />} />
           <Route path="/offre" element={<Offers />} />
           <Route path="/a-propos" element={<About />} />
+          <Route path="/termes" element={<Terms />} />
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/reclamations" element={<Complaints />} />
           <Route path="/auth" element={<Auth />} />

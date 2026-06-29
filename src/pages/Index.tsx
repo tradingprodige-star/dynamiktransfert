@@ -20,10 +20,10 @@ const serviceSections = [
   },
   {
     id: "section-parrainage",
-    to: "/parrainage",
+    to: "/partenariats",
     eyebrow: "Parrainage",
     title: "Transformez vos recommandations en récompenses.",
-    text: "Une page dédiée pour créer son code parrain, suivre les points, comprendre les paliers et débloquer les bonus.",
+    text: "Une page partenariats permet de créer son code parrain, partager son lien et comprendre les paliers.",
     icon: Share2,
     stat: "150 pts",
     accent: "violet",
@@ -31,10 +31,10 @@ const serviceSections = [
   },
   {
     id: "section-ambassadeurs",
-    to: "/ambassadeurs",
-    eyebrow: "Ambassadeurs",
+    to: "/partenariats",
+    eyebrow: "Partenariats",
     title: "Codes partenaires et influenceurs dans un espace propre.",
-    text: "Les codes promo restent disponibles, mais sur une page organisée avec un design plus sérieux et des actions simples.",
+    text: "Les codes promo, liens de parrainage et demandes partenaires sont réunis dans une seule page sérieuse.",
     icon: Users,
     stat: "Codes actifs",
     accent: "slate",
@@ -45,7 +45,7 @@ const serviceSections = [
     to: "/offre",
     eyebrow: "Offres & USDT",
     title: "Promos et services USDT sans lumière agressive.",
-    text: "Le code BIENVENUE et le service de rachat USDT sont séparés dans une page sombre, lisible et plus premium.",
+    text: "Le code BIENVENUE et le service de rachat USDT sont réunis sur une page sombre, claire et directe.",
     icon: BadgePercent,
     stat: "565 F/USDT",
     accent: "emerald",
@@ -56,7 +56,7 @@ const serviceSections = [
     to: "/a-propos",
     eyebrow: "À propos",
     title: "L’histoire et la mission de DYNAMIK à part.",
-    text: "La partie storytelling ne surcharge plus l’accueil. Elle existe toujours dans une page dédiée, plus confortable à lire.",
+    text: "L’histoire de DYNAMIK est disponible sur une page dédiée, facile à lire.",
     icon: Info,
     stat: "2020 → 2025",
     accent: "violet",
@@ -67,7 +67,7 @@ const serviceSections = [
     to: "/reclamations",
     eyebrow: "Support",
     title: "Réclamations et FAQ accessibles sans chercher.",
-    text: "Les utilisateurs peuvent trouver les réponses fréquentes ou envoyer une réclamation depuis des pages propres.",
+    text: "Les visiteurs trouvent les réponses fréquentes ou envoient une réclamation depuis des pages simples.",
     icon: MessageCircle,
     stat: "24/7",
     accent: "slate",
@@ -108,6 +108,34 @@ const Index = () => {
       <Header />
       <Calculator />
 
+      <section id="carrousel-partenariats" className="relative overflow-hidden bg-card py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto mb-10 max-w-3xl text-center">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-violet-digital">Partenariats</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-5xl">Accès rapide au programme partenaires.</h2>
+            <p className="mt-4 text-muted-foreground">Toutes les cartes ouvrent la grande page PARTENARIATS.</p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {[
+              ["Créer mon lien", "Nom, prénom, numéro WhatsApp et code partenaire reliés."],
+              ["Codes promo", "BIENVENUE, CID et codes ambassadeurs dans le calculateur."],
+              ["Suivi WhatsApp", "Le code est repris automatiquement dans la demande finale."],
+            ].map(([title, text]) => (
+              <Link key={title} to="/partenariats" className="group rounded-[2rem] border bg-white p-6 shadow-card transition hover:-translate-y-2 hover:shadow-financial">
+                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-primary">
+                  <Share2 className="h-6 w-6" />
+                </div>
+                <h3 className="text-2xl font-semibold text-foreground">{title}</h3>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">{text}</p>
+                <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-violet-digital">
+                  Ouvrir PARTENARIATS <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section id="ambassadeurs-apercu" className="relative overflow-hidden bg-background py-20">
         <div className="absolute left-10 top-10 h-56 w-56 rounded-full bg-primary/[0.10] blur-3xl" />
         <div className="absolute bottom-0 right-10 h-64 w-64 rounded-full bg-violet-digital/[0.08] blur-3xl" />
@@ -118,7 +146,7 @@ const Index = () => {
               Les codes partenaires visibles dès l’accueil.
             </h2>
             <p className="mt-4 text-lg leading-8 text-muted-foreground">
-              Les utilisateurs voient rapidement les ambassadeurs actifs, puis peuvent ouvrir la page complète pour copier les codes ou demander leur propre code.
+              Les partenaires actifs sont visibles ici. La page complète permet de copier les codes ou demander son propre lien.
             </p>
           </div>
 
@@ -143,8 +171,8 @@ const Index = () => {
 
           <div className="mt-10 text-center">
             <Button asChild className="rounded-full bg-slate-950 text-white hover:bg-slate-800">
-              <Link to="/ambassadeurs">
-                Voir tous les ambassadeurs <ArrowRight className="h-4 w-4" />
+              <Link to="/partenariats">
+                Voir la page partenariats <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
           </div>
@@ -166,7 +194,7 @@ const Index = () => {
               Toutes les sections sont visibles, mais chaque service a sa page.
             </h2>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/65">
-              L’accueil présente les services sous forme de sections premium compactes. En cliquant, l’utilisateur ouvre la page complète correspondante.
+              L’accueil présente les services de façon compacte. En cliquant, le visiteur ouvre la page complète correspondante.
             </p>
           </div>
 
