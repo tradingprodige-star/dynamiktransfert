@@ -73,19 +73,22 @@ const Header = () => {
             <Button
               type="button"
               variant="outline"
-              size="icon"
+              size="sm"
               onClick={() => setMobileOpen((value) => !value)}
-              className="rounded-full border-white/20 bg-white/10 text-white hover:bg-white hover:text-slate-950 lg:hidden"
+              className="rounded-full border-white/20 bg-white/10 px-3 text-white hover:bg-white hover:text-slate-950 lg:hidden"
               aria-label="Ouvrir le menu"
+              aria-expanded={mobileOpen}
+              aria-controls="home-mobile-menu"
             >
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              <span className="text-xs font-semibold">Menu</span>
             </Button>
           </div>
         </nav>
 
         {mobileOpen && (
-          <div className="mb-8 rounded-[1.75rem] border border-white/10 bg-slate-950/90 p-4 shadow-2xl backdrop-blur-xl lg:hidden">
-            <div className="grid gap-2">
+          <div id="home-mobile-menu" className="fixed left-4 right-4 top-[6.5rem] z-[120] rounded-[1.75rem] border border-white/10 bg-slate-950/95 p-4 shadow-2xl ring-1 ring-white/10 backdrop-blur-xl sm:left-1/2 sm:right-auto sm:w-full sm:max-w-md sm:-translate-x-1/2 lg:hidden">
+            <div className="grid max-h-[calc(100vh-8rem)] gap-2 overflow-y-auto">
               <button onClick={scrollToCalculator} className="rounded-2xl px-4 py-3 text-left text-white/80 hover:bg-white/10 hover:text-white">Calculateur</button>
               {navItems.filter((item) => item.to !== "/").map((item) => (
                 <Link key={item.to} to={item.to} onClick={() => setMobileOpen(false)} className="rounded-2xl px-4 py-3 text-white/80 hover:bg-white/10 hover:text-white">

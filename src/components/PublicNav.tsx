@@ -40,19 +40,22 @@ const PublicNav = () => {
           <Button
             type="button"
             variant="outline"
-            size="icon"
+            size="sm"
             onClick={() => setOpen((value) => !value)}
-            className="rounded-full border-white/20 bg-white/10 text-white hover:bg-white hover:text-slate-950 xl:hidden"
+            className="rounded-full border-white/20 bg-white/10 px-3 text-white hover:bg-white hover:text-slate-950 xl:hidden"
             aria-label="Ouvrir le menu"
+            aria-expanded={open}
+            aria-controls="public-mobile-menu"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            <span className="text-xs font-semibold">Menu</span>
           </Button>
         </div>
       </div>
 
       {open && (
-        <div className="container mx-auto px-4 pb-4 xl:hidden">
-          <nav className="grid gap-2 rounded-[1.5rem] border border-white/10 bg-slate-900 p-3 shadow-2xl">
+        <div id="public-mobile-menu" className="fixed inset-x-4 top-[4.75rem] z-[120] xl:hidden">
+          <nav className="mx-auto grid max-h-[calc(100vh-6rem)] max-w-md gap-2 overflow-y-auto rounded-[1.5rem] border border-white/10 bg-slate-900 p-3 shadow-2xl ring-1 ring-white/10">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
