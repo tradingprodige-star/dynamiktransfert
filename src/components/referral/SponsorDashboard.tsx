@@ -15,6 +15,7 @@ import { makeReferralLink, whatsappUrl } from '@/lib/dynamik';
 
 interface SponsorData {
   id: string;
+  full_name?: string | null;
   phone_number: string;
   referral_code: string;
   total_points: number;
@@ -221,8 +222,8 @@ Merci de confirmer ma demande.`;
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <div className="flex-1">
-          <h2 className="text-xl font-bold">Tableau de bord Parrain</h2>
-          <p className="text-sm text-muted-foreground">{sponsor.phone_number}</p>
+          <h2 className="text-xl font-bold">Tableau de bord Partenaire</h2>
+          <p className="text-sm text-muted-foreground">{fullSponsor.full_name ? `${fullSponsor.full_name} • ` : ''}{sponsor.phone_number}</p>
         </div>
         <Badge className={`${currentLevel.color} text-white`}>
           {currentLevel.emoji} {currentLevel.name}
@@ -344,7 +345,7 @@ Merci de confirmer ma demande.`;
       <Card className="border-primary">
         <CardContent className="pt-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium">Votre code</span>
+            <span className="text-sm font-medium">Votre code promo partenaire</span>
             <span className="text-xl font-bold text-primary">{sponsor.referral_code}</span>
           </div>
           <div className="flex gap-2">
@@ -363,7 +364,7 @@ Merci de confirmer ma demande.`;
               onClick={shareLink}
             >
               <Share2 className="w-4 h-4 mr-1" />
-              Partager
+              Partager lien/code
             </Button>
           </div>
         </CardContent>

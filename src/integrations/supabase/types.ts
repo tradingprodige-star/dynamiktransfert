@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_banners: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          is_active: boolean
+          link_url: string | null
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          is_active?: boolean
+          link_url?: string | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          link_url?: string | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       points_history: {
         Row: {
           created_at: string
@@ -103,6 +136,8 @@ export type Database = {
           id: string
           is_active: boolean
           max_uses: number | null
+          partner_name: string | null
+          partner_phone: string | null
           type: string
           updated_at: string
         }
@@ -116,6 +151,8 @@ export type Database = {
           id?: string
           is_active?: boolean
           max_uses?: number | null
+          partner_name?: string | null
+          partner_phone?: string | null
           type: string
           updated_at?: string
         }
@@ -129,6 +166,8 @@ export type Database = {
           id?: string
           is_active?: boolean
           max_uses?: number | null
+          partner_name?: string | null
+          partner_phone?: string | null
           type?: string
           updated_at?: string
         }
@@ -288,6 +327,7 @@ export type Database = {
           created_at: string
           cumulative_volume: number | null
           current_level: string | null
+          full_name: string | null
           id: string
           is_active: boolean
           is_blocked: boolean
@@ -305,6 +345,7 @@ export type Database = {
           created_at?: string
           cumulative_volume?: number | null
           current_level?: string | null
+          full_name?: string | null
           id?: string
           is_active?: boolean
           is_blocked?: boolean
@@ -322,6 +363,7 @@ export type Database = {
           created_at?: string
           cumulative_volume?: number | null
           current_level?: string | null
+          full_name?: string | null
           id?: string
           is_active?: boolean
           is_blocked?: boolean

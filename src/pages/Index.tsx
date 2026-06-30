@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Calculator from "@/components/Calculator";
 import Footer from "@/components/Footer";
+import AdMarquee from "@/components/AdMarquee";
 import ReferralBanner from "@/components/referral/ReferralBanner";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BadgePercent, Bitcoin, HelpCircle, MessageCircle, Share2, Users, Info, Sparkles, ShieldCheck, WalletCards } from "lucide-react";
@@ -107,6 +108,7 @@ const Index = () => {
       <ReferralBanner />
       <Header />
       <Calculator />
+      <AdMarquee />
 
       <section id="carrousel-partenariats" className="relative overflow-hidden bg-card py-16">
         <div className="container mx-auto px-4">

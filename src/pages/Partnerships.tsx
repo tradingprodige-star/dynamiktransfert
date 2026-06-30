@@ -2,7 +2,7 @@ import PublicPage from "@/components/PublicPage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import ReferralSection from "@/components/referral/ReferralSection";
-import { DYNAMIK_CONTACTS, PARTNER_CODES, makeReferralLink, whatsappUrl } from "@/lib/dynamik";
+import { DYNAMIK_CONTACTS, PARTNER_CODES, makeReferralLink } from "@/lib/dynamik";
 import { ArrowRight, Copy, Handshake, MessageCircle, Share2, Sparkles, Users } from "lucide-react";
 import { useMemo } from "react";
 
@@ -25,8 +25,6 @@ const featuredSlides = [
 ];
 
 const Partnerships = () => {
-  const partnerMessage = "Bonjour DYNAMIK TRANSFERT, je souhaite rejoindre le programme PARTENARIATS et obtenir mon lien de parrainage lié à mon nom, prénom et numéro WhatsApp.";
-
   const promoCards = useMemo(() => PARTNER_CODES.map((partner) => ({
     ...partner,
     link: makeReferralLink(partner.code),
@@ -53,7 +51,7 @@ const Partnerships = () => {
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Button asChild size="lg" className="rounded-full bg-primary text-slate-950 hover:bg-primary-glow">
-                <a href={whatsappUrl(partnerMessage)} target="_blank" rel="noreferrer">
+                <a href="#programme-parrainage">
                   Demander mon lien partenaire <MessageCircle className="h-4 w-4" />
                 </a>
               </Button>
@@ -102,6 +100,7 @@ const Partnerships = () => {
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">{partner.label}</p>
                       <h3 className="mt-1 text-2xl font-semibold">{partner.name}</h3>
+                      <p className="mt-1 text-xs text-muted-foreground">Nom + numéro partenaire liés au code</p>
                     </div>
                     <div className="rounded-2xl bg-slate-950 px-4 py-3 font-mono text-sm font-bold text-white">{partner.code}</div>
                   </div>
@@ -134,11 +133,11 @@ const Partnerships = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-semibold">Besoin d’un lien personnalisé ?</h2>
           <p className="mx-auto mt-3 max-w-2xl text-white/65">
-            Envoyez votre nom, prénom et numéro WhatsApp à DYNAMIK. L’équipe vous confirme le code partenaire à utiliser.
+Inscrivez-vous au programme partenariat avec votre nom et numéro WhatsApp. Votre dashboard affichera le code promo et le lien liés ensemble.
           </p>
           <Button asChild size="lg" className="mt-8 rounded-full bg-primary text-slate-950 hover:bg-primary-glow">
-            <a href={whatsappUrl(partnerMessage)} target="_blank" rel="noreferrer">
-              Contacter WhatsApp {DYNAMIK_CONTACTS.whatsappDisplay}
+            <a href="#programme-parrainage">
+              S’inscrire au programme partenariat
             </a>
           </Button>
         </div>

@@ -35,6 +35,7 @@ import {
   Crown, Award, Wallet, LogOut, TicketPercent
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import AdminCmsManager from '@/components/admin/AdminCmsManager';
 
 interface ReferralClick {
   id: string;
@@ -122,7 +123,7 @@ const AdminReferrals = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [levelFilter, setLevelFilter] = useState('all');
-  const [activeTab, setActiveTab] = useState<'referrals' | 'sponsors' | 'promo'>('referrals');
+  const [activeTab, setActiveTab] = useState<'referrals' | 'sponsors' | 'promo' | 'cms'>('referrals');
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [validateDialog, setValidateDialog] = useState<{ open: boolean; click: ReferralClick | null }>({ open: false, click: null });
@@ -376,7 +377,7 @@ const AdminReferrals = () => {
       a.href = url;
       a.download = `dynamik-sponsors-${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
-    } else {
+    } else if (activeTab === 'promo') {
       const headers = ['Date', 'Code promo', 'Type', 'Partenaire', 'Utilisateur', 'Réduction'];
       const rows = filteredPromoUsages.map((usage) => [
         new Date(usage.used_at).toLocaleDateString('fr-FR'),
@@ -600,6 +601,12 @@ const AdminReferrals = () => {
           >
             Codes promo ({promoUsages.length})
           </Button>
+          <Button
+            variant={activeTab === 'cms' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('cms')}
+          >
+            CMS modification
+          </Button>
         </div>
 
         {/* Filters */}
@@ -648,6 +655,8 @@ const AdminReferrals = () => {
           <div className="flex items-center justify-center py-12">
             <RefreshCw className="w-8 h-8 animate-spin text-primary" />
           </div>
+        ) : activeTab === 'cms' ? (
+          <AdminCmsManager />
         ) : activeTab === 'referrals' ? (
           <Card>
             <CardContent className="p-0">

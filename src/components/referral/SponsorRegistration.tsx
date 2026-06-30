@@ -12,6 +12,7 @@ import { makeReferralLink } from '@/lib/dynamik';
 
 interface SponsorData {
   id: string;
+  full_name?: string | null;
   phone_number: string;
   referral_code: string;
   total_points: number;
@@ -24,6 +25,7 @@ interface SponsorRegistrationProps {
 }
 
 const SponsorRegistration = ({ onSponsorFound }: SponsorRegistrationProps) => {
+  const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [newSponsor, setNewSponsor] = useState<SponsorData | null>(null);
@@ -56,6 +58,15 @@ Ce lien remplit automatiquement le code promo dans le calculateur. Partagez-le a
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!fullName.trim()) {
+      toast({
+        title: "Nom requis",
+        description: "Veuillez entrer le nom du partenaire",
+        variant: "destructive"
+      });
+      return;
+    }
+
     // Validation plus souple - minimum 8 chiffres
     const cleanPhone = getCleanPhoneNumber(phone);
     if (!phone || cleanPhone.length < 8) {
@@ -97,6 +108,7 @@ Ce lien remplit automatiquement le code promo dans le calculateur. Partagez-le a
         const { data: newData, error: insertError } = await supabase
           .from('sponsors')
           .insert({
+            full_name: fullName.trim(),
             phone_number: phone,
             referral_code: codeData
           })
@@ -114,7 +126,9 @@ Ce lien remplit automatiquement le code promo dans le calculateur. Partagez-le a
             code: codeData,
             type: 'ambassador',
             discount_percentage: 10,
-            ambassador_name: phone,
+            ambassador_name: fullName.trim(),
+            partner_name: fullName.trim(),
+            partner_phone: phone,
             is_active: true,
           }, { onConflict: 'code' });
 
@@ -264,13 +278,21 @@ Ce lien remplit automatiquement le code promo dans le calculateur. Partagez-le a
           <div className="mx-auto w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-3">
             <Users className="w-7 h-7 text-primary" />
           </div>
-          <CardTitle>Devenez Parrain DYNAMIK</CardTitle>
+          <CardTitle>Inscription au programme partenariat</CardTitle>
           <CardDescription>
-            Entrez votre numéro WhatsApp pour obtenir votre code de parrainage unique
+            Entrez votre nom et votre numéro WhatsApp pour obtenir votre code promo et votre lien partenaire
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Nom du partenaire</label>
+              <Input
+                value={fullName}
+                onChange={(event) => setFullName(event.target.value)}
+                placeholder="Nom et prénom"
+              />
+            </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Numéro WhatsApp</label>
               <PhoneInput
@@ -294,7 +316,7 @@ Ce lien remplit automatiquement le code promo dans le calculateur. Partagez-le a
               ) : (
                 <>
                   <Gift className="w-4 h-4 mr-2" />
-                  Obtenir mon code parrain
+                  M’inscrire et obtenir mon lien
                 </>
               )}
             </Button>
