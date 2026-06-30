@@ -62,7 +62,7 @@ const AdMarquee = () => {
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Annonces</p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-5xl">Espace publicitaire DYNAMIK</h2>
           <p className="mt-4 text-white/65">
-            Affiches, promotions et annonces importantes défilent ici. L’administrateur peut modifier ces visuels sans coder.
+            Découvrez les offres, promotions et opportunités partenaires. Cliquez sur une annonce pour voir tous les détails.
           </p>
         </div>
       </div>
@@ -70,18 +70,16 @@ const AdMarquee = () => {
       <div className="relative z-10 w-full overflow-hidden">
         <div className="flex w-max gap-5 px-4" style={{ animation: "dynamik-ad-marquee 38s linear infinite" }}>
           {marqueeItems.map((ad, index) => {
-            const card = (
-              <div className="h-52 w-[320px] overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.07] shadow-2xl transition hover:-translate-y-1 md:h-64 md:w-[420px]">
-                <img src={ad.image_url} alt={ad.title} className="h-full w-full object-cover" loading="lazy" />
-              </div>
-            );
-
-            return ad.link_url ? (
-              <a key={`${ad.id}-${index}`} href={ad.link_url} className="block" aria-label={ad.title}>
-                {card}
+            return (
+              <a key={`${ad.id}-${index}`} href={ad.link_url || "/partenariats"} className="group block" aria-label={`${ad.title} - voir les détails`}>
+                <div className="relative h-52 w-[320px] overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.07] shadow-2xl transition group-hover:-translate-y-1 md:h-64 md:w-[420px]">
+                  <img src={ad.image_url} alt={ad.title} className="h-full w-full object-cover" loading="lazy" />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/90 to-transparent p-5">
+                    <p className="text-sm font-semibold text-white">{ad.title}</p>
+                    <p className="mt-1 text-xs text-white/70">Voir les détails sur la page Partenariats</p>
+                  </div>
+                </div>
               </a>
-            ) : (
-              <div key={`${ad.id}-${index}`}>{card}</div>
             );
           })}
         </div>

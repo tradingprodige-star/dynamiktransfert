@@ -41,13 +41,13 @@ const Partnerships = () => {
           <div className="mx-auto max-w-4xl text-center">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm text-white/70">
               <Handshake className="h-4 w-4 text-primary" />
-              Page et menu PARTENARIATS
+              Opportunités partenaires DYNAMIK
             </div>
             <h1 className="text-4xl font-semibold tracking-tight md:text-6xl">
               Parrainage, codes promo et partenaires DYNAMIK.
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/68">
-              Chaque partenaire peut partager un lien simple. Le code est repris dans le calculateur puis envoyé à DYNAMIK sur WhatsApp avec la demande de transfert.
+              Rejoignez le réseau DYNAMIK, partagez vos annonces et suivez les clients envoyés vers nos services de transfert et crypto.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Button asChild size="lg" className="rounded-full bg-primary text-slate-950 hover:bg-primary-glow">
@@ -82,13 +82,44 @@ const Partnerships = () => {
         </div>
       </section>
 
+      <section id="annonces-partenaires" className="bg-gradient-to-br from-primary/10 via-background to-violet-500/10 py-20">
+        <div className="container mx-auto px-4">
+          <div className="grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">Vitrine annonces</p>
+              <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Les annonces de l’accueil mènent ici.</h2>
+              <p className="mt-5 text-muted-foreground leading-7">
+                La page Partenariats présente les offres, promotions, campagnes et opportunités visibles sur la page d’accueil. Chaque annonce peut orienter un client vers une action claire : devenir partenaire, utiliser un code, ou contacter DYNAMIK.
+              </p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              {[
+                { title: "Annonces", text: "Promotions et informations importantes mises en avant." },
+                { title: "Partenaires", text: "Codes, liens et suivi des recommandations." },
+                { title: "WhatsApp", text: "Finalisation directe avec l’équipe DYNAMIK." },
+              ].map((item) => (
+                <Card key={item.title} className="border-slate-200 bg-white/80 shadow-card backdrop-blur">
+                  <CardContent className="p-6">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-primary">
+                      <Sparkles className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-xl font-semibold">{item.title}</h3>
+                    <p className="mt-3 text-sm leading-6 text-muted-foreground">{item.text}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="codes-partenaires" className="bg-background py-20">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-12 max-w-3xl text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">Codes promo</p>
-            <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Liens de parrainage opérationnels</h2>
+            <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Liens de parrainage disponibles</h2>
             <p className="mt-4 text-muted-foreground">
-              Le lien remplit automatiquement le code dans le calculateur. Si le client finalise sur WhatsApp, DYNAMIK reçoit le code dans la demande.
+              Chaque lien applique le code partenaire dans le calculateur et transmet l’information à l’équipe DYNAMIK lors de la finalisation WhatsApp.
             </p>
           </div>
 
@@ -100,12 +131,12 @@ const Partnerships = () => {
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">{partner.label}</p>
                       <h3 className="mt-1 text-2xl font-semibold">{partner.name}</h3>
-                      <p className="mt-1 text-xs text-muted-foreground">Nom + numéro partenaire liés au code</p>
+                      <p className="mt-1 text-xs text-muted-foreground">Code rattaché au partenaire</p>
                     </div>
                     <div className="rounded-2xl bg-slate-950 px-4 py-3 font-mono text-sm font-bold text-white">{partner.code}</div>
                   </div>
                   <p className="text-sm leading-6 text-muted-foreground">
-                    Code utilisable dans le simulateur. Le lien conserve le code dans l'URL pour éviter les oublis.
+                    Partagez ce lien avec vos contacts. Le code est reconnu pendant la simulation et la demande de transfert.
                   </p>
                   <div className="mt-5 rounded-2xl border bg-muted/40 p-3 text-xs text-muted-foreground break-all">
                     {partner.link}
@@ -115,7 +146,7 @@ const Partnerships = () => {
                       <Copy className="h-4 w-4" /> Copier
                     </Button>
                     <Button asChild className="bg-slate-950 text-white hover:bg-slate-800">
-                      <a href={partner.link}>Tester</a>
+                      <a href={partner.link}>Ouvrir</a>
                     </Button>
                   </div>
                 </CardContent>
@@ -133,7 +164,7 @@ const Partnerships = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-semibold">Besoin d’un lien personnalisé ?</h2>
           <p className="mx-auto mt-3 max-w-2xl text-white/65">
-Inscrivez-vous au programme partenariat avec votre nom et numéro WhatsApp. Votre dashboard affichera le code promo et le lien liés ensemble.
+            Inscrivez-vous avec votre nom et votre numéro WhatsApp. L’équipe DYNAMIK vous accompagne ensuite pour activer votre lien et vos annonces.
           </p>
           <Button asChild size="lg" className="mt-8 rounded-full bg-primary text-slate-950 hover:bg-primary-glow">
             <a href="#programme-parrainage">

@@ -58,21 +58,31 @@ const CryptoPayment = () => {
 
   const currentReference = reference || generatePaymentReference();
 
+  const buildPaymentMessage = (safeReference: string, trigger: string) => {
+    const safePhone = sanitizeInput(phone);
+    return `Bonjour DYNAMIK TRANSFERT, je veux finaliser une transaction crypto vers Mobile Money.\n\nAction client: ${trigger}\nRéférence: ${safeReference}\nPays bénéficiaire: ${selectedCountry.label}\nNuméro bénéficiaire: ${selectedCountry.prefix} ${safePhone}\nRéseau Mobile Money: ${network}\nMontant à recevoir: ${beneficiaryReceives.toLocaleString("fr-FR")} FCFA\nFrais estimés: ${serviceFee.toLocaleString("fr-FR")} FCFA\nCrypto utilisée: ${selectedCrypto.label}\nRéseau crypto: ${selectedCrypto.network}\nMontant crypto estimé: ${cryptoAmount.toFixed(selectedCrypto.value.includes("btc") ? 8 : 2)} ${selectedCrypto.value.includes("btc") ? "BTC" : "USDT"}\n\nJe viens de copier l’adresse / les informations de paiement. Merci de confirmer l’adresse exacte, le réseau et la suite de la transaction sur WhatsApp.`;
+  };
+
   const createPayment = () => {
     if (!paymentReady) return;
-    const safePhone = sanitizeInput(phone);
     const safeReference = reference || generatePaymentReference();
     setReference(safeReference);
-
-    const message = `Bonjour DYNAMIK TRANSFERT, je veux créer un paiement crypto vers Mobile Money.\n\nRéférence: ${safeReference}\nPays bénéficiaire: ${selectedCountry.label}\nNuméro bénéficiaire: ${selectedCountry.prefix} ${safePhone}\nRéseau Mobile Money: ${network}\nMontant à recevoir: ${beneficiaryReceives.toLocaleString("fr-FR")} FCFA\nFrais estimés: ${serviceFee.toLocaleString("fr-FR")} FCFA\nCrypto utilisée: ${selectedCrypto.label}\nRéseau crypto: ${selectedCrypto.network}\nMontant crypto estimé: ${cryptoAmount.toFixed(selectedCrypto.value.includes("btc") ? 8 : 2)} ${selectedCrypto.value.includes("btc") ? "BTC" : "USDT"}\n\nUSDT propulsé par la technologie de BMIPAY. Merci de m'envoyer immédiatement l'adresse correcte, le réseau exact et le QR Code de paiement.`;
-
-    window.open(whatsappUrl(message), "_blank");
+    window.open(whatsappUrl(buildPaymentMessage(safeReference, "Demande de paiement créée")), "_blank");
   };
 
   const copyReference = () => {
     const safeReference = reference || currentReference;
     setReference(safeReference);
     navigator.clipboard.writeText(safeReference);
+  };
+
+  const copyAddressAndOpenWhatsApp = () => {
+    if (!paymentReady) return;
+    const safeReference = reference || generatePaymentReference();
+    setReference(safeReference);
+    const paymentLine = `${selectedCrypto.label} • ${selectedCrypto.network} • Référence ${safeReference}`;
+    navigator.clipboard?.writeText(paymentLine).catch(() => undefined);
+    window.open(whatsappUrl(buildPaymentMessage(safeReference, "Adresse USDT copiée depuis le QR Code")), "_blank");
   };
 
   return (
@@ -256,8 +266,16 @@ const CryptoPayment = () => {
                     <div className="text-sm text-white/70">
                       <p className="font-semibold text-white">{BMIPAY_USDT_NOTICE.title}</p>
                       <p className="mt-1">Réseau choisi : <span className="text-emerald-300">{selectedCrypto.network}</span></p>
-                      <p className="mt-1">Adresse USDT : confirmée sur WhatsApp avant paiement.</p>
-                      <p className="mt-1 text-xs text-white/45">Ne payez qu’après confirmation du réseau et de l’adresse par DYNAMIK.</p>
+                      <p className="mt-1">Adresse USDT : finalisation sécurisée sur WhatsApp.</p>
+                      <button
+                        type="button"
+                        disabled={!paymentReady}
+                        onClick={copyAddressAndOpenWhatsApp}
+                        className="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <Copy className="h-4 w-4" /> Copier l’adresse et ouvrir WhatsApp
+                      </button>
+                      <p className="mt-2 text-xs text-white/45">Après la copie, DYNAMIK reçoit les détails de la transaction sur WhatsApp pour finaliser avec le client.</p>
                     </div>
                   </div>
                 </div>

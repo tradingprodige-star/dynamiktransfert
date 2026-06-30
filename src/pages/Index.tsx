@@ -45,8 +45,8 @@ const serviceSections = [
     id: "section-offres",
     to: "/offre",
     eyebrow: "Offres & USDT",
-    title: "Promos et services USDT sans lumière agressive.",
-    text: "Le code BIENVENUE et le service de rachat USDT sont réunis sur une page sombre, claire et directe.",
+    title: "Promotions et services USDT clairs.",
+    text: "Le code BIENVENUE et le service de rachat USDT sont présentés sur une page simple, lisible et directe.",
     icon: BadgePercent,
     stat: "565 F/USDT",
     accent: "emerald",
@@ -56,8 +56,8 @@ const serviceSections = [
     id: "section-a-propos",
     to: "/a-propos",
     eyebrow: "À propos",
-    title: "L’histoire et la mission de DYNAMIK à part.",
-    text: "L’histoire de DYNAMIK est disponible sur une page dédiée, facile à lire.",
+    title: "L’histoire et la mission de DYNAMIK.",
+    text: "L’histoire de DYNAMIK est disponible sur une page dédiée, claire et facile à lire.",
     icon: Info,
     stat: "2020 → 2025",
     accent: "violet",
@@ -115,7 +115,7 @@ const Index = () => {
           <div className="mx-auto mb-10 max-w-3xl text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-violet-digital">Partenariats</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-5xl">Accès rapide au programme partenaires.</h2>
-            <p className="mt-4 text-muted-foreground">Toutes les cartes ouvrent la grande page PARTENARIATS.</p>
+            <p className="mt-4 text-muted-foreground">Retrouvez les liens, codes et annonces partenaires dans un espace dédié.</p>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {[
@@ -130,7 +130,7 @@ const Index = () => {
                 <h3 className="text-2xl font-semibold text-foreground">{title}</h3>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">{text}</p>
                 <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-violet-digital">
-                  Ouvrir PARTENARIATS <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+                  Voir les détails <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
                 </span>
               </Link>
             ))}
@@ -193,10 +193,10 @@ const Index = () => {
               Aperçu complet de la plateforme
             </div>
             <h2 className="text-4xl font-semibold tracking-tight md:text-6xl">
-              Toutes les sections sont visibles, mais chaque service a sa page.
+              Tous les services essentiels en un coup d’œil.
             </h2>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/65">
-              L’accueil présente les services de façon compacte. En cliquant, le visiteur ouvre la page complète correspondante.
+              L’accueil présente les principaux services DYNAMIK. Chaque carte donne accès à une page complète avec les informations utiles.
             </p>
           </div>
 
