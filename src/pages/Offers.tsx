@@ -10,7 +10,7 @@ const offerCards = [
   {
     title: "Premier transfert",
     value: "0% de frais",
-    detail: "Code BIENVENUE pour tester DYNAMIK sur un premier transfert éligible.",
+    detail: "Saisissez BIENVENUE pour profiter de 0% de frais sur un premier transfert éligible.",
     badge: "Code BIENVENUE",
     icon: BadgePercent,
   },
@@ -143,10 +143,10 @@ const Offers = () => {
         <div className="container mx-auto px-4">
           <div className="grid items-start gap-10 lg:grid-cols-[0.95fr_1.05fr]">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">Ce que le client peut faire</p>
-              <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Des offres lisibles, mais toujours validées avant paiement.</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">Votre parcours</p>
+              <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Choisissez l’offre, calculez, puis validez sur WhatsApp.</h2>
               <p className="mt-5 leading-7 text-muted-foreground">
-                La page sert de vitrine claire : le client voit les offres, lance une simulation et envoie une demande WhatsApp avec une référence. L’équipe DYNAMIK confirme ensuite le montant, le réseau et les instructions finales.
+                Consultez les promotions actives, lancez une simulation et envoyez votre demande avec une référence claire. L’équipe DYNAMIK confirme ensuite le montant, le réseau et les instructions finales avant tout paiement.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button asChild className="rounded-full bg-slate-950 text-white hover:bg-slate-800">

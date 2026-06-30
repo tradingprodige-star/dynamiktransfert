@@ -47,7 +47,7 @@ const Partnerships = () => {
               Parrainage, codes promo et partenaires DYNAMIK.
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/68">
-              Rejoignez le réseau DYNAMIK, partagez vos annonces et suivez les clients envoyés vers nos services de transfert et crypto.
+              Rejoignez le réseau DYNAMIK, partagez vos annonces et suivez les personnes orientées vers nos services de transfert et crypto.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Button asChild size="lg" className="rounded-full bg-primary text-slate-950 hover:bg-primary-glow">
@@ -86,10 +86,10 @@ const Partnerships = () => {
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">Vitrine annonces</p>
-              <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Les annonces de l’accueil mènent ici.</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">Annonces & opportunités</p>
+              <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Codes, campagnes et contacts partenaires réunis.</h2>
               <p className="mt-5 text-muted-foreground leading-7">
-                La page Partenariats présente les offres, promotions, campagnes et opportunités visibles sur la page d’accueil. Chaque annonce peut orienter un client vers une action claire : devenir partenaire, utiliser un code, ou contacter DYNAMIK.
+                Retrouvez les promotions en cours, les codes à partager et les actions utiles : devenir partenaire, utiliser un code ou contacter DYNAMIK sur WhatsApp.
               </p>
             </div>
             <div className="grid gap-4 md:grid-cols-3">

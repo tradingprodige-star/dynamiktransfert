@@ -24,7 +24,7 @@ const serviceSections = [
     to: "/partenariats",
     eyebrow: "Parrainage",
     title: "Transformez vos recommandations en récompenses.",
-    text: "Une page partenariats permet de créer son code parrain, partager son lien et comprendre les paliers.",
+    text: "Créez votre code parrain, partagez votre lien et suivez vos récompenses avec l’équipe DYNAMIK.",
     icon: Share2,
     stat: "150 pts",
     accent: "violet",
@@ -34,8 +34,8 @@ const serviceSections = [
     id: "section-ambassadeurs",
     to: "/partenariats",
     eyebrow: "Partenariats",
-    title: "Codes partenaires et influenceurs dans un espace propre.",
-    text: "Les codes promo, liens de parrainage et demandes partenaires sont réunis dans une seule page sérieuse.",
+    title: "Codes partenaires et influenceurs faciles à utiliser.",
+    text: "Retrouvez les codes promo, liens de parrainage et demandes partenaires au même endroit.",
     icon: Users,
     stat: "Codes actifs",
     accent: "slate",
@@ -46,7 +46,7 @@ const serviceSections = [
     to: "/offre",
     eyebrow: "Offres & USDT",
     title: "Promotions et services USDT clairs.",
-    text: "Le code BIENVENUE et le service de rachat USDT sont présentés sur une page simple, lisible et directe.",
+    text: "Profitez du code BIENVENUE et consultez les conditions de rachat USDT avant de contacter DYNAMIK.",
     icon: BadgePercent,
     stat: "565 F/USDT",
     accent: "emerald",
@@ -57,7 +57,7 @@ const serviceSections = [
     to: "/a-propos",
     eyebrow: "À propos",
     title: "L’histoire et la mission de DYNAMIK.",
-    text: "L’histoire de DYNAMIK est disponible sur une page dédiée, claire et facile à lire.",
+    text: "Découvrez l’origine de DYNAMIK, sa mission et la vision portée par l’équipe.",
     icon: Info,
     stat: "2020 → 2025",
     accent: "violet",
@@ -68,7 +68,7 @@ const serviceSections = [
     to: "/reclamations",
     eyebrow: "Support",
     title: "Réclamations et FAQ accessibles sans chercher.",
-    text: "Les visiteurs trouvent les réponses fréquentes ou envoient une réclamation depuis des pages simples.",
+    text: "Trouvez une réponse rapide ou envoyez une réclamation suivie directement sur WhatsApp.",
     icon: MessageCircle,
     stat: "24/7",
     accent: "slate",
@@ -115,7 +115,7 @@ const Index = () => {
           <div className="mx-auto mb-10 max-w-3xl text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-violet-digital">Partenariats</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-5xl">Accès rapide au programme partenaires.</h2>
-            <p className="mt-4 text-muted-foreground">Retrouvez les liens, codes et annonces partenaires dans un espace dédié.</p>
+            <p className="mt-4 text-muted-foreground">Créez votre lien, utilisez un code actif ou contactez DYNAMIK pour devenir partenaire.</p>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {[
@@ -145,10 +145,10 @@ const Index = () => {
           <div className="mx-auto mb-12 max-w-3xl text-center">
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.24em] text-violet-digital">Ambassadeurs DYNAMIK</p>
             <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-5xl">
-              Les codes partenaires visibles dès l’accueil.
+              Utilisez directement les codes partenaires actifs.
             </h2>
             <p className="mt-4 text-lg leading-8 text-muted-foreground">
-              Les partenaires actifs sont visibles ici. La page complète permet de copier les codes ou demander son propre lien.
+              Copiez un code actif, partagez-le à vos proches ou demandez votre propre lien partenaire.
             </p>
           </div>
 
@@ -174,7 +174,7 @@ const Index = () => {
           <div className="mt-10 text-center">
             <Button asChild className="rounded-full bg-slate-950 text-white hover:bg-slate-800">
               <Link to="/partenariats">
-                Voir la page partenariats <ArrowRight className="h-4 w-4" />
+                Voir les partenariats <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
           </div>
@@ -190,13 +190,13 @@ const Index = () => {
           <div className="mx-auto mb-16 max-w-4xl text-center">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.08] px-4 py-2 text-sm text-white/70 backdrop-blur-xl">
               <Sparkles className="h-4 w-4 text-emerald-300" />
-              Aperçu complet de la plateforme
+              Services DYNAMIK
             </div>
             <h2 className="text-4xl font-semibold tracking-tight md:text-6xl">
-              Tous les services essentiels en un coup d’œil.
+              Tout pour envoyer, recevoir et suivre votre transfert.
             </h2>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/65">
-              L’accueil présente les principaux services DYNAMIK. Chaque carte donne accès à une page complète avec les informations utiles.
+              Choisissez le service qui vous concerne, simulez votre opération et finalisez avec DYNAMIK sur WhatsApp.
             </p>
           </div>
 
@@ -241,12 +241,12 @@ const Index = () => {
                       <div className="mt-8 flex flex-wrap gap-3">
                         <Button asChild className="rounded-full bg-white text-slate-950 hover:bg-white/90">
                           <Link to={section.to}>
-                            Ouvrir la page <ArrowRight className="h-4 w-4" />
+                            Voir ce service <ArrowRight className="h-4 w-4" />
                           </Link>
                         </Button>
                         {section.secondaryTo && (
                           <Button asChild variant="outline" className="rounded-full border-white/20 bg-white/5 text-white hover:bg-white hover:text-slate-950">
-                            <Link to={section.secondaryTo}>Voir la FAQ</Link>
+                            <Link to={section.secondaryTo}>Lire la FAQ</Link>
                           </Button>
                         )}
                       </div>
@@ -257,13 +257,13 @@ const Index = () => {
                         <div className="absolute right-4 top-4 h-24 w-24 rounded-full bg-white/5 blur-2xl" />
                         <div className="mb-12 flex items-center justify-between">
                           <div>
-                            <p className="text-sm text-white/45">Module DYNAMIK</p>
+                            <p className="text-sm text-white/45">Service DYNAMIK</p>
                             <p className="mt-1 text-xl font-semibold">{section.eyebrow}</p>
                           </div>
                           <WalletCards className={`h-8 w-8 ${accent.text}`} />
                         </div>
                         <div className="rounded-3xl bg-white/[0.07] p-5">
-                          <p className="text-sm uppercase tracking-[0.24em] text-white/40">Indicateur</p>
+                          <p className="text-sm uppercase tracking-[0.24em] text-white/40">Repère utile</p>
                           <p className={`mt-2 text-4xl font-semibold ${accent.text}`}>{section.stat}</p>
                         </div>
                         <div className="mt-5 h-1 overflow-hidden rounded-full bg-white/10">

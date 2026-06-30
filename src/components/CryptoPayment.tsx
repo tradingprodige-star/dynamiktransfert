@@ -60,7 +60,7 @@ const CryptoPayment = () => {
 
   const buildPaymentMessage = (safeReference: string, trigger: string) => {
     const safePhone = sanitizeInput(phone);
-    return `Bonjour DYNAMIK TRANSFERT, je veux finaliser une transaction crypto vers Mobile Money.\n\nAction client: ${trigger}\nRéférence: ${safeReference}\nPays bénéficiaire: ${selectedCountry.label}\nNuméro bénéficiaire: ${selectedCountry.prefix} ${safePhone}\nRéseau Mobile Money: ${network}\nMontant à recevoir: ${beneficiaryReceives.toLocaleString("fr-FR")} FCFA\nFrais estimés: ${serviceFee.toLocaleString("fr-FR")} FCFA\nCrypto utilisée: ${selectedCrypto.label}\nRéseau crypto: ${selectedCrypto.network}\nMontant crypto estimé: ${cryptoAmount.toFixed(selectedCrypto.value.includes("btc") ? 8 : 2)} ${selectedCrypto.value.includes("btc") ? "BTC" : "USDT"}\n\nJe viens de copier l’adresse / les informations de paiement. Merci de confirmer l’adresse exacte, le réseau et la suite de la transaction sur WhatsApp.`;
+    return `Bonjour DYNAMIK TRANSFERT, je veux finaliser une transaction crypto vers Mobile Money.\n\nAction demandée: ${trigger}\nRéférence: ${safeReference}\nPays bénéficiaire: ${selectedCountry.label}\nNuméro bénéficiaire: ${selectedCountry.prefix} ${safePhone}\nRéseau Mobile Money: ${network}\nMontant à recevoir: ${beneficiaryReceives.toLocaleString("fr-FR")} FCFA\nFrais estimés: ${serviceFee.toLocaleString("fr-FR")} FCFA\nCrypto utilisée: ${selectedCrypto.label}\nRéseau crypto: ${selectedCrypto.network}\nMontant crypto estimé: ${cryptoAmount.toFixed(selectedCrypto.value.includes("btc") ? 8 : 2)} ${selectedCrypto.value.includes("btc") ? "BTC" : "USDT"}\n\nJe viens de copier l’adresse / les informations de paiement. Merci de confirmer l’adresse exacte, le réseau et la suite de la transaction sur WhatsApp.`;
   };
 
   const createPayment = () => {
@@ -275,7 +275,7 @@ const CryptoPayment = () => {
                       >
                         <Copy className="h-4 w-4" /> Copier l’adresse et ouvrir WhatsApp
                       </button>
-                      <p className="mt-2 text-xs text-white/45">Après la copie, DYNAMIK reçoit les détails de la transaction sur WhatsApp pour finaliser avec le client.</p>
+                      <p className="mt-2 text-xs text-white/45">Après la copie, WhatsApp s’ouvre avec les détails nécessaires pour finaliser avec DYNAMIK.</p>
                     </div>
                   </div>
                 </div>

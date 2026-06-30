@@ -76,7 +76,7 @@ const AdMarquee = () => {
                   <img src={ad.image_url} alt={ad.title} className="h-full w-full object-cover" loading="lazy" />
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/90 to-transparent p-5">
                     <p className="text-sm font-semibold text-white">{ad.title}</p>
-                    <p className="mt-1 text-xs text-white/70">Voir les détails sur la page Partenariats</p>
+                    <p className="mt-1 text-xs text-white/70">Voir les détails partenaires</p>
                   </div>
                 </div>
               </a>
