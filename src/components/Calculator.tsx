@@ -67,7 +67,8 @@ const Calculator = () => {
           .eq('is_active', true);
         
         if (error) {
-          console.error('Error fetching promo codes:', error);
+          // Supabase promo table can be absent on public/demo deployments.
+          // Keep fallback partner codes active without noisy console errors.
           return;
         }
         
@@ -382,7 +383,8 @@ const Calculator = () => {
     });
 
     if (error) {
-      console.info('Referral tracking unavailable:', error.message);
+      // Referral tracking is optional; WhatsApp handoff must still work cleanly.
+      return;
     }
   };
 
