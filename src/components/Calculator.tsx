@@ -89,7 +89,7 @@ const Calculator = () => {
           setPromoCodes(merged);
         }
       } catch (error) {
-        console.error('Error fetching promo codes:', error);
+        // Optional remote promo table may be absent; keep local fallback codes.
       }
     };
 

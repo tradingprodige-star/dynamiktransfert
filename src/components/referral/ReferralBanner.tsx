@@ -30,7 +30,6 @@ const ReferralBanner = () => {
         .maybeSingle();
 
       if (sponsorError || !sponsor) {
-        console.log('Code parrain non trouvé ou inactif');
         return;
       }
 
