@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Coins, Gift } from "lucide-react";
 
 const WelcomeCode = () => {
   const copyCode = () => {
@@ -6,7 +7,12 @@ const WelcomeCode = () => {
   };
 
   const useCodeNow = () => {
-    document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' });
+    const calculator = document.getElementById("calculator");
+    if (calculator) {
+      calculator.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    window.location.href = "/#calculator";
   };
 
   return (
@@ -18,7 +24,7 @@ const WelcomeCode = () => {
         <div className="relative z-10 max-w-4xl mx-auto text-center text-white">
           <div className="mb-8">
             <div className="inline-block p-4 bg-white/10 rounded-full mb-4 border border-white/10 shadow-financial">
-              <span className="text-4xl">🎁</span>
+              <Gift className="h-9 w-9 text-primary" />
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Offre Spéciale Premier Transfert
@@ -65,7 +71,10 @@ const WelcomeCode = () => {
           
           {/* Services USDT */}
           <div className="mt-12 bg-white/[0.06] backdrop-blur-xl rounded-[2rem] p-6 border border-white/10 shadow-financial">
-            <h3 className="text-xl font-bold mb-3 text-white">💰 Services USDT</h3>
+            <h3 className="flex items-center justify-center gap-2 text-xl font-bold mb-3 text-white">
+              <Coins className="h-5 w-5 text-emerald-300" />
+              Services USDT
+            </h3>
             <p className="text-lg mb-4 text-white/80">
               Nous rachetons et vendons vos USDT dans toutes les zones BECEAO et CEMAC.
             </p>
