@@ -41,6 +41,21 @@ const transferRoutes = [
 
 const partnerCodes = PARTNER_CODES.slice(0, 6);
 
+const trustPoints = [
+  {
+    title: "Validation humaine",
+    text: "Chaque montant, réseau et instruction finale est confirmé par l’équipe avant paiement.",
+  },
+  {
+    title: "WhatsApp comme point de contrôle",
+    text: "La demande préremplie garde une trace claire du pays, du service, du code et de la référence.",
+  },
+  {
+    title: "Offres lisibles",
+    text: "Les conditions importantes restent visibles avant la simulation : frais, code, service et canal de contact.",
+  },
+];
+
 const Offers = () => {
   const message = `Bonjour DYNAMIK TRANSFERT, je viens de la page Offres. Je veux profiter d'une offre ou demander un transfert. Code si applicable : BIENVENUE.`;
 
@@ -69,7 +84,7 @@ const Offers = () => {
               </Button>
               <Button asChild size="lg" variant="outline" className="rounded-full border-white/20 bg-white/5 text-white hover:bg-white hover:text-slate-950">
                 <a href={whatsappUrl(message)} target="_blank" rel="noreferrer">
-                  Parler à DYNAMIK <MessageCircle className="h-4 w-4" />
+                  Démarrer sur WhatsApp <MessageCircle className="h-4 w-4" />
                 </a>
               </Button>
             </div>
@@ -97,6 +112,32 @@ const Offers = () => {
       </section>
 
       <WelcomeCode />
+
+      <section className="bg-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto mb-10 max-w-3xl text-center">
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">Pourquoi choisir DYNAMIK</p>
+            <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Rapide, sécurisé et confirmé avant action.</h2>
+            <p className="mt-4 text-muted-foreground">
+              Le site prépare la demande. L’équipe DYNAMIK confirme toujours les détails sensibles sur WhatsApp avant toute opération.
+            </p>
+          </div>
+
+          <div className="grid gap-5 md:grid-cols-3">
+            {trustPoints.map((point) => (
+              <Card key={point.title} className="border-slate-200 bg-slate-50/70 shadow-card">
+                <CardContent className="p-6">
+                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-primary">
+                    <ShieldCheck className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-xl font-semibold">{point.title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">{point.text}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section className="bg-background py-20">
         <div className="container mx-auto px-4">
