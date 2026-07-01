@@ -2,8 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { useSiteContent } from "@/lib/siteContent";
 
 const AmbassadorsSection = () => {
+  const { t } = useSiteContent();
   const scrollRevealRef = useScrollReveal();
   
   // Partenaire officiel en vedette
@@ -85,7 +87,7 @@ const AmbassadorsSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            Nos <span className="text-violet-digital">Ambassadeurs</span>
+            {t("ambassadors.title")}
           </motion.h2>
           <motion.p 
             className="text-center text-muted-foreground mb-12 text-lg"
@@ -94,7 +96,7 @@ const AmbassadorsSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
           >
-            Profitez de codes promo exclusifs avec nos ambassadeurs de confiance
+            {t("ambassadors.subtitle")}
           </motion.p>
 
           {/* Partenaire officiel en vedette */}
@@ -107,7 +109,7 @@ const AmbassadorsSection = () => {
           >
             <Card className="relative overflow-hidden border-2 border-violet-digital/20 bg-gradient-to-br from-violet-digital/10 via-card to-slate-50 shadow-xl">
               <div className="absolute top-0 right-0 bg-slate-950 text-white px-4 py-1 text-xs font-bold rounded-bl-lg">
-                Partenaire Officiel
+                {t("ambassadors.featured.badge")}
               </div>
               <CardContent className="p-8 flex flex-col md:flex-row items-center gap-8">
                 <div className="relative">
@@ -193,10 +195,10 @@ const AmbassadorsSection = () => {
           <div className="text-center">
             <div className="bg-gradient-hero rounded-2xl p-8 text-white">
               <h3 className="text-2xl font-bold mb-4">
-                Devenez Ambassadeur DYNAMIK
+                {t("ambassadors.cta.title")}
               </h3>
               <p className="text-lg mb-6 opacity-90">
-                Obtenez votre propre code promo et gagnez sur chaque parrainage !
+                {t("ambassadors.cta.subtitle")}
               </p>
               <Button 
                 variant="secondary" 

@@ -145,10 +145,10 @@ const Offers = () => {
         <div className="container mx-auto px-4">
           <div className="grid items-start gap-10 lg:grid-cols-[0.95fr_1.05fr]">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">Votre parcours</p>
-              <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Choisissez l’offre, calculez, puis validez sur WhatsApp.</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">{t("offer.journey.eyebrow")}</p>
+              <h2 className="mt-3 text-3xl font-semibold md:text-5xl">{t("offer.journey.title")}</h2>
               <p className="mt-5 leading-7 text-muted-foreground">
-                Consultez les promotions actives, lancez une simulation et envoyez votre demande avec une référence claire. L’équipe DYNAMIK confirme ensuite le montant, le réseau et les instructions finales avant tout paiement.
+                {t("offer.journey.subtitle")}
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button asChild className="rounded-full bg-slate-950 text-white hover:bg-slate-800">
@@ -178,10 +178,10 @@ const Offers = () => {
       <section className="bg-gradient-to-br from-primary/10 via-background to-violet-500/10 py-20">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-12 max-w-3xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">Codes partenaires</p>
-            <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Les codes actifs restent visibles et actionnables.</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">{t("offer.codes.eyebrow")}</p>
+            <h2 className="mt-3 text-3xl font-semibold md:text-5xl">{t("offer.codes.title")}</h2>
             <p className="mt-4 text-muted-foreground">
-              Ces codes peuvent être saisis dans le calculateur ou partagés via les liens partenaires.
+              {t("offer.codes.subtitle")}
             </p>
           </div>
 

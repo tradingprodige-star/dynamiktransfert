@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DYNAMIK_CONTACTS, whatsappUrl } from "@/lib/dynamik";
 import { ExternalLink, FileText, MessageCircle, ShieldCheck } from "lucide-react";
+import { useSiteContent } from "@/lib/siteContent";
 
 const files = [
   {
@@ -17,20 +18,23 @@ const files = [
   },
 ];
 
-const Terms = () => (
+const Terms = () => {
+  const { t } = useSiteContent();
+
+  return (
   <PublicPage>
     <section className="bg-slate-950 py-20 text-white">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-4xl text-center">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm text-white/70">
             <FileText className="h-4 w-4 text-primary" />
-            Termes et fichiers
+            {t("terms.hero.eyebrow")}
           </div>
           <h1 className="text-4xl font-semibold tracking-tight md:text-6xl">
-            Documents DYNAMIK Transfert.
+            {t("terms.hero.title")}
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/65">
-            Retrouvez les liens des conditions d’utilisation, fichiers et contacts officiels. Pour toute question, l’équipe répond directement sur WhatsApp.
+            {t("terms.hero.subtitle")}
           </p>
         </div>
       </div>
@@ -63,9 +67,9 @@ const Terms = () => (
               <div className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-violet-digital">
                 <ShieldCheck className="h-4 w-4" /> Contact officiel
               </div>
-              <h2 className="text-3xl font-semibold">Besoin d’une confirmation ?</h2>
+              <h2 className="text-3xl font-semibold">{t("terms.confirm.title")}</h2>
               <p className="mt-3 text-muted-foreground">
-                Les liens, adresses USDT, réseaux et montants à payer sont confirmés avant paiement par WhatsApp.
+                {t("terms.confirm.text")}
               </p>
             </div>
             <Button asChild size="lg" className="rounded-full bg-emerald-500 text-white hover:bg-emerald-600">
@@ -78,6 +82,7 @@ const Terms = () => (
       </div>
     </section>
   </PublicPage>
-);
+  );
+};
 
 export default Terms;

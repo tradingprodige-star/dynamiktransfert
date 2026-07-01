@@ -6,8 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MessageCircle } from "lucide-react";
+import { useSiteContent } from "@/lib/siteContent";
 
 const ComplaintForm = () => {
+  const { t } = useSiteContent();
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -76,10 +78,10 @@ Merci de traiter cette réclamation dans les plus brefs délais.`;
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Plaintes et Réclamations
+              {t("complaints.title")}
             </h2>
             <p className="text-muted-foreground text-lg">
-              Un problème avec votre transfert ? Nous sommes là pour vous aider.
+              {t("complaints.subtitle")}
             </p>
           </div>
 
@@ -87,10 +89,10 @@ Merci de traiter cette réclamation dans les plus brefs délais.`;
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageCircle className="h-5 w-5 text-primary" />
-                Formulaire de réclamation
+                {t("complaints.card.title")}
               </CardTitle>
               <CardDescription>
-                Remplissez ce formulaire et votre réclamation sera automatiquement transmise à notre équipe via WhatsApp.
+                {t("complaints.card.description")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -180,7 +182,7 @@ Merci de traiter cette réclamation dans les plus brefs délais.`;
                 size="lg"
               >
                 <MessageCircle className="mr-2 h-4 w-4" />
-                Envoyer la réclamation via WhatsApp
+                {t("complaints.submit")}
               </Button>
 
               <div className="text-center text-sm text-muted-foreground">

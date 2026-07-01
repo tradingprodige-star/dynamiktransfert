@@ -234,7 +234,7 @@ const AdminCmsManager = () => {
           <div>
             <CardTitle>CMS modification des textes du site</CardTitle>
             <p className="mt-2 text-sm text-muted-foreground">
-              Modifiez ici les textes visibles sur l’accueil, la page Offres et le pied de page. Après sauvegarde, le site public affiche les nouveaux textes.
+              Modifiez ici les textes visibles sur toutes les pages publiques : accueil, crypto, partenariats, offres, à propos, FAQ, réclamations, termes, ambassadeurs, parrainage et pied de page. Après sauvegarde, le site public affiche les nouveaux textes.
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">

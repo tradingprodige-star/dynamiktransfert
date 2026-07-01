@@ -5,6 +5,7 @@ import ReferralSection from "@/components/referral/ReferralSection";
 import { DYNAMIK_CONTACTS, PARTNER_CODES, makeReferralLink } from "@/lib/dynamik";
 import { ArrowRight, Copy, Handshake, MessageCircle, Share2, Sparkles, Users } from "lucide-react";
 import { useMemo } from "react";
+import { useSiteContent } from "@/lib/siteContent";
 
 const featuredSlides = [
   {
@@ -25,6 +26,7 @@ const featuredSlides = [
 ];
 
 const Partnerships = () => {
+  const { t } = useSiteContent();
   const promoCards = useMemo(() => PARTNER_CODES.map((partner) => ({
     ...partner,
     link: makeReferralLink(partner.code),
@@ -41,13 +43,13 @@ const Partnerships = () => {
           <div className="mx-auto max-w-4xl text-center">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm text-white/70">
               <Handshake className="h-4 w-4 text-primary" />
-              Opportunités partenaires DYNAMIK
+              {t("partnerships.hero.eyebrow")}
             </div>
             <h1 className="text-4xl font-semibold tracking-tight md:text-6xl">
-              Parrainage, codes promo et partenaires DYNAMIK.
+              {t("partnerships.hero.title")}
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/68">
-              Rejoignez le réseau DYNAMIK, partagez vos annonces et suivez les personnes orientées vers nos services de transfert et crypto.
+              {t("partnerships.hero.subtitle")}
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Button asChild size="lg" className="rounded-full bg-primary text-slate-950 hover:bg-primary-glow">
@@ -86,10 +88,10 @@ const Partnerships = () => {
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">Annonces & opportunités</p>
-              <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Codes, campagnes et contacts partenaires réunis.</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">{t("partnerships.ads.eyebrow")}</p>
+              <h2 className="mt-3 text-3xl font-semibold md:text-5xl">{t("partnerships.ads.title")}</h2>
               <p className="mt-5 text-muted-foreground leading-7">
-                Retrouvez les promotions en cours, les codes à partager et les actions utiles : devenir partenaire, utiliser un code ou contacter DYNAMIK sur WhatsApp.
+                {t("partnerships.ads.subtitle")}
               </p>
             </div>
             <div className="grid gap-4 md:grid-cols-3">
@@ -116,10 +118,10 @@ const Partnerships = () => {
       <section id="codes-partenaires" className="bg-background py-20">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-12 max-w-3xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">Codes promo</p>
-            <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Liens de parrainage disponibles</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">{t("partnerships.codes.eyebrow")}</p>
+            <h2 className="mt-3 text-3xl font-semibold md:text-5xl">{t("partnerships.codes.title")}</h2>
             <p className="mt-4 text-muted-foreground">
-              Chaque lien applique le code partenaire dans le calculateur et transmet l’information à l’équipe DYNAMIK lors de la finalisation WhatsApp.
+              {t("partnerships.codes.subtitle")}
             </p>
           </div>
 
@@ -162,9 +164,9 @@ const Partnerships = () => {
 
       <section className="bg-slate-950 py-16 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-semibold">Besoin d’un lien personnalisé ?</h2>
+          <h2 className="text-3xl font-semibold">{t("partnerships.cta.title")}</h2>
           <p className="mx-auto mt-3 max-w-2xl text-white/65">
-            Inscrivez-vous avec votre nom et votre numéro WhatsApp. L’équipe DYNAMIK vous accompagne ensuite pour activer votre lien et vos annonces.
+            {t("partnerships.cta.subtitle")}
           </p>
           <Button asChild size="lg" className="mt-8 rounded-full bg-primary text-slate-950 hover:bg-primary-glow">
             <a href="#programme-parrainage">

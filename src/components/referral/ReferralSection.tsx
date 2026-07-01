@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import SponsorRegistration from './SponsorRegistration';
 import SponsorDashboard from './SponsorDashboard';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
+import { useSiteContent } from '@/lib/siteContent';
 
 interface SponsorData {
   id: string;
@@ -14,6 +15,7 @@ interface SponsorData {
 }
 
 const ReferralSection = () => {
+  const { t } = useSiteContent();
   const [currentSponsor, setCurrentSponsor] = useState<SponsorData | null>(null);
   const scrollRevealRef = useScrollReveal();
 
@@ -32,10 +34,10 @@ const ReferralSection = () => {
             className="text-center mb-8"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-3">
-              Programme de <span className="text-violet-digital">Parrainage</span>
+              {t("referral.title")}
             </h2>
             <p className="text-muted-foreground">
-              Parrainez vos proches et gagnez des récompenses à chaque transfert effectué
+              {t("referral.subtitle")}
             </p>
           </motion.div>
 

@@ -1,4 +1,7 @@
+import { useSiteContent } from "@/lib/siteContent";
+
 const AboutSection = () => {
+  const { t } = useSiteContent();
   const openInstagram = (url: string) => {
     window.open(url, '_blank');
   };
@@ -12,7 +15,7 @@ const AboutSection = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 text-foreground animate-fade-in">
-            À propos de <span className="text-violet-digital">DYNAMIK Transfert</span>
+            {t("about.title")}
           </h2>
           
           {/* Storytelling */}
@@ -20,14 +23,11 @@ const AboutSection = () => {
             <div className="max-w-4xl mx-auto">
               <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
                 <p>
-                  En 2020, le monde était figé par la crise du Covid.
-                  Mais pendant que la planète tournait au ralenti, deux jeunes amis de Lomé 
-                  décidaient de créer leur propre dynamique :
+                  {t("about.story.1")}
                 </p>
                 
                 <p>
-                  Une boutique de vêtements en ligne qui connaît un succès, qu'ils baptisent 
-                  <span className="font-bold text-accent"> DYNAMIK SHOP</span>.
+                  {t("about.story.2")}
                 </p>
                 
                 <p>
@@ -40,7 +40,7 @@ const AboutSection = () => {
                 </div>
                 
                 <p className="text-xl font-semibold">
-                  5 ans plus tard, ils reviennent avec un projet 10 fois plus grand.
+                  {t("about.story.highlight")}
                 </p>
                 
                 <p>
@@ -64,7 +64,7 @@ const AboutSection = () => {
           {/* Fondateurs */}
           <div className="mb-16">
             <h3 className="text-2xl font-bold text-center mb-12 text-foreground">
-              Corneille & Prodige
+              {t("about.founders.title")}
             </h3>
             <div className="grid md:grid-cols-2 gap-12">
               
@@ -172,18 +172,16 @@ const AboutSection = () => {
           {/* Mission et Vision */}
           <div className="grid md:grid-cols-2 gap-8">
             <div className="text-center p-8 rounded-2xl bg-background border border-border">
-              <h4 className="text-xl font-bold mb-4 text-violet-digital">Notre Mission</h4>
+              <h4 className="text-xl font-bold mb-4 text-violet-digital">{t("about.mission.title")}</h4>
               <p className="text-muted-foreground">
-                Démocratiser les transferts d'argent en Afrique plus précisément entre l'Afrique de l'Ouest 
-                Et L'Afrique centrale en offrant une solution accessible, transparente et économique.
+                {t("about.mission.text")}
               </p>
             </div>
             
             <div className="text-center p-8 rounded-2xl bg-background border border-border">
-              <h4 className="text-xl font-bold mb-4 text-accent">Notre Vision</h4>
+              <h4 className="text-xl font-bold mb-4 text-accent">{t("about.vision.title")}</h4>
               <p className="text-muted-foreground">
-                Devenir la référence des échanges financiers entre le Gabon, Togo et 
-                dans toute la zone BECEAO.
+                {t("about.vision.text")}
               </p>
             </div>
           </div>

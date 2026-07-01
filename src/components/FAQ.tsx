@@ -1,6 +1,8 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useSiteContent } from "@/lib/siteContent";
 
 const FAQ = () => {
+  const { t } = useSiteContent();
   const faqData = [
     {
       question: "Comment fonctionne DYNAMIK TRANSFERT ?",
@@ -58,10 +60,10 @@ const FAQ = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Questions Fréquemment Posées
+              {t("faq.title")}
             </h2>
             <p className="text-muted-foreground text-lg">
-              Tout ce que vous devez savoir sur DYNAMIK TRANSFERT
+              {t("faq.subtitle")}
             </p>
           </div>
 
@@ -84,13 +86,13 @@ const FAQ = () => {
 
           <div className="text-center mt-12">
             <p className="text-muted-foreground mb-4">
-              Vous ne trouvez pas la réponse à votre question ?
+              {t("faq.cta.text")}
             </p>
             <button
               onClick={() => window.open('https://wa.me/22899771419?text=Bonjour%20DYNAMIK%20TRANSFERT,%20j\'ai%20une%20question%20qui%20n\'est%20pas%20dans%20la%20FAQ...', '_blank')}
               className="inline-flex items-center gap-2 bg-slate-950 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
             >
-              Contactez-nous sur WhatsApp
+              {t("faq.cta.button")}
             </button>
           </div>
         </div>

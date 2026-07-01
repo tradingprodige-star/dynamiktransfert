@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BMIPAY_USDT_NOTICE, qrCodeUrl, whatsappUrl } from "@/lib/dynamik";
+import { useSiteContent } from "@/lib/siteContent";
 
 const countries = [
   { value: "togo", label: "Togo", prefix: "+228", networks: ["T-Money", "Moov Money"] },
@@ -31,6 +32,7 @@ const generatePaymentReference = () => {
 };
 
 const CryptoPayment = () => {
+  const { t } = useSiteContent();
   const [country, setCountry] = useState("togo");
   const [phone, setPhone] = useState("");
   const [network, setNetwork] = useState("T-Money");
@@ -104,15 +106,15 @@ const CryptoPayment = () => {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-white/80 backdrop-blur-xl">
               <Wallet className="h-4 w-4 text-emerald-300" />
-              Paiement crypto vers FCFA Mobile Money
+              {t("crypto.hero.eyebrow")}
             </div>
 
             <div className="space-y-5">
               <h2 className="max-w-3xl text-4xl font-semibold tracking-tight md:text-6xl">
-                Payez en crypto. Le bénéficiaire reçoit en FCFA.
+                {t("crypto.hero.title")}
               </h2>
               <p className="max-w-2xl text-lg leading-8 text-white/70">
-                USDT propulsé par la technologie de BMIPAY. Choisissez le pays, le réseau Mobile Money et le montant à recevoir ; la demande s’ouvre immédiatement sur WhatsApp pour confirmer l’adresse, le réseau et le QR Code.
+                {t("crypto.hero.subtitle")}
               </p>
             </div>
 
@@ -134,7 +136,7 @@ const CryptoPayment = () => {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-sm text-white/50">Flux du paiement</p>
-                  <p className="mt-1 font-medium">Wallet crypto → DYNAMIK → Mobile Money</p>
+                  <p className="mt-1 font-medium">{t("crypto.flow.title")}</p>
                 </div>
                 <div className="flex items-center gap-2 text-emerald-300">
                   <Bitcoin className="h-6 w-6" />
