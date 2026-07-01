@@ -20,10 +20,10 @@ const ReferralBanner = () => {
     if (!referralInfo) return;
 
     try {
-      // Vérifier si le code parrain existe
+      // Vérifier si le code parrain existe pour afficher le bandeau.
       const { data: sponsor, error: sponsorError } = await supabase
         .from('sponsors')
-        .select('id, phone_number')
+        .select('phone_number')
         .eq('referral_code', referralInfo.referralCode)
         .eq('is_active', true)
         .eq('is_blocked', false)
@@ -33,29 +33,17 @@ const ReferralBanner = () => {
         return;
       }
 
-      // Enregistrer le clic
-      const { error: clickError } = await supabase
-        .from('referral_clicks')
-        .insert({
-          sponsor_id: sponsor.id,
-          referral_code: referralInfo.referralCode,
-          godchild_id: referralInfo.godchildId,
-          source: referralInfo.source,
-          transfer_status: 'pending'
-        });
+      // Enregistrer le filleul via RPC SECURITY DEFINER : évite les refus RLS publics
+      // sur referral_clicks/sponsors tout en gardant la logique en base.
+      const { error: trackingError } = await supabase.rpc('record_referral_interest', {
+        _referral_code: referralInfo.referralCode,
+        _godchild_id: referralInfo.godchildId,
+        _source: referralInfo.source || 'web',
+      });
 
-      if (clickError) {
-        // Si le godchild_id existe déjà, c'est ok (visite répétée)
-        if (!clickError.message.includes('duplicate')) {
-          console.error('Erreur enregistrement clic:', clickError);
-        }
+      if (trackingError) {
+        console.info('Referral tracking skipped:', trackingError.message);
       }
-
-      // Mettre à jour le compteur du parrain
-      await supabase
-        .from('sponsors')
-        .update({ total_referrals: sponsor.phone_number ? 1 : 0 })
-        .eq('id', sponsor.id);
 
       setSponsorName(sponsor.phone_number.slice(-4));
       setIsVisible(true);

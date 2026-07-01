@@ -6,8 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Gift, Users, TrendingUp, Copy, Share2, Check, Loader2 } from 'lucide-react';
-import { PhoneInput } from 'react-international-phone';
-import 'react-international-phone/style.css';
 import { makeReferralLink } from '@/lib/dynamik';
 
 interface SponsorData {
@@ -32,9 +30,13 @@ const SponsorRegistration = ({ onSponsorFound }: SponsorRegistrationProps) => {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
-  // Extraire les chiffres du numéro de téléphone
-  const getCleanPhoneNumber = (phoneNumber: string) => {
-    return phoneNumber.replace(/\D/g, '');
+  // Normaliser le numéro pour éviter les refus liés aux espaces, tirets ou formats WhatsApp.
+  const getCleanPhoneNumber = (phoneNumber: string) => phoneNumber.replace(/\D/g, '');
+
+  const normalizePhoneNumber = (phoneNumber: string) => {
+    const cleanPhone = getCleanPhoneNumber(phoneNumber);
+    if (!cleanPhone) return '';
+    return `+${cleanPhone}`;
   };
 
   // Ouvrir WhatsApp avec un message de confirmation
@@ -69,6 +71,7 @@ Ce lien remplit automatiquement le code promo dans le calculateur. Partagez-le a
 
     // Validation plus souple - minimum 8 chiffres
     const cleanPhone = getCleanPhoneNumber(phone);
+    const normalizedPhone = normalizePhoneNumber(phone);
     if (!phone || cleanPhone.length < 8) {
       toast({
         title: "Numéro invalide",
@@ -85,7 +88,7 @@ Ce lien remplit automatiquement le code promo dans le calculateur. Partagez-le a
       const { data: existingSponsor, error: searchError } = await supabase
         .from('sponsors')
         .select('*')
-        .eq('phone_number', phone)
+        .eq('phone_number', normalizedPhone)
         .maybeSingle();
 
       if (searchError) throw searchError;
@@ -109,7 +112,7 @@ Ce lien remplit automatiquement le code promo dans le calculateur. Partagez-le a
           .from('sponsors')
           .insert({
             full_name: fullName.trim(),
-            phone_number: phone,
+            phone_number: normalizedPhone,
             referral_code: codeData
           })
           .select()
@@ -119,8 +122,10 @@ Ce lien remplit automatiquement le code promo dans le calculateur. Partagez-le a
 
         setNewSponsor(newData as SponsorData);
         
-        // Créer aussi le code promo lié au lien de parrainage (si la politique DB le permet).
-        await supabase
+        // Créer aussi le code promo lié au lien de parrainage si la politique DB le permet.
+        // Un trigger Supabase le crée déjà côté base. Cette tentative ne doit jamais bloquer
+        // l'inscription publique si RLS refuse l'écriture directe sur promo_codes.
+        const { error: promoError } = await supabase
           .from('promo_codes')
           .upsert({
             code: codeData,
@@ -128,12 +133,16 @@ Ce lien remplit automatiquement le code promo dans le calculateur. Partagez-le a
             discount_percentage: 10,
             ambassador_name: fullName.trim(),
             partner_name: fullName.trim(),
-            partner_phone: phone,
+            partner_phone: normalizedPhone,
             is_active: true,
           }, { onConflict: 'code' });
 
+        if (promoError) {
+          console.info('Promo sync skipped:', promoError.message);
+        }
+
         // Envoyer la notification WhatsApp
-        sendWhatsAppConfirmation(phone, codeData);
+        sendWhatsAppConfirmation(normalizedPhone, codeData);
         
         toast({
           title: "Félicitations !",
@@ -142,7 +151,10 @@ Ce lien remplit automatiquement le code promo dans le calculateur. Partagez-le a
       }
     } catch (error: unknown) {
       console.error('Error:', error);
-      const message = error instanceof Error ? error.message : "Une erreur est survenue";
+      const rawMessage = error instanceof Error ? error.message : "Une erreur est survenue";
+      const message = rawMessage.includes('duplicate key')
+        ? "Ce numéro est déjà inscrit. Vérifiez le format du numéro ou contactez le support WhatsApp."
+        : rawMessage;
       toast({
         title: "Erreur",
         description: message,
@@ -280,7 +292,7 @@ Ce lien remplit automatiquement le code promo dans le calculateur. Partagez-le a
           </div>
           <CardTitle>Inscription au programme partenariat</CardTitle>
           <CardDescription>
-            Entrez votre nom et votre numéro WhatsApp pour obtenir votre code promo et votre lien partenaire
+            Entrez votre nom et votre numéro WhatsApp. Vous recevez immédiatement votre code promo et votre lien partenaire.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -295,12 +307,11 @@ Ce lien remplit automatiquement le code promo dans le calculateur. Partagez-le a
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Numéro WhatsApp</label>
-              <PhoneInput
-                defaultCountry="tg"
+              <Input
                 value={phone}
-                onChange={(phone) => setPhone(phone)}
-                className="w-full"
-                inputClassName="!w-full !h-11 !text-base !rounded-md !border-input"
+                onChange={(event) => setPhone(event.target.value)}
+                inputMode="tel"
+                placeholder="Ex : +228 90 12 34 56"
               />
             </div>
             <Button 
