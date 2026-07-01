@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { LogIn, Menu, UserPlus, X } from "lucide-react";
 import { useState } from "react";
 import { navItems, whatsappUrl } from "@/lib/dynamik";
 
@@ -34,8 +34,17 @@ const PublicNav = () => {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button asChild className="hidden rounded-full bg-white text-slate-950 hover:bg-white/90 sm:inline-flex">
-            <Link to="/auth">Se connecter</Link>
+          <Button asChild variant="outline" className="hidden rounded-full border-white/20 bg-white/10 text-white hover:bg-white hover:text-slate-950 md:inline-flex">
+            <Link to="/auth?mode=signin">
+              <LogIn className="h-4 w-4" />
+              Se connecter
+            </Link>
+          </Button>
+          <Button asChild className="hidden rounded-full bg-primary text-slate-950 hover:bg-primary-glow md:inline-flex">
+            <Link to="/auth?mode=signup">
+              <UserPlus className="h-4 w-4" />
+              S'inscrire
+            </Link>
           </Button>
           <Button
             type="button"
@@ -80,6 +89,24 @@ const PublicNav = () => {
             >
               WhatsApp immédiat
             </a>
+            <div className="grid gap-2 rounded-3xl border border-white/10 bg-white/[0.04] p-2">
+              <NavLink
+                to="/auth?mode=signin"
+                onClick={() => setOpen(false)}
+                className="flex items-center justify-center gap-2 rounded-2xl border border-white/20 px-4 py-3 text-sm font-semibold text-white hover:bg-white hover:text-slate-950"
+              >
+                <LogIn className="h-4 w-4" />
+                Se connecter
+              </NavLink>
+              <NavLink
+                to="/auth?mode=signup"
+                onClick={() => setOpen(false)}
+                className="flex items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-slate-950 hover:bg-primary-glow"
+              >
+                <UserPlus className="h-4 w-4" />
+                Créer un compte
+              </NavLink>
+            </div>
           </nav>
         </div>
       )}

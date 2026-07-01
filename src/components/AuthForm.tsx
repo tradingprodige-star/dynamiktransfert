@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -20,7 +21,18 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const referralCode = getStoredReferralCode();
+  const initialMode = useMemo(() => {
+    const mode = searchParams.get("mode");
+    if (mode === "signup" || mode === "inscription") return "signup";
+    return "signin";
+  }, [searchParams]);
+  const [activeTab, setActiveTab] = useState(initialMode);
+
+  useEffect(() => {
+    setActiveTab(referralCode ? "signup" : initialMode);
+  }, [initialMode, referralCode]);
 
   const applyReferralAfterSignup = async (userId: string, phone: string) => {
     const code = persistReferralCode(referralCode);
@@ -232,7 +244,7 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
           </div>
         )}
 
-        <Tabs defaultValue={referralCode ? "signup" : "signin"} className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="signin">Connexion</TabsTrigger>
             <TabsTrigger value="signup">Inscription</TabsTrigger>

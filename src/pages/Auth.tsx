@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthForm from "@/components/AuthForm";
-import Header from "@/components/Header";
+import PublicNav from "@/components/PublicNav";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 
@@ -10,32 +10,43 @@ const Auth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const redirectAfterAuth = useCallback(async (userId: string) => {
+    const { data: roleData } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', 'admin')
+      .maybeSingle();
+
+    navigate(roleData ? '/admin/referrals' : '/promo');
+  }, [navigate]);
+
   useEffect(() => {
-    // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        navigate('/');
+        redirectAfterAuth(session.user.id);
       }
       setLoading(false);
     });
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (_event, session) => {
         setUser(session?.user ?? null);
-        if (session?.user) {
-          navigate('/');
-        }
         setLoading(false);
       }
     );
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [redirectAfterAuth]);
 
-  const handleAuthSuccess = () => {
-    navigate('/');
+  const handleAuthSuccess = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      await redirectAfterAuth(session.user.id);
+      return;
+    }
+    navigate('/promo');
   };
 
   if (loading) {
@@ -55,7 +66,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <PublicNav />
       <div className="container mx-auto px-4 py-20">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
@@ -63,7 +74,7 @@ const Auth = () => {
               Accès à votre compte
             </h1>
             <p className="text-muted-foreground">
-              Connectez-vous ou créez votre compte pour utiliser les codes promo
+              Connectez-vous avec vos accès. Si le compte est super administrateur, vous serez envoyé directement vers le tableau d'administration.
             </p>
           </div>
           

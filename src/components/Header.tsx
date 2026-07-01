@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import { ArrowRight, Globe2, Menu, ShieldCheck, Smartphone, Wallet, X } from "lucide-react";
+import { ArrowRight, Globe2, LogIn, Menu, ShieldCheck, Smartphone, UserPlus, Wallet, X } from "lucide-react";
 import { navItems, whatsappUrl } from "@/lib/dynamik";
 
 const Header = () => {
@@ -67,6 +67,31 @@ const Header = () => {
             <button onClick={() => navigate("/termes")} className="transition hover:text-white">Termes</button>
           </div>
           <div className="flex items-center gap-2">
+            {!user && (
+              <div className="hidden items-center gap-2 md:flex">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="rounded-full border-white/25 bg-white/10 text-white hover:bg-white hover:text-slate-950"
+                >
+                  <Link to="/auth?mode=signin">
+                    <LogIn className="h-4 w-4" />
+                    Se connecter
+                  </Link>
+                </Button>
+                <Button asChild className="rounded-full bg-primary text-slate-950 hover:bg-primary-glow">
+                  <Link to="/auth?mode=signup">
+                    <UserPlus className="h-4 w-4" />
+                    S'inscrire
+                  </Link>
+                </Button>
+              </div>
+            )}
+            {user && (
+              <Button asChild className="hidden rounded-full bg-primary text-slate-950 hover:bg-primary-glow md:inline-flex">
+                <Link to="/promo">Mon espace</Link>
+              </Button>
+            )}
             <Button onClick={openWhatsApp} className="hidden rounded-full bg-white text-matte-black hover:bg-white/90 sm:inline-flex">
               WhatsApp
             </Button>
@@ -95,6 +120,22 @@ const Header = () => {
                   {item.label}
                 </Link>
               ))}
+              {!user ? (
+                <div className="grid gap-2 rounded-3xl border border-white/10 bg-white/[0.04] p-2">
+                  <Link to="/auth?mode=signin" onClick={() => setMobileOpen(false)} className="flex items-center justify-center gap-2 rounded-2xl border border-white/20 px-4 py-3 text-sm font-semibold text-white hover:bg-white hover:text-slate-950">
+                    <LogIn className="h-4 w-4" />
+                    Se connecter
+                  </Link>
+                  <Link to="/auth?mode=signup" onClick={() => setMobileOpen(false)} className="flex items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-slate-950 hover:bg-primary-glow">
+                    <UserPlus className="h-4 w-4" />
+                    Créer un compte
+                  </Link>
+                </div>
+              ) : (
+                <Link to="/promo" onClick={() => setMobileOpen(false)} className="rounded-2xl bg-primary px-4 py-3 text-center text-sm font-bold text-slate-950 hover:bg-primary-glow">
+                  Mon espace
+                </Link>
+              )}
               <button onClick={openWhatsApp} className="rounded-2xl bg-emerald-400 px-4 py-3 text-left font-semibold text-slate-950">WhatsApp immédiat</button>
             </div>
           </div>

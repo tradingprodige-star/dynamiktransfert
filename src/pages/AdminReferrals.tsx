@@ -462,7 +462,7 @@ const AdminReferrals = () => {
             <p className="text-center text-muted-foreground">
               Vous devez être connecté avec un compte administrateur pour accéder à cette page.
             </p>
-            <Link to="/auth">
+            <Link to="/auth?mode=signin">
               <Button className="w-full">
                 Se connecter
               </Button>
