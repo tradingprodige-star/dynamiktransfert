@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -72,13 +72,7 @@ const SponsorDashboard = ({ sponsor, onBack }: SponsorDashboardProps) => {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    loadSponsorData();
-    loadReferrals();
-    loadRewards();
-  }, [sponsor.id]);
-
-  const loadSponsorData = async () => {
+  const loadSponsorData = useCallback(async () => {
     const { data, error } = await supabase
       .from('sponsors')
       .select('*')
@@ -88,9 +82,9 @@ const SponsorDashboard = ({ sponsor, onBack }: SponsorDashboardProps) => {
     if (!error && data) {
       setFullSponsor(data as SponsorData);
     }
-  };
+  }, [sponsor.id]);
 
-  const loadReferrals = async () => {
+  const loadReferrals = useCallback(async () => {
     const { data, error } = await supabase
       .from('referral_clicks')
       .select('*')
@@ -100,9 +94,9 @@ const SponsorDashboard = ({ sponsor, onBack }: SponsorDashboardProps) => {
     if (!error && data) {
       setReferrals(data as ReferralClick[]);
     }
-  };
+  }, [sponsor.id]);
 
-  const loadRewards = async () => {
+  const loadRewards = useCallback(async () => {
     const { data, error } = await supabase
       .from('rewards')
       .select('*')
@@ -112,7 +106,13 @@ const SponsorDashboard = ({ sponsor, onBack }: SponsorDashboardProps) => {
     if (!error && data) {
       setRewards(data as Reward[]);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadSponsorData();
+    loadReferrals();
+    loadRewards();
+  }, [loadSponsorData, loadReferrals, loadRewards]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);

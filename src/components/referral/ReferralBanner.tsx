@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Gift } from 'lucide-react';
 import { useReferralTracking } from '@/hooks/useReferralTracking';
@@ -10,13 +10,7 @@ const ReferralBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [hasTracked, setHasTracked] = useState(false);
 
-  useEffect(() => {
-    if (referralInfo?.referralCode && !hasTracked) {
-      trackClick();
-    }
-  }, [referralInfo, hasTracked]);
-
-  const trackClick = async () => {
+  const trackClick = useCallback(async () => {
     if (!referralInfo) return;
 
     try {
@@ -52,7 +46,13 @@ const ReferralBanner = () => {
     } catch (error) {
       console.error('Erreur tracking:', error);
     }
-  };
+  }, [referralInfo]);
+
+  useEffect(() => {
+    if (referralInfo?.referralCode && !hasTracked) {
+      trackClick();
+    }
+  }, [referralInfo?.referralCode, hasTracked, trackClick]);
 
   if (!isVisible || !referralInfo) return null;
 

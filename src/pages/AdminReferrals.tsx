@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -131,69 +131,7 @@ const AdminReferrals = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Check authentication and admin role on mount
-  useEffect(() => {
-    const checkAdminAccess = async () => {
-      setIsCheckingAuth(true);
-      
-      try {
-        // Get current session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError || !session?.user) {
-          setIsAdmin(false);
-          setIsCheckingAuth(false);
-          return;
-        }
-
-        // Check if user has admin role in database
-        const { data: roleData, error: roleError } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', session.user.id)
-          .eq('role', 'admin')
-          .maybeSingle();
-
-        if (roleError) {
-          console.error('Error checking admin role:', roleError);
-          setIsAdmin(false);
-          setIsCheckingAuth(false);
-          return;
-        }
-
-        if (roleData) {
-          setIsAdmin(true);
-          loadData();
-        } else {
-          setIsAdmin(false);
-        }
-      } catch (error) {
-        console.error('Auth check error:', error);
-        setIsAdmin(false);
-      } finally {
-        setIsCheckingAuth(false);
-      }
-    };
-
-    checkAdminAccess();
-
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_OUT' || !session) {
-        setIsAdmin(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setIsAdmin(false);
-    toast({ title: "Déconnexion réussie" });
-  };
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
       // Charger les referrals avec les infos sponsor
@@ -268,6 +206,68 @@ const AdminReferrals = () => {
     } finally {
       setIsLoading(false);
     }
+  }, [toast]);
+
+  // Check authentication and admin role on mount
+  useEffect(() => {
+    const checkAdminAccess = async () => {
+      setIsCheckingAuth(true);
+
+      try {
+        // Get current session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+        if (sessionError || !session?.user) {
+          setIsAdmin(false);
+          setIsCheckingAuth(false);
+          return;
+        }
+
+        // Check if user has admin role in database
+        const { data: roleData, error: roleError } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', session.user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
+
+        if (roleError) {
+          console.error('Error checking admin role:', roleError);
+          setIsAdmin(false);
+          setIsCheckingAuth(false);
+          return;
+        }
+
+        if (roleData) {
+          setIsAdmin(true);
+          loadData();
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        setIsAdmin(false);
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    };
+
+    checkAdminAccess();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        setIsAdmin(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [loadData]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsAdmin(false);
+    toast({ title: "Déconnexion réussie" });
   };
 
   const openValidateDialog = (click: ReferralClick) => {

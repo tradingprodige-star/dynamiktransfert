@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,35 +40,7 @@ const PromoCodeManager = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    // Get current authenticated user
-    const getCurrentUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        // Get the user profile from our users table
-        const { data: profile } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        
-        if (profile) {
-          setUser(profile);
-        }
-      }
-    };
-
-    getCurrentUser();
-    loadPromoCodes();
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      loadUserUsage();
-    }
-  }, [user]);
-
-  const loadPromoCodes = async () => {
+  const loadPromoCodes = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('promo_codes')
@@ -80,9 +52,9 @@ const PromoCodeManager = () => {
     } catch (error: unknown) {
       console.error('Erreur lors du chargement des codes promo:', error);
     }
-  };
+  }, []);
 
-  const loadUserUsage = async () => {
+  const loadUserUsage = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -96,7 +68,35 @@ const PromoCodeManager = () => {
     } catch (error: unknown) {
       console.error('Erreur lors du chargement de l\'usage:', error);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    // Get current authenticated user
+    const getCurrentUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        // Get the user profile from our users table
+        const { data: profile } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile) {
+          setUser(profile);
+        }
+      }
+    };
+
+    getCurrentUser();
+    loadPromoCodes();
+  }, [loadPromoCodes]);
+
+  useEffect(() => {
+    if (user) {
+      loadUserUsage();
+    }
+  }, [user, loadUserUsage]);
 
   const usePromoCode = async () => {
     if (!user) {
