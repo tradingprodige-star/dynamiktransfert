@@ -279,7 +279,7 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
             
             <Button 
               onClick={handleSignIn}
-              className="w-full h-12 bg-gradient-primary hover:opacity-90 text-primary-foreground font-semibold micro-interaction"
+              className="w-full h-12 bg-gradient-primary text-white hover:opacity-95 font-bold micro-interaction shadow-financial border border-white/10"
               disabled={loading}
             >
               {loading ? "Connexion..." : "Se connecter"}
@@ -344,7 +344,7 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
             
             <Button 
               onClick={handleSignUp}
-              className="w-full h-12 bg-gradient-primary hover:opacity-90 text-primary-foreground font-semibold micro-interaction"
+              className="w-full h-12 bg-gradient-primary text-white hover:opacity-95 font-bold micro-interaction shadow-financial border border-white/10"
               disabled={loading}
             >
               {loading ? "Inscription..." : "S'inscrire"}
