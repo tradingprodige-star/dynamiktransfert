@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DYNAMIK_CONTACTS, PARTNER_CODES, whatsappUrl } from "@/lib/dynamik";
 import { ArrowRight, BadgePercent, Bitcoin, CheckCircle2, Clock3, MessageCircle, ShieldCheck, Sparkles, WalletCards } from "lucide-react";
+import { useSiteContent } from "@/lib/siteContent";
 
 const offerCards = [
   {
@@ -57,6 +58,7 @@ const trustPoints = [
 ];
 
 const Offers = () => {
+  const { t } = useSiteContent();
   const message = `Bonjour DYNAMIK TRANSFERT, je viens de la page Offres. Je veux profiter d'une offre ou demander un transfert. Code si applicable : BIENVENUE.`;
 
   return (
@@ -68,13 +70,13 @@ const Offers = () => {
           <div className="mx-auto max-w-4xl text-center">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm text-white/70">
               <Sparkles className="h-4 w-4 text-primary" />
-              Offres DYNAMIK TRANSFERT
+              {t("offer.hero.eyebrow")}
             </div>
             <h1 className="text-4xl font-semibold tracking-tight md:text-6xl">
-              Les promotions, tarifs clés et services USDT au même endroit.
+              {t("offer.hero.title")}
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/68">
-              Choisissez une offre, simulez votre transfert, puis finalisez directement avec l’équipe DYNAMIK sur WhatsApp.
+              {t("offer.hero.subtitle")}
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Button asChild size="lg" className="rounded-full bg-primary text-slate-950 hover:bg-primary-glow">
@@ -116,10 +118,10 @@ const Offers = () => {
       <section className="bg-white py-16">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-10 max-w-3xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">Pourquoi choisir DYNAMIK</p>
-            <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Rapide, sécurisé et confirmé avant action.</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-digital">{t("offer.trust.eyebrow")}</p>
+            <h2 className="mt-3 text-3xl font-semibold md:text-5xl">{t("offer.trust.title")}</h2>
             <p className="mt-4 text-muted-foreground">
-              Le site prépare la demande. L’équipe DYNAMIK confirme toujours les détails sensibles sur WhatsApp avant toute opération.
+              {t("offer.trust.subtitle")}
             </p>
           </div>
 

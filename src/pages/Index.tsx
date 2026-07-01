@@ -6,6 +6,7 @@ import AdMarquee from "@/components/AdMarquee";
 import ReferralBanner from "@/components/referral/ReferralBanner";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BadgePercent, Bitcoin, HelpCircle, MessageCircle, Share2, Users, Info, Sparkles, ShieldCheck, WalletCards } from "lucide-react";
+import { useSiteContent } from "@/lib/siteContent";
 
 const serviceSections = [
   {
@@ -103,6 +104,8 @@ const accentClasses = {
 } as const;
 
 const Index = () => {
+  const { t } = useSiteContent();
+
   return (
     <div className="min-h-screen premium-page">
       <ReferralBanner />
@@ -113,9 +116,9 @@ const Index = () => {
       <section id="carrousel-partenariats" className="relative overflow-hidden bg-card py-16">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-10 max-w-3xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-violet-digital">Partenariats</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-5xl">Accès rapide au programme partenaires.</h2>
-            <p className="mt-4 text-muted-foreground">Créez votre lien, utilisez un code actif ou contactez DYNAMIK pour devenir partenaire.</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-violet-digital">{t("home.partnership.eyebrow")}</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-5xl">{t("home.partnership.title")}</h2>
+            <p className="mt-4 text-muted-foreground">{t("home.partnership.subtitle")}</p>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {[
@@ -143,12 +146,12 @@ const Index = () => {
         <div className="absolute bottom-0 right-10 h-64 w-64 rounded-full bg-violet-digital/[0.08] blur-3xl" />
         <div className="container relative z-10 mx-auto px-4">
           <div className="mx-auto mb-12 max-w-3xl text-center">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.24em] text-violet-digital">Ambassadeurs DYNAMIK</p>
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.24em] text-violet-digital">{t("home.ambassadors.eyebrow")}</p>
             <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-5xl">
-              Utilisez directement les codes partenaires actifs.
+              {t("home.ambassadors.title")}
             </h2>
             <p className="mt-4 text-lg leading-8 text-muted-foreground">
-              Copiez un code actif, partagez-le à vos proches ou demandez votre propre lien partenaire.
+              {t("home.ambassadors.subtitle")}
             </p>
           </div>
 
@@ -190,13 +193,13 @@ const Index = () => {
           <div className="mx-auto mb-16 max-w-4xl text-center">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.08] px-4 py-2 text-sm text-white/70 backdrop-blur-xl">
               <Sparkles className="h-4 w-4 text-emerald-300" />
-              Services DYNAMIK
+              {t("home.services.eyebrow")}
             </div>
             <h2 className="text-4xl font-semibold tracking-tight md:text-6xl">
-              Tout pour envoyer, recevoir et suivre votre transfert.
+              {t("home.services.title")}
             </h2>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/65">
-              Choisissez le service qui vous concerne, simulez votre opération et finalisez avec DYNAMIK sur WhatsApp.
+              {t("home.services.subtitle")}
             </p>
           </div>
 

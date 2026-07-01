@@ -47,6 +47,45 @@ export type Database = {
         }
         Relationships: []
       }
+      site_texts: {
+        Row: {
+          created_at: string
+          default_value: string
+          is_active: boolean
+          is_multiline: boolean
+          key: string
+          label: string
+          page: string
+          sort_order: number
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          default_value: string
+          is_active?: boolean
+          is_multiline?: boolean
+          key: string
+          label: string
+          page: string
+          sort_order?: number
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          default_value?: string
+          is_active?: boolean
+          is_multiline?: boolean
+          key?: string
+          label?: string
+          page?: string
+          sort_order?: number
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       points_history: {
         Row: {
           created_at: string

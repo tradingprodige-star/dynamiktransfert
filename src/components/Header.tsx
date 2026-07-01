@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { ArrowRight, Globe2, LogIn, Menu, ShieldCheck, Smartphone, UserPlus, Wallet, X } from "lucide-react";
 import { navItems, whatsappUrl } from "@/lib/dynamik";
+import { useSiteContent } from "@/lib/siteContent";
 
 const Header = () => {
   const scrollRevealRef = useScrollReveal();
@@ -15,6 +16,7 @@ const Header = () => {
   const magneticRef2 = useCursorMagnetic(0.3);
   const magneticRef3 = useCursorMagnetic(0.3);
   const navigate = useNavigate();
+  const { t } = useSiteContent();
   const [user, setUser] = useState<User | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -150,7 +152,7 @@ const Header = () => {
               transition={{ delay: 0.25, duration: 0.6 }}
             >
               <span className="h-px w-10 bg-primary/70" />
-              TRANSFERTS USDT & MOBILE MONEY EN AFRIQUE
+              {t("home.hero.eyebrow")}
             </motion.div>
 
             <motion.h1
@@ -159,9 +161,9 @@ const Header = () => {
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.35, duration: 0.8, ease: "easeOut" }}
             >
-              <span className="text-white">Envoyez.</span>{" "}
-              <span className="text-primary">Recevez.</span>{" "}
-              <span className="text-white">Multipliez.</span>
+              <span className="text-white">{t("home.hero.title.part1")}</span>{" "}
+              <span className="text-primary">{t("home.hero.title.part2")}</span>{" "}
+              <span className="text-white">{t("home.hero.title.part3")}</span>
             </motion.h1>
 
             <motion.p
@@ -170,7 +172,7 @@ const Header = () => {
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
             >
-              DYNAMIK TRANSFERT accompagne les transferts FCFA, les échanges USDT et les paiements Mobile Money avec un parcours clair, un suivi WhatsApp et une validation humaine.
+              {t("home.hero.subtitle")}
             </motion.p>
 
             <motion.div
@@ -181,12 +183,12 @@ const Header = () => {
             >
               <motion.div ref={magneticRef1} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
                 <Button size="xl" onClick={scrollToCalculator} className="w-full rounded-full bg-primary text-slate-950 hover:bg-primary-glow shadow-[0_18px_60px_rgba(245,187,0,0.22)] sm:w-auto">
-                  Calculer mes frais <ArrowRight className="h-5 w-5" />
+                  {t("home.hero.cta.primary")} <ArrowRight className="h-5 w-5" />
                 </Button>
               </motion.div>
               <motion.div ref={magneticRef2} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
                 <Button size="xl" onClick={() => navigate("/crypto")} className="w-full rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-xl hover:bg-white/20 sm:w-auto">
-                  Crypto vers FCFA
+                  {t("home.hero.cta.crypto")}
                 </Button>
               </motion.div>
               <motion.div ref={magneticRef3} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>

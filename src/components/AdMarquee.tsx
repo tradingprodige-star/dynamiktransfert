@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { CMS_TEXT_AD_PREFIX } from "@/lib/siteContent";
 
 interface AdBanner {
   id: string;
@@ -38,6 +39,7 @@ const AdMarquee = () => {
         .from("ad_banners")
         .select("id,title,image_url,link_url,is_active,sort_order")
         .eq("is_active", true)
+        .not("title", "like", `${CMS_TEXT_AD_PREFIX}%`)
         .order("sort_order", { ascending: true });
 
       if (!error && data?.length) {

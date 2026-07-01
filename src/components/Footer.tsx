@@ -1,9 +1,11 @@
 import { Instagram, MessageCircle, FileText, Users, Handshake } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DYNAMIK_CONTACTS, whatsappUrl } from "@/lib/dynamik";
+import { useSiteContent } from "@/lib/siteContent";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { t } = useSiteContent();
 
   const openLink = (url: string) => {
     window.open(url, "_blank");
@@ -18,7 +20,7 @@ const Footer = () => {
               DYNAMIK <span className="text-violet-digital">TRANSFERT</span>
             </h3>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Transferts FCFA, USDT et Mobile Money avec suivi WhatsApp et validation humaine.
+              {t("footer.description")}
             </p>
           </div>
 
@@ -87,18 +89,18 @@ const Footer = () => {
               Propulsé par <span className="font-bold text-violet-digital">DYNAMIK</span> • {currentYear}
             </p>
             <p className="text-sm text-muted-foreground">
-              Service accompagné par WhatsApp. Les taux, réseaux et adresses USDT sont confirmés avant paiement.
+              {t("footer.notice")}
             </p>
           </div>
 
           <div className="text-center mt-8">
             <div className="inline-block bg-card border border-border rounded-lg p-4">
-              <p className="text-sm text-muted-foreground mb-1">Support client 24/7</p>
+              <p className="text-sm text-muted-foreground mb-1">{t("footer.support.label")}</p>
               <button
                 onClick={() => openLink(whatsappUrl("Bonjour DYNAMIK TRANSFERT, j’ai besoin d’assistance."))}
                 className="text-violet-digital font-bold hover:underline"
               >
-                Contactez-nous sur WhatsApp
+                {t("footer.support.cta")}
               </button>
             </div>
           </div>
