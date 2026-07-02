@@ -4,8 +4,9 @@ import Calculator from "@/components/Calculator";
 import Footer from "@/components/Footer";
 import AdMarquee from "@/components/AdMarquee";
 import ReferralBanner from "@/components/referral/ReferralBanner";
+import TrustAndProof from "@/components/TrustAndProof";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BadgePercent, Bitcoin, HelpCircle, MessageCircle, Share2, Users, Info, Sparkles, ShieldCheck, WalletCards } from "lucide-react";
+import { ArrowRight, BadgePercent, Bitcoin, MessageCircle, Share2, Users, Info, Sparkles, ShieldCheck, WalletCards } from "lucide-react";
 import { useSiteContent } from "@/lib/siteContent";
 
 const serviceSections = [
@@ -111,6 +112,7 @@ const Index = () => {
       <ReferralBanner />
       <Header />
       <Calculator />
+      <TrustAndProof />
       <AdMarquee />
 
       <section id="carrousel-partenariats" className="relative overflow-hidden bg-card py-16">

@@ -65,7 +65,9 @@ const Header = () => {
             <button onClick={scrollToCalculator} className="transition hover:text-white">Calculateur</button>
             <button onClick={() => navigate("/crypto")} className="transition hover:text-white">Crypto → FCFA</button>
             <button onClick={() => navigate("/partenariats")} className="transition hover:text-white">Partenariats</button>
+            <button onClick={() => document.getElementById("confiance")?.scrollIntoView({ behavior: "smooth" })} className="transition hover:text-white">Confiance</button>
             <button onClick={() => navigate("/a-propos")} className="transition hover:text-white">À propos</button>
+            <button onClick={() => navigate("/faq")} className="transition hover:text-white">FAQ</button>
             <button onClick={() => navigate("/termes")} className="transition hover:text-white">Termes</button>
           </div>
           <div className="flex items-center gap-2">
