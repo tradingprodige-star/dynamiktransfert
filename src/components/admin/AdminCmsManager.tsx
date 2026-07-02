@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/hooks/use-toast";
 import { ImagePlus, Plus, Save, Trash2 } from "lucide-react";
 import { SITE_TEXT_FIELDS, SiteContentMap, cacheSiteContent, defaultSiteContent, fetchRemoteSiteContent, CMS_TEXT_AD_PREFIX } from "@/lib/siteContent";
+import { CmsCollectionItem, CmsCollectionType, adRowToCmsItem, cmsItemToAdPayload, CMS_COLLECTION_PREFIX } from "@/lib/cmsCollections";
 
 type PromoRow = {
   id?: string;
@@ -49,17 +50,62 @@ const emptyAd: AdRow = {
   sort_order: 10,
 };
 
+const emptyCollectionItem = (type: CmsCollectionType, sortOrder = 10): CmsCollectionItem => ({
+  type,
+  title: "",
+  subtitle: "",
+  description: "",
+  imageUrl: "",
+  badge: "",
+  rating: 5,
+  isActive: true,
+  sortOrder,
+});
+
+const collectionLabels: Record<CmsCollectionType, { title: string; description: string; titleLabel: string; subtitleLabel: string; imageLabel: string; descriptionLabel: string }> = {
+  team: {
+    title: "CMS équipe — profils et photos",
+    description: "Ajoutez ou modifiez les membres visibles dans la section Équipe DYNAMIK. L’image peut être une URL ou un fichier local converti pour affichage.",
+    titleLabel: "Nom / rôle affiché",
+    subtitleLabel: "Fonction courte",
+    imageLabel: "Image profil",
+    descriptionLabel: "Description courte",
+  },
+  testimonial: {
+    title: "CMS avis clients — textes et photos",
+    description: "Ajoutez ou modifiez les avis visibles sur la page d’accueil, avec photo ou initiales si aucune image n’est renseignée.",
+    titleLabel: "Nom affiché",
+    subtitleLabel: "Trajet / type d’opération",
+    imageLabel: "Photo client",
+    descriptionLabel: "Avis client",
+  },
+  proof: {
+    title: "CMS captures clients — preuves anonymisées",
+    description: "Ajoutez des captures d’écran de transactions réussies. Floutez toujours les données privées avant publication.",
+    titleLabel: "Titre de la capture",
+    subtitleLabel: "Libellé / statut",
+    imageLabel: "Capture d’écran",
+    descriptionLabel: "Texte sous la capture",
+  },
+};
+
 const AdminCmsManager = () => {
   const [siteTexts, setSiteTexts] = useState<SiteContentMap>(defaultSiteContent);
   const [promos, setPromos] = useState<PromoRow[]>([]);
   const [ads, setAds] = useState<AdRow[]>([]);
+  const [teamItems, setTeamItems] = useState<CmsCollectionItem[]>([]);
+  const [testimonialItems, setTestimonialItems] = useState<CmsCollectionItem[]>([]);
+  const [proofItems, setProofItems] = useState<CmsCollectionItem[]>([]);
+  const [newTeamItem, setNewTeamItem] = useState<CmsCollectionItem>(emptyCollectionItem("team"));
+  const [newTestimonialItem, setNewTestimonialItem] = useState<CmsCollectionItem>(emptyCollectionItem("testimonial"));
+  const [newProofItem, setNewProofItem] = useState<CmsCollectionItem>(emptyCollectionItem("proof"));
   const [newPromo, setNewPromo] = useState<PromoRow>(emptyPromo);
   const [newAd, setNewAd] = useState<AdRow>(emptyAd);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
   const loadCms = async () => {
-    const [remoteTexts, { data: promoData }, { data: adData }] = await Promise.all([
+    const [remoteTexts, { data: promoData }, { data: adData }, { data: collectionData }] = await Promise.all([
       fetchRemoteSiteContent(),
       supabase
         .from("promo_codes")
@@ -70,6 +116,12 @@ const AdminCmsManager = () => {
         .select("id,title,image_url,link_url,is_active,sort_order")
         .eq("is_active", true)
         .not("title", "like", "CMS_TEXT::%")
+        .not("title", "like", `${CMS_COLLECTION_PREFIX}%`)
+        .order("sort_order", { ascending: true }),
+      supabase
+        .from("ad_banners")
+        .select("id,title,image_url,link_url,is_active,sort_order")
+        .like("title", `${CMS_COLLECTION_PREFIX}%`)
         .order("sort_order", { ascending: true }),
     ]);
 
@@ -78,8 +130,15 @@ const AdminCmsManager = () => {
       cacheSiteContent(remoteTexts);
     }
 
+    const collectionItems = ((collectionData || []) as AdRow[]).map((row) =>
+      adRowToCmsItem(row, row.title.includes("::testimonial::") ? "testimonial" : row.title.includes("::proof::") ? "proof" : "team")
+    );
+
     setPromos((promoData || []) as PromoRow[]);
     setAds((adData || []) as AdRow[]);
+    setTeamItems(collectionItems.filter((item) => item.type === "team"));
+    setTestimonialItems(collectionItems.filter((item) => item.type === "testimonial"));
+    setProofItems(collectionItems.filter((item) => item.type === "proof"));
   };
 
   useEffect(() => {
@@ -159,6 +218,102 @@ const AdminCmsManager = () => {
 
   const updateAdLocal = (index: number, patch: Partial<AdRow>) => {
     setAds((current) => current.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  };
+
+  const collectionState = (type: CmsCollectionType) => {
+    if (type === "team") return { items: teamItems, setItems: setTeamItems, newItem: newTeamItem, setNewItem: setNewTeamItem };
+    if (type === "testimonial") return { items: testimonialItems, setItems: setTestimonialItems, newItem: newTestimonialItem, setNewItem: setNewTestimonialItem };
+    return { items: proofItems, setItems: setProofItems, newItem: newProofItem, setNewItem: setNewProofItem };
+  };
+
+  const updateCollectionLocal = (type: CmsCollectionType, index: number, patch: Partial<CmsCollectionItem>) => {
+    const { setItems } = collectionState(type);
+    setItems((current) => current.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  };
+
+  const loadImageFile = (file: File, onValue: (value: string) => void) => {
+    const reader = new FileReader();
+    reader.onload = () => onValue(String(reader.result || ""));
+    reader.readAsDataURL(file);
+  };
+
+  const saveCollectionItem = async (item: CmsCollectionItem) => {
+    setIsSaving(true);
+    const payload = cmsItemToAdPayload(item);
+    const query = item.id ? supabase.from("ad_banners").update(payload).eq("id", item.id) : supabase.from("ad_banners").insert(payload);
+    const { error } = await query;
+    setIsSaving(false);
+
+    if (error) {
+      toast({ title: "Erreur CMS", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    toast({ title: "Élément CMS enregistré" });
+    if (!item.id) {
+      if (item.type === "team") setNewTeamItem(emptyCollectionItem("team"));
+      if (item.type === "testimonial") setNewTestimonialItem(emptyCollectionItem("testimonial"));
+      if (item.type === "proof") setNewProofItem(emptyCollectionItem("proof"));
+    }
+    loadCms();
+  };
+
+  const deleteCollectionItem = async (item: CmsCollectionItem) => {
+    if (!item.id) return;
+    const { error } = await supabase.from("ad_banners").delete().eq("id", item.id);
+    if (error) {
+      toast({ title: "Erreur suppression", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Élément CMS supprimé" });
+    loadCms();
+  };
+
+  const renderCollectionSection = (type: CmsCollectionType) => {
+    const labels = collectionLabels[type];
+    const { items, newItem, setNewItem } = collectionState(type);
+
+    return (
+      <Card key={type}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><ImagePlus className="h-5 w-5" /> {labels.title}</CardTitle>
+          <p className="text-sm text-muted-foreground">{labels.description}</p>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <div className="grid gap-3 rounded-2xl border bg-muted/30 p-4 md:grid-cols-6">
+            <div className="space-y-1 md:col-span-2"><Label>{labels.titleLabel}</Label><Input value={newItem.title} onChange={(e) => setNewItem({ ...newItem, title: e.target.value })} /></div>
+            <div className="space-y-1 md:col-span-2"><Label>{labels.subtitleLabel}</Label><Input value={newItem.subtitle} onChange={(e) => setNewItem({ ...newItem, subtitle: e.target.value })} /></div>
+            <div className="space-y-1 md:col-span-2"><Label>{labels.imageLabel} — URL</Label><Input value={newItem.imageUrl} onChange={(e) => setNewItem({ ...newItem, imageUrl: e.target.value })} placeholder="https://...jpg" /></div>
+            <div className="space-y-1 md:col-span-2"><Label>Importer une image</Label><Input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && loadImageFile(e.target.files[0], (value) => setNewItem({ ...newItem, imageUrl: value }))} /></div>
+            <div className="space-y-1 md:col-span-3"><Label>{labels.descriptionLabel}</Label><Textarea value={newItem.description} onChange={(e) => setNewItem({ ...newItem, description: e.target.value })} className="min-h-[90px]" /></div>
+            <div className="space-y-1 md:col-span-1"><Label>Ordre</Label><Input type="number" value={newItem.sortOrder} onChange={(e) => setNewItem({ ...newItem, sortOrder: Number(e.target.value) })} /></div>
+            <div className="flex items-end"><Button className="w-full" onClick={() => saveCollectionItem(newItem)} disabled={isSaving || !newItem.title}><Plus className="h-4 w-4" /> Ajouter</Button></div>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            {items.map((item, index) => (
+              <div key={item.id || index} className="grid gap-3 rounded-2xl border p-4 md:grid-cols-[160px_1fr]">
+                {item.imageUrl ? <img src={item.imageUrl} alt={item.title} className="h-32 w-full rounded-xl bg-muted object-cover" /> : <div className="flex h-32 items-center justify-center rounded-xl bg-muted text-xs text-muted-foreground">Aucune image</div>}
+                <div className="space-y-3">
+                  <Input value={item.title} onChange={(e) => updateCollectionLocal(type, index, { title: e.target.value })} />
+                  <Input value={item.subtitle} onChange={(e) => updateCollectionLocal(type, index, { subtitle: e.target.value })} />
+                  <Input value={item.imageUrl} onChange={(e) => updateCollectionLocal(type, index, { imageUrl: e.target.value })} placeholder="URL image" />
+                  <Input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && loadImageFile(e.target.files[0], (value) => updateCollectionLocal(type, index, { imageUrl: value }))} />
+                  <Textarea value={item.description} onChange={(e) => updateCollectionLocal(type, index, { description: e.target.value })} className="min-h-[90px]" />
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-2"><Switch checked={item.isActive} onCheckedChange={(checked) => updateCollectionLocal(type, index, { isActive: checked })} /><span className="text-sm">Actif</span></div>
+                    {type === "testimonial" && <Input className="w-20" type="number" min={1} max={5} value={item.rating || 5} onChange={(e) => updateCollectionLocal(type, index, { rating: Number(e.target.value) })} />}
+                    <Input className="w-20" type="number" value={item.sortOrder} onChange={(e) => updateCollectionLocal(type, index, { sortOrder: Number(e.target.value) })} />
+                    <Button size="sm" onClick={() => saveCollectionItem(item)} disabled={isSaving}><Save className="h-4 w-4" /></Button>
+                    <Button size="sm" variant="destructive" onClick={() => deleteCollectionItem(item)}><Trash2 className="h-4 w-4" /></Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
   };
 
   const savePromo = async (promo: PromoRow) => {
@@ -273,6 +428,10 @@ const AdminCmsManager = () => {
           ))}
         </CardContent>
       </Card>
+
+      {renderCollectionSection("team")}
+      {renderCollectionSection("testimonial")}
+      {renderCollectionSection("proof")}
 
       <Card>
         <CardHeader>

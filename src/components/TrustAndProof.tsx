@@ -1,25 +1,28 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Camera, CheckCircle2, Clock3, MessageCircle, ReceiptText, SearchCheck, ShieldCheck, Star, UsersRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { whatsappUrl } from "@/lib/dynamik";
+import { useSiteContent } from "@/lib/siteContent";
+import { CmsCollectionItem, fetchCmsCollections } from "@/lib/cmsCollections";
 
 const trustStats = [
   {
     value: "Référence unique",
     label: "pour chaque demande",
-    detail: "Le client garde une trace claire du montant, du pays, du réseau et du bénéficiaire.",
+    detail: "Gardez une trace claire du montant, du pays, du réseau et du bénéficiaire.",
     icon: ReceiptText,
   },
   {
     value: "< 10 min",
     label: "pour obtenir une estimation",
-    detail: "Le simulateur prépare les frais et le total avant l’échange WhatsApp.",
+    detail: "Simulez les frais et le total à prévoir avant la confirmation WhatsApp.",
     icon: Clock3,
   },
   {
     value: "4 étapes",
     label: "du formulaire à la confirmation",
-    detail: "Remplir, payer, recevoir, confirmer : le parcours est expliqué sans zone grise.",
+    detail: "Remplir, payer, recevoir, confirmer : chaque étape reste simple et visible.",
     icon: CheckCircle2,
   },
   {
@@ -53,49 +56,120 @@ const steps = [
   },
 ];
 
-const testimonials = [
+const defaultTestimonials: CmsCollectionItem[] = [
   {
-    name: "Client diaspora",
-    role: "France → Togo",
-    quote: "Le parcours est clair : je calcule, j’envoie les infos et je reçois la confirmation sur WhatsApp.",
+    type: "testimonial",
+    title: "Client diaspora",
+    subtitle: "France → Togo",
+    description: "Le parcours est clair : je calcule, j’envoie les informations et je reçois la confirmation sur WhatsApp.",
+    imageUrl: "",
+    rating: 5,
+    isActive: true,
+    sortOrder: 1,
   },
   {
-    name: "Commerçant mobile money",
-    role: "USDT → FCFA",
-    quote: "Les instructions sont confirmées avant paiement, ce qui évite les erreurs de réseau ou d’adresse.",
+    type: "testimonial",
+    title: "Commerçant mobile money",
+    subtitle: "USDT → FCFA",
+    description: "Les instructions sont confirmées avant paiement, ce qui évite les erreurs de réseau ou d’adresse.",
+    imageUrl: "",
+    rating: 5,
+    isActive: true,
+    sortOrder: 2,
   },
   {
-    name: "Utilisateur partenaire",
-    role: "Code ambassadeur",
-    quote: "Le code partenaire est repris dans la demande, donc le suivi est plus simple pour tout le monde.",
+    type: "testimonial",
+    title: "Utilisateur partenaire",
+    subtitle: "Code ambassadeur",
+    description: "Le code partenaire est repris dans la demande, donc le suivi est plus simple pour tout le monde.",
+    imageUrl: "",
+    rating: 5,
+    isActive: true,
+    sortOrder: 3,
   },
 ];
 
-const proofCards = [
+const defaultProofs: CmsCollectionItem[] = [
   {
+    type: "proof",
     title: "Captures de transactions réussies",
-    text: "Les confirmations peuvent être partagées en captures floutées : référence, statut confirmé et montant protégé.",
-    icon: Camera,
+    subtitle: "Transactions anonymisées",
+    description: "Des confirmations floutées peuvent montrer la référence, le statut confirmé et le montant protégé.",
+    imageUrl: "",
+    isActive: true,
+    sortOrder: 1,
   },
   {
+    type: "proof",
     title: "Avis clients structurés",
-    text: "Les retours clients mettent en avant le pays, le cas d’usage et l’expérience, sans exposer les données privées.",
-    icon: Star,
+    subtitle: "Retours vérifiables",
+    description: "Chaque avis met en avant le pays, le cas d’usage et l’expérience, sans exposer de données privées.",
+    imageUrl: "",
+    isActive: true,
+    sortOrder: 2,
   },
   {
-    title: "Statistiques de suivi",
-    text: "Les indicateurs publics se concentrent sur ce qui rassure : référence créée, demande confirmée et support joignable.",
-    icon: SearchCheck,
+    type: "proof",
+    title: "Suivi clair",
+    subtitle: "Demande, validation, confirmation",
+    description: "Les informations importantes restent visibles : référence créée, demande confirmée et support joignable.",
+    imageUrl: "",
+    isActive: true,
+    sortOrder: 3,
   },
 ];
 
-const team = [
-  { name: "Équipe opérations", role: "Validation paiements, réseaux et références" },
-  { name: "Support client", role: "Assistance WhatsApp, réclamations et confirmations" },
-  { name: "Partenaires & ambassadeurs", role: "Codes, campagnes locales et accompagnement terrain" },
+const defaultTeam: CmsCollectionItem[] = [
+  {
+    type: "team",
+    title: "Équipe opérations",
+    subtitle: "Validation paiements, réseaux et références",
+    description: "Une équipe dédiée au suivi des opérations et à la vérification des informations sensibles.",
+    imageUrl: "",
+    isActive: true,
+    sortOrder: 1,
+  },
+  {
+    type: "team",
+    title: "Support client",
+    subtitle: "Assistance WhatsApp et confirmations",
+    description: "Un accompagnement humain pour les questions, les réclamations et les confirmations.",
+    imageUrl: "",
+    isActive: true,
+    sortOrder: 2,
+  },
+  {
+    type: "team",
+    title: "Partenaires & ambassadeurs",
+    subtitle: "Codes, campagnes locales et terrain",
+    description: "Des relais locaux pour orienter les clients et simplifier les demandes.",
+    imageUrl: "",
+    isActive: true,
+    sortOrder: 3,
+  },
 ];
 
 const TrustAndProof = () => {
+  const { t } = useSiteContent();
+  const [team, setTeam] = useState<CmsCollectionItem[]>(defaultTeam);
+  const [testimonials, setTestimonials] = useState<CmsCollectionItem[]>(defaultTestimonials);
+  const [proofs, setProofs] = useState<CmsCollectionItem[]>(defaultProofs);
+
+  useEffect(() => {
+    let mounted = true;
+
+    fetchCmsCollections(true).then((collections) => {
+      if (!mounted) return;
+      if (collections.team.length) setTeam(collections.team);
+      if (collections.testimonials.length) setTestimonials(collections.testimonials);
+      if (collections.proofs.length) setProofs(collections.proofs);
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const openWhatsApp = () => {
     window.open(
       whatsappUrl("Bonjour DYNAMIK TRANSFERT, je veux confirmer les frais, délais et pays pris en charge avant mon transfert."),
@@ -112,12 +186,12 @@ const TrustAndProof = () => {
         <div className="container relative z-10 mx-auto px-4">
           <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Confiance avant paiement</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">{t("trust.hero.eyebrow")}</p>
               <h2 className="mt-4 text-4xl font-semibold tracking-tight md:text-6xl">
-                Des repères visibles pour décider sans hésiter.
+                {t("trust.hero.title")}
               </h2>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-white/65">
-                DYNAMIK TRANSFERT met en avant les éléments qui rassurent : référence claire, estimation rapide, validation humaine et preuves publiables sans exposer les données privées.
+                {t("trust.hero.subtitle")}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button onClick={openWhatsApp} className="rounded-full bg-primary text-slate-950 hover:bg-primary-glow">
@@ -151,12 +225,12 @@ const TrustAndProof = () => {
       <section id="fonctionnement" className="bg-background py-20">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-12 max-w-3xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-violet-digital">Comment ça marche</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-violet-digital">{t("trust.steps.eyebrow")}</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground md:text-5xl">
-              Le parcours expliqué en 4 étapes.
+              {t("trust.steps.title")}
             </h2>
             <p className="mt-4 text-lg leading-8 text-muted-foreground">
-              Le visiteur comprend exactement ce qui se passe avant, pendant et après le transfert.
+              {t("trust.steps.subtitle")}
             </p>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -176,23 +250,30 @@ const TrustAndProof = () => {
         <div className="container mx-auto px-4">
           <div className="grid gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-start">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-violet-digital">Preuves & avis</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-violet-digital">{t("trust.proofs.eyebrow")}</p>
               <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground md:text-5xl">
-                Des signaux de sérieux avant le premier message WhatsApp.
+                {t("trust.proofs.title")}
               </h2>
               <p className="mt-4 text-lg leading-8 text-muted-foreground">
-                Avis clients, captures anonymisées et indicateurs de suivi rendent le service plus concret tout en protégeant les informations sensibles.
+                {t("trust.proofs.subtitle")}
               </p>
               <div className="mt-8 grid gap-4 sm:grid-cols-3">
-                {proofCards.map((card) => {
-                  const Icon = card.icon;
+                {proofs.map((card, index) => {
+                  const Icon = index === 0 ? Camera : index === 1 ? Star : SearchCheck;
                   return (
-                    <div key={card.title} className="rounded-[1.5rem] border bg-white p-5 shadow-card">
-                      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-primary">
-                        <Icon className="h-5 w-5" />
+                    <div key={`${card.title}-${index}`} className="overflow-hidden rounded-[1.5rem] border bg-white shadow-card">
+                      {card.imageUrl ? (
+                        <img src={card.imageUrl} alt={card.title} className="h-36 w-full object-cover" loading="lazy" />
+                      ) : (
+                        <div className="flex h-24 items-center justify-center bg-slate-950 text-primary">
+                          <Icon className="h-8 w-8" />
+                        </div>
+                      )}
+                      <div className="p-5">
+                        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-violet-digital">{card.subtitle}</p>
+                        <h3 className="font-semibold text-foreground">{card.title}</h3>
+                        <p className="mt-2 text-sm leading-6 text-muted-foreground">{card.description}</p>
                       </div>
-                      <h3 className="font-semibold text-foreground">{card.title}</h3>
-                      <p className="mt-2 text-sm leading-6 text-muted-foreground">{card.text}</p>
                     </div>
                   );
                 })}
@@ -200,21 +281,25 @@ const TrustAndProof = () => {
             </div>
 
             <div className="space-y-4">
-              {testimonials.map((testimonial) => (
-                <article key={testimonial.name} className="rounded-[1.75rem] border bg-white p-6 shadow-card">
+              {testimonials.map((testimonial, index) => (
+                <article key={`${testimonial.title}-${index}`} className="rounded-[1.75rem] border bg-white p-6 shadow-card">
                   <div className="mb-4 flex items-center gap-1 text-primary">
-                    {[0, 1, 2, 3, 4].map((star) => (
+                    {Array.from({ length: Math.max(1, Math.min(5, Number(testimonial.rating || 5))) }).map((_, star) => (
                       <Star key={star} className="h-4 w-4 fill-current" />
                     ))}
                   </div>
-                  <p className="text-base leading-7 text-foreground">“{testimonial.quote}”</p>
+                  <p className="text-base leading-7 text-foreground">“{testimonial.description}”</p>
                   <div className="mt-5 flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-950 text-sm font-bold text-primary">
-                      {testimonial.name.charAt(0)}
-                    </div>
+                    {testimonial.imageUrl ? (
+                      <img src={testimonial.imageUrl} alt={testimonial.title} className="h-12 w-12 rounded-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-950 text-sm font-bold text-primary">
+                        {testimonial.title.charAt(0)}
+                      </div>
+                    )}
                     <div>
-                      <p className="font-semibold text-foreground">{testimonial.name}</p>
-                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                      <p className="font-semibold text-foreground">{testimonial.title}</p>
+                      <p className="text-sm text-muted-foreground">{testimonial.subtitle}</p>
                     </div>
                   </div>
                 </article>
@@ -225,16 +310,25 @@ const TrustAndProof = () => {
           <div className="mt-12 rounded-[2rem] border bg-slate-950 p-6 text-white shadow-financial md:p-8">
             <div className="grid gap-6 md:grid-cols-[0.9fr_1.1fr] md:items-center">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Équipe DYNAMIK</p>
-                <h3 className="mt-3 text-3xl font-semibold">Une équipe visible, pas un formulaire anonyme.</h3>
-                <p className="mt-3 text-white/60">L’équipe est organisée autour des opérations, du support et des partenaires terrain pour accompagner chaque demande.</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">{t("trust.team.eyebrow")}</p>
+                <h3 className="mt-3 text-3xl font-semibold">{t("trust.team.title")}</h3>
+                <p className="mt-3 text-white/60">{t("trust.team.subtitle")}</p>
               </div>
               <div className="grid gap-3 sm:grid-cols-3">
-                {team.map((member) => (
-                  <div key={member.name} className="rounded-3xl border border-white/10 bg-white/[0.07] p-5">
-                    <UsersRound className="mb-4 h-6 w-6 text-emerald-300" />
-                    <p className="font-semibold">{member.name}</p>
-                    <p className="mt-2 text-sm leading-6 text-white/55">{member.role}</p>
+                {team.map((member, index) => (
+                  <div key={`${member.title}-${index}`} className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.07]">
+                    {member.imageUrl ? (
+                      <img src={member.imageUrl} alt={member.title} className="h-32 w-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="flex h-24 items-center justify-center bg-white/[0.06]">
+                        <UsersRound className="h-8 w-8 text-emerald-300" />
+                      </div>
+                    )}
+                    <div className="p-5">
+                      <p className="font-semibold">{member.title}</p>
+                      <p className="mt-2 text-sm leading-6 text-white/55">{member.subtitle}</p>
+                      {member.description && <p className="mt-3 text-xs leading-5 text-white/45">{member.description}</p>}
+                    </div>
                   </div>
                 ))}
               </div>
