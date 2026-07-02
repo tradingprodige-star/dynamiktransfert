@@ -98,6 +98,43 @@ interface Stats {
   totalPromoUses: number;
 }
 
+const TEST_DATA_PATTERN = /\b(test|demo|démo|essai|sample|placeholder|lorem|fake|mock)\b/i;
+
+const isTestLikeValue = (value?: string | null) => Boolean(value && TEST_DATA_PATTERN.test(value));
+
+const sourceLabels: Record<string, string> = {
+  signup: "Inscription client",
+  calculator: "Simulation de transfert",
+  transfer: "Demande de transfert",
+  whatsapp: "Contact WhatsApp",
+  referral: "Lien partenaire",
+};
+
+const formatSource = (source?: string | null) => {
+  if (!source) return "Parcours client";
+  return sourceLabels[source] || source.replace(/[_-]/g, " ");
+};
+
+const maskIdentifier = (value?: string | null) => {
+  if (!value) return "Client non renseigné";
+  if (value.startsWith("+") || /^\d{7,}$/.test(value.replace(/\D/g, ""))) return value;
+  if (value.includes("@")) return value.replace(/^(.{2}).*(@.*)$/, "$1•••$2");
+  if (value.length > 14) return `${value.slice(0, 6)}…${value.slice(-4)}`;
+  return value;
+};
+
+const isTestReferral = (item: ReferralClick) =>
+  [item.referral_code, item.godchild_id, item.godchild_phone, item.source, item.sponsors?.phone_number]
+    .some(isTestLikeValue);
+
+const isTestSponsor = (item: Sponsor) =>
+  [item.phone_number, item.referral_code]
+    .some(isTestLikeValue);
+
+const isTestPromoUsage = (item: PromoUsage) =>
+  [item.user_id, item.users?.phone_number, item.promo_codes?.code, item.promo_codes?.ambassador_name]
+    .some(isTestLikeValue);
+
 const LEVEL_COLORS: Record<string, string> = {
   starter: 'bg-gray-500',
   active: 'bg-blue-500',
@@ -325,7 +362,7 @@ const AdminReferrals = () => {
 
       if (error) throw error;
 
-      toast({ title: "Transfert marqué comme non abouti" });
+      toast({ title: "Demande marquée comme non confirmée" });
       loadData();
     } catch (error: unknown) {
       console.error('Error rejecting:', error);
@@ -336,16 +373,16 @@ const AdminReferrals = () => {
 
   const exportCSV = () => {
     if (activeTab === 'referrals') {
-      const headers = ['Date', 'Code Parrain', 'Tel Parrain', 'Niveau', 'ID Filleul', 'Source', 'Montant', 'Statut', 'Points'];
+      const headers = ['Date', 'Code partenaire', 'Téléphone partenaire', 'Niveau', 'Client', 'Origine client', 'Montant', 'Statut', 'Points'];
       const rows = filteredReferrals.map(r => [
         new Date(r.created_at).toLocaleDateString('fr-FR'),
         r.referral_code,
         r.sponsors?.phone_number || '',
         r.sponsors?.current_level || 'starter',
-        r.godchild_id,
-        r.source,
+        maskIdentifier(r.godchild_phone || r.godchild_id),
+        formatSource(r.source),
         r.transfer_amount || '',
-        r.transfer_status,
+        r.transfer_status === 'validated' ? 'Transfert confirmé' : r.transfer_status === 'rejected' ? 'Non confirmé' : 'En attente',
         r.points_awarded
       ]);
 
@@ -357,7 +394,7 @@ const AdminReferrals = () => {
       a.download = `dynamik-referrals-${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
     } else if (activeTab === 'sponsors') {
-      const headers = ['Tel', 'Code', 'Niveau', 'Points', 'Filleuls', 'Validés', 'Volume Mensuel', 'Volume Cumulé', 'Date inscription'];
+      const headers = ['Téléphone', 'Code', 'Niveau', 'Points', 'Clients invités', 'Validés', 'Volume mensuel', 'Volume cumulé', 'Date inscription'];
       const rows = filteredSponsors.map(s => [
         s.phone_number,
         s.referral_code,
@@ -378,13 +415,13 @@ const AdminReferrals = () => {
       a.download = `dynamik-sponsors-${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
     } else if (activeTab === 'promo') {
-      const headers = ['Date', 'Code promo', 'Type', 'Partenaire', 'Utilisateur', 'Réduction'];
+      const headers = ['Date', 'Code promo', 'Type', 'Partenaire', 'Client', 'Réduction'];
       const rows = filteredPromoUsages.map((usage) => [
         new Date(usage.used_at).toLocaleDateString('fr-FR'),
         usage.promo_codes?.code || '',
         usage.promo_codes?.type || '',
         usage.promo_codes?.ambassador_name || '',
-        usage.users?.phone_number || usage.user_id,
+        usage.users?.phone_number || maskIdentifier(usage.user_id),
         usage.promo_codes?.discount_percentage ? `${usage.promo_codes.discount_percentage}%` : '',
       ]);
       const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
@@ -397,7 +434,15 @@ const AdminReferrals = () => {
     }
   };
 
-  const filteredReferrals = referrals.filter(r => {
+  const cleanReferrals = referrals.filter((r) => !isTestReferral(r));
+  const cleanSponsors = sponsors.filter((s) => !isTestSponsor(s));
+  const cleanPromoUsages = promoUsages.filter((usage) => !isTestPromoUsage(usage));
+
+  const cleanTotalValidated = cleanReferrals.filter((item) => item.transfer_status === 'validated').length;
+  const cleanTotalPoints = cleanSponsors.reduce((sum, item) => sum + (item.total_points || 0), 0);
+  const cleanTotalVolume = cleanSponsors.reduce((sum, item) => sum + (item.cumulative_volume || 0), 0);
+
+  const filteredReferrals = cleanReferrals.filter(r => {
     const matchesSearch = 
       r.referral_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
       r.godchild_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -408,7 +453,7 @@ const AdminReferrals = () => {
     return matchesSearch && matchesStatus;
   });
 
-  const filteredSponsors = sponsors.filter(s => {
+  const filteredSponsors = cleanSponsors.filter(s => {
     const matchesSearch = 
       s.phone_number.includes(searchTerm) ||
       s.referral_code.toLowerCase().includes(searchTerm.toLowerCase());
@@ -418,7 +463,7 @@ const AdminReferrals = () => {
     return matchesSearch && matchesLevel;
   });
 
-  const filteredPromoUsages = promoUsages.filter((usage) => {
+  const filteredPromoUsages = cleanPromoUsages.filter((usage) => {
     const code = usage.promo_codes?.code || '';
     const partner = usage.promo_codes?.ambassador_name || '';
     const phone = usage.users?.phone_number || '';
@@ -456,11 +501,11 @@ const AdminReferrals = () => {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <Shield className="w-12 h-12 mx-auto text-primary mb-2" />
-            <CardTitle>Accès Admin Requis</CardTitle>
+            <CardTitle>Accès conseiller requis</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-center text-muted-foreground">
-              Vous devez être connecté avec un compte administrateur pour accéder à cette page.
+              Connectez-vous avec un compte conseiller autorisé pour gérer les partenaires, les codes et les demandes client.
             </p>
             <Link to="/auth?mode=signin">
               <Button className="w-full">
@@ -491,8 +536,8 @@ const AdminReferrals = () => {
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold">Admin Parrainage</h1>
-              <p className="text-muted-foreground">Gestion complète des parrainages DYNAMIK</p>
+              <h1 className="text-2xl font-bold">Espace conseiller DYNAMIK</h1>
+              <p className="text-muted-foreground">Suivi des partenaires, codes promo et demandes client.</p>
             </div>
           </div>
           <div className="flex gap-2">
@@ -518,7 +563,7 @@ const AdminReferrals = () => {
               <div className="flex items-center gap-3">
                 <Users className="w-8 h-8 text-blue-500" />
                 <div>
-                  <p className="text-2xl font-bold">{stats.totalSponsors}</p>
+                  <p className="text-2xl font-bold">{cleanSponsors.length}</p>
                   <p className="text-xs text-muted-foreground">Parrains</p>
                 </div>
               </div>
@@ -529,8 +574,8 @@ const AdminReferrals = () => {
               <div className="flex items-center gap-3">
                 <TrendingUp className="w-8 h-8 text-orange-500" />
                 <div>
-                  <p className="text-2xl font-bold">{stats.totalClicks}</p>
-                  <p className="text-xs text-muted-foreground">Clics totaux</p>
+                  <p className="text-2xl font-bold">{cleanReferrals.length}</p>
+                  <p className="text-xs text-muted-foreground">Demandes suivies</p>
                 </div>
               </div>
             </CardContent>
@@ -540,7 +585,7 @@ const AdminReferrals = () => {
               <div className="flex items-center gap-3">
                 <CheckCircle className="w-8 h-8 text-green-500" />
                 <div>
-                  <p className="text-2xl font-bold">{stats.totalValidated}</p>
+                  <p className="text-2xl font-bold">{cleanTotalValidated}</p>
                   <p className="text-xs text-muted-foreground">Validés</p>
                 </div>
               </div>
@@ -551,7 +596,7 @@ const AdminReferrals = () => {
               <div className="flex items-center gap-3">
                 <Award className="w-8 h-8 text-primary" />
                 <div>
-                  <p className="text-2xl font-bold">{stats.totalPoints}</p>
+                  <p className="text-2xl font-bold">{cleanTotalPoints}</p>
                   <p className="text-xs text-muted-foreground">Points distribués</p>
                 </div>
               </div>
@@ -562,7 +607,7 @@ const AdminReferrals = () => {
               <div className="flex items-center gap-3">
                 <Wallet className="w-8 h-8 text-green-600" />
                 <div>
-                  <p className="text-2xl font-bold">{formatVolume(stats.totalVolume)}</p>
+                  <p className="text-2xl font-bold">{formatVolume(cleanTotalVolume)}</p>
                   <p className="text-xs text-muted-foreground">Volume total</p>
                 </div>
               </div>
@@ -573,7 +618,7 @@ const AdminReferrals = () => {
               <div className="flex items-center gap-3">
                 <TicketPercent className="w-8 h-8 text-violet-600" />
                 <div>
-                  <p className="text-2xl font-bold">{stats.totalPromoUses}</p>
+                  <p className="text-2xl font-bold">{cleanPromoUsages.length}</p>
                   <p className="text-xs text-muted-foreground">Codes utilisés</p>
                 </div>
               </div>
@@ -587,25 +632,25 @@ const AdminReferrals = () => {
             variant={activeTab === 'referrals' ? 'default' : 'outline'}
             onClick={() => setActiveTab('referrals')}
           >
-            Transferts ({referrals.length})
+            Demandes client ({cleanReferrals.length})
           </Button>
           <Button 
             variant={activeTab === 'sponsors' ? 'default' : 'outline'}
             onClick={() => setActiveTab('sponsors')}
           >
-            Parrains ({sponsors.length})
+            Partenaires ({cleanSponsors.length})
           </Button>
           <Button
             variant={activeTab === 'promo' ? 'default' : 'outline'}
             onClick={() => setActiveTab('promo')}
           >
-            Codes promo ({promoUsages.length})
+            Codes promo ({cleanPromoUsages.length})
           </Button>
           <Button
             variant={activeTab === 'cms' ? 'default' : 'outline'}
             onClick={() => setActiveTab('cms')}
           >
-            CMS modification
+            Contenus publics
           </Button>
         </div>
 
@@ -614,7 +659,7 @@ const AdminReferrals = () => {
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder={activeTab === 'promo' ? "Rechercher code, partenaire, utilisateur..." : activeTab === 'referrals' ? "Rechercher par code, téléphone..." : "Rechercher par téléphone, code..."}
+              placeholder={activeTab === 'promo' ? "Rechercher un code, un partenaire ou un client..." : activeTab === 'referrals' ? "Rechercher une demande, un code ou un téléphone..." : "Rechercher un partenaire, un téléphone ou un code..."}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -630,7 +675,7 @@ const AdminReferrals = () => {
                 <SelectItem value="all">Tous les statuts</SelectItem>
                 <SelectItem value="pending">En attente</SelectItem>
                 <SelectItem value="validated">Validés</SelectItem>
-                <SelectItem value="rejected">Non aboutis</SelectItem>
+                <SelectItem value="rejected">Non confirmés</SelectItem>
               </SelectContent>
             </Select>
           ) : activeTab === 'sponsors' ? (
@@ -664,9 +709,9 @@ const AdminReferrals = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Date</TableHead>
-                    <TableHead>Parrain</TableHead>
+                    <TableHead>Partenaire</TableHead>
                     <TableHead>Niveau</TableHead>
-                    <TableHead>Filleul</TableHead>
+                    <TableHead>Client</TableHead>
                     <TableHead>Montant</TableHead>
                     <TableHead>Points</TableHead>
                     <TableHead>Statut</TableHead>
@@ -692,8 +737,8 @@ const AdminReferrals = () => {
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="text-sm">{click.godchild_id}</p>
-                          <p className="text-xs text-muted-foreground">{click.source}</p>
+                          <p className="text-sm">{maskIdentifier(click.godchild_phone || click.godchild_id)}</p>
+                          <p className="text-xs text-muted-foreground">{formatSource(click.source)}</p>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -722,7 +767,7 @@ const AdminReferrals = () => {
                         {click.transfer_status === 'rejected' && (
                           <Badge variant="destructive">
                             <XCircle className="w-3 h-3 mr-1" />
-                            Non abouti
+                            Non confirmé
                           </Badge>
                         )}
                       </TableCell>
@@ -744,7 +789,7 @@ const AdminReferrals = () => {
               </Table>
               {filteredReferrals.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
-                  Aucun transfert trouvé
+                  Aucune demande client trouvée
                 </div>
               )}
             </CardContent>
@@ -755,10 +800,10 @@ const AdminReferrals = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Parrain</TableHead>
+                    <TableHead>Partenaire</TableHead>
                     <TableHead>Niveau</TableHead>
                     <TableHead>Points</TableHead>
-                    <TableHead>Filleuls</TableHead>
+                    <TableHead>Clients invités</TableHead>
                     <TableHead>Validés</TableHead>
                     <TableHead>Vol. Mensuel</TableHead>
                     <TableHead>Vol. Cumulé</TableHead>
@@ -795,7 +840,7 @@ const AdminReferrals = () => {
               </Table>
               {filteredSponsors.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
-                  Aucun parrain trouvé
+                  Aucun partenaire trouvé
                 </div>
               )}
             </CardContent>
@@ -809,7 +854,7 @@ const AdminReferrals = () => {
                     <TableHead>Date</TableHead>
                     <TableHead>Code promo</TableHead>
                     <TableHead>Partenaire / parrain</TableHead>
-                    <TableHead>Utilisateur inscrit</TableHead>
+                    <TableHead>Client inscrit</TableHead>
                     <TableHead>Réduction</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -828,8 +873,8 @@ const AdminReferrals = () => {
                       <TableCell>{usage.promo_codes?.ambassador_name || '—'}</TableCell>
                       <TableCell>
                         <div>
-                          <p className="text-sm">{usage.users?.phone_number || 'Profil non lié'}</p>
-                          <p className="text-xs text-muted-foreground">{usage.user_id}</p>
+                          <p className="text-sm">{usage.users?.phone_number || 'Client non relié'}</p>
+                          <p className="text-xs text-muted-foreground">Référence : {maskIdentifier(usage.user_id)}</p>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -841,7 +886,7 @@ const AdminReferrals = () => {
               </Table>
               {filteredPromoUsages.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
-                  Aucune utilisation de code promo trouvée
+                  Aucun code promo utilisé pour le moment
                 </div>
               )}
             </CardContent>
@@ -852,9 +897,9 @@ const AdminReferrals = () => {
         <Dialog open={validateDialog.open} onOpenChange={(open) => setValidateDialog({ open, click: validateDialog.click })}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Valider le transfert</DialogTitle>
+              <DialogTitle>Confirmer la demande client</DialogTitle>
               <DialogDescription>
-                Entrez le montant du transfert effectué par le filleul {validateDialog.click?.godchild_id}
+                Entrez le montant réellement traité pour {maskIdentifier(validateDialog.click?.godchild_phone || validateDialog.click?.godchild_id)}.
               </DialogDescription>
             </DialogHeader>
             <div className="py-4">

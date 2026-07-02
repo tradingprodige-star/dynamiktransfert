@@ -65,6 +65,34 @@ const MILESTONES = [
   { volume: 5000000, bonus: 180, label: '5M FCFA (Transfert gratuit)' },
 ];
 
+const TEST_DATA_PATTERN = /\b(test|demo|démo|essai|sample|placeholder|lorem|fake|mock)\b/i;
+
+const isTestLikeValue = (value?: string | null) => Boolean(value && TEST_DATA_PATTERN.test(value));
+
+const sourceLabels: Record<string, string> = {
+  signup: "Inscription client",
+  calculator: "Simulation de transfert",
+  transfer: "Demande de transfert",
+  whatsapp: "Contact WhatsApp",
+  referral: "Lien partenaire",
+};
+
+const formatSource = (source?: string | null) => {
+  if (!source) return "Parcours client";
+  return sourceLabels[source] || source.replace(/[_-]/g, " ");
+};
+
+const maskIdentifier = (value?: string | null) => {
+  if (!value) return "Client non renseigné";
+  if (value.startsWith("+") || /^\d{7,}$/.test(value.replace(/\D/g, ""))) return value;
+  if (value.includes("@")) return value.replace(/^(.{2}).*(@.*)$/, "$1•••$2");
+  if (value.length > 14) return `${value.slice(0, 6)}…${value.slice(-4)}`;
+  return value;
+};
+
+const isTestReferral = (item: ReferralClick) =>
+  [item.godchild_id, item.godchild_phone, item.source].some(isTestLikeValue);
+
 const SponsorDashboard = ({ sponsor, onBack }: SponsorDashboardProps) => {
   const [referrals, setReferrals] = useState<ReferralClick[]>([]);
   const [rewards, setRewards] = useState<Reward[]>([]);
@@ -176,7 +204,7 @@ Merci de confirmer ma demande.`;
       case 'pending':
         return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" /> En attente</Badge>;
       default:
-        return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" /> Non abouti</Badge>;
+        return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" /> Non confirmé</Badge>;
     }
   };
 
@@ -203,6 +231,7 @@ Merci de confirmer ma demande.`;
 
   // Prochain palier de bonus
   const nextMilestone = MILESTONES.find(m => m.volume > cumulativeVolume);
+  const visibleReferrals = referrals.filter((ref) => !isTestReferral(ref));
 
   const formatVolume = (amount: number) => {
     if (amount >= 1000000) return `${(amount / 1000000).toFixed(1)}M`;
@@ -289,8 +318,8 @@ Merci de confirmer ma demande.`;
         <Card className="text-center">
           <CardContent className="pt-4 pb-3">
             <Users className="w-6 h-6 mx-auto text-blue-500 mb-1" />
-            <p className="text-2xl font-bold">{referrals.length}</p>
-            <p className="text-xs text-muted-foreground">Filleuls</p>
+            <p className="text-2xl font-bold">{visibleReferrals.length}</p>
+            <p className="text-xs text-muted-foreground">Clients invités</p>
           </CardContent>
         </Card>
         <Card className="text-center">
@@ -406,7 +435,7 @@ Merci de confirmer ma demande.`;
             </div>
           </div>
           <p className="text-xs text-muted-foreground mt-2 text-center">
-            × 1,5 pour transfert de filleul • × 2 pour filleul VIP
+            × 1,5 pour transfert d’un client invité • × 2 pour client VIP
           </p>
         </CardContent>
       </Card>
@@ -458,31 +487,31 @@ Merci de confirmer ma demande.`;
         </CardContent>
       </Card>
 
-      {/* Liste des filleuls */}
+      {/* Clients invités */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
             <Users className="w-5 h-5 text-blue-500" />
-            Mes filleuls ({referrals.length})
+            Mes clients invités ({visibleReferrals.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {referrals.length === 0 ? (
+          {visibleReferrals.length === 0 ? (
             <p className="text-center text-muted-foreground py-4">
-              Aucun filleul pour le moment.<br />
+              Aucun client invité pour le moment.<br />
               Partagez votre lien pour commencer !
             </p>
           ) : (
             <div className="space-y-2">
-              {referrals.map((ref) => (
+              {visibleReferrals.map((ref) => (
                 <div 
                   key={ref.id}
                   className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
                 >
                   <div>
-                    <p className="font-medium text-sm">{ref.godchild_id}</p>
+                    <p className="font-medium text-sm">{maskIdentifier(ref.godchild_phone || ref.godchild_id)}</p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(ref.created_at).toLocaleDateString('fr-FR')} • {ref.source}
+                      {new Date(ref.created_at).toLocaleDateString('fr-FR')} • {formatSource(ref.source)}
                       {ref.transfer_amount && ` • ${ref.transfer_amount.toLocaleString()} FCFA`}
                     </p>
                   </div>

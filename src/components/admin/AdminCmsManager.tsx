@@ -64,24 +64,24 @@ const emptyCollectionItem = (type: CmsCollectionType, sortOrder = 10): CmsCollec
 
 const collectionLabels: Record<CmsCollectionType, { title: string; description: string; titleLabel: string; subtitleLabel: string; imageLabel: string; descriptionLabel: string }> = {
   team: {
-    title: "CMS équipe — profils et photos",
-    description: "Ajoutez ou modifiez les membres visibles dans la section Équipe DYNAMIK. L’image peut être une URL ou un fichier local converti pour affichage.",
+    title: "Équipe affichée sur le site",
+    description: "Ajoutez les personnes que les visiteurs verront dans la section équipe. Utilisez une photo professionnelle ou laissez le champ image vide.",
     titleLabel: "Nom / rôle affiché",
     subtitleLabel: "Fonction courte",
     imageLabel: "Image profil",
     descriptionLabel: "Description courte",
   },
   testimonial: {
-    title: "CMS avis clients — textes et photos",
-    description: "Ajoutez ou modifiez les avis visibles sur la page d’accueil, avec photo ou initiales si aucune image n’est renseignée.",
+    title: "Avis clients affichés",
+    description: "Publiez uniquement des avis prêts à être lus par les visiteurs. Le texte doit parler de l’expérience client, pas du travail interne.",
     titleLabel: "Nom affiché",
     subtitleLabel: "Trajet / type d’opération",
     imageLabel: "Photo client",
     descriptionLabel: "Avis client",
   },
   proof: {
-    title: "CMS captures clients — preuves anonymisées",
-    description: "Ajoutez des captures d’écran de transactions réussies. Floutez toujours les données privées avant publication.",
+    title: "Preuves client anonymisées",
+    description: "Ajoutez des captures de transactions réussies uniquement après avoir flouté les noms, numéros, références et montants privés.",
     titleLabel: "Titre de la capture",
     subtitleLabel: "Libellé / statut",
     imageLabel: "Capture d’écran",
@@ -245,11 +245,11 @@ const AdminCmsManager = () => {
     setIsSaving(false);
 
     if (error) {
-      toast({ title: "Erreur CMS", description: error.message, variant: "destructive" });
+      toast({ title: "Erreur d’enregistrement", description: error.message, variant: "destructive" });
       return;
     }
 
-    toast({ title: "Élément CMS enregistré" });
+    toast({ title: "Contenu enregistré" });
     if (!item.id) {
       if (item.type === "team") setNewTeamItem(emptyCollectionItem("team"));
       if (item.type === "testimonial") setNewTestimonialItem(emptyCollectionItem("testimonial"));
@@ -265,7 +265,7 @@ const AdminCmsManager = () => {
       toast({ title: "Erreur suppression", description: error.message, variant: "destructive" });
       return;
     }
-    toast({ title: "Élément CMS supprimé" });
+    toast({ title: "Contenu supprimé" });
     loadCms();
   };
 
@@ -336,7 +336,7 @@ const AdminCmsManager = () => {
     setIsSaving(false);
 
     if (error) {
-      toast({ title: "Erreur CMS", description: error.message, variant: "destructive" });
+      toast({ title: "Erreur d’enregistrement", description: error.message, variant: "destructive" });
       return;
     }
 
@@ -387,9 +387,9 @@ const AdminCmsManager = () => {
       <Card className="border-violet-200 bg-gradient-to-br from-white to-violet-50/60">
         <CardHeader className="gap-3 md:flex md:flex-row md:items-start md:justify-between">
           <div>
-            <CardTitle>CMS modification des textes du site</CardTitle>
+            <CardTitle>Textes publics du site</CardTitle>
             <p className="mt-2 text-sm text-muted-foreground">
-              Modifiez ici les textes visibles sur toutes les pages publiques : accueil, crypto, partenariats, offres, à propos, FAQ, réclamations, termes, ambassadeurs, parrainage et pied de page. Après sauvegarde, le site public affiche les nouveaux textes.
+              Modifiez les textes que les clients voient sur le site : accueil, crypto, partenariats, offres, à propos, FAQ, réclamations, termes, ambassadeurs, parrainage et pied de page.
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">
@@ -420,7 +420,7 @@ const AdminCmsManager = () => {
                         className="bg-white"
                       />
                     )}
-                    <p className="text-xs text-muted-foreground">Clé technique : {field.key}</p>
+                    <p className="text-xs text-muted-foreground">Texte affiché aux visiteurs.</p>
                   </div>
                 ))}
               </div>
@@ -435,7 +435,7 @@ const AdminCmsManager = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>CMS codes promo / partenaires</CardTitle>
+          <CardTitle>Codes promo et partenaires</CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
           <div className="grid gap-3 rounded-2xl border bg-muted/30 p-4 md:grid-cols-6">
@@ -493,7 +493,7 @@ const AdminCmsManager = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><ImagePlus className="h-5 w-5" /> CMS annonces accueil</CardTitle>
+          <CardTitle className="flex items-center gap-2"><ImagePlus className="h-5 w-5" /> Annonces affichées sur l’accueil</CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
           <div className="grid gap-3 rounded-2xl border bg-muted/30 p-4 md:grid-cols-6">
