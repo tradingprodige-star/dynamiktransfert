@@ -13,68 +13,68 @@ const serviceSections = [
   {
     id: "section-crypto",
     to: "/crypto",
-    eyebrow: "Crypto → FCFA",
-    title: "Payer en crypto, recevoir sur Mobile Money.",
-    text: "Un tunnel clair pour créer une demande USDT/BTC vers T-Money, Moov, MTN, Orange ou Wave, avec référence et validation humaine.",
+    eyebrowKey: "home.service.crypto.eyebrow",
+    titleKey: "home.service.crypto.title",
+    textKey: "home.service.crypto.text",
     icon: Bitcoin,
-    stat: "USDT / BTC",
+    statKey: "home.service.crypto.stat",
     accent: "emerald",
-    bullets: ["Togo, Bénin, Burkina, Côte d’Ivoire", "Référence de paiement générée", "Validation finale par WhatsApp"],
+    bulletKeys: ["home.service.crypto.bullet1", "home.service.crypto.bullet2", "home.service.crypto.bullet3"],
   },
   {
     id: "section-parrainage",
     to: "/partenariats",
-    eyebrow: "Parrainage",
-    title: "Transformez vos recommandations en récompenses.",
-    text: "Créez votre code parrain, partagez votre lien et suivez vos récompenses avec l’équipe DYNAMIK.",
+    eyebrowKey: "home.service.referral.eyebrow",
+    titleKey: "home.service.referral.title",
+    textKey: "home.service.referral.text",
     icon: Share2,
-    stat: "150 pts",
+    statKey: "home.service.referral.stat",
     accent: "violet",
-    bullets: ["Points par transfert", "Cashback et bonus", "Statut VIP"],
+    bulletKeys: ["home.service.referral.bullet1", "home.service.referral.bullet2", "home.service.referral.bullet3"],
   },
   {
     id: "section-ambassadeurs",
     to: "/partenariats",
-    eyebrow: "Partenariats",
-    title: "Codes partenaires et influenceurs faciles à utiliser.",
-    text: "Retrouvez les codes promo, liens de parrainage et demandes partenaires au même endroit.",
+    eyebrowKey: "home.service.partners.eyebrow",
+    titleKey: "home.service.partners.title",
+    textKey: "home.service.partners.text",
     icon: Users,
-    stat: "Codes actifs",
+    statKey: "home.service.partners.stat",
     accent: "slate",
-    bullets: ["CID partenaire officiel", "Copie rapide des codes", "Demande de code ambassadeur"],
+    bulletKeys: ["home.service.partners.bullet1", "home.service.partners.bullet2", "home.service.partners.bullet3"],
   },
   {
     id: "section-offres",
     to: "/offre",
-    eyebrow: "Offres & USDT",
-    title: "Promotions et services USDT clairs.",
-    text: "Profitez du code BIENVENUE et consultez les conditions de rachat USDT avant de contacter DYNAMIK.",
+    eyebrowKey: "home.service.offers.eyebrow",
+    titleKey: "home.service.offers.title",
+    textKey: "home.service.offers.text",
     icon: BadgePercent,
-    stat: "565 F/USDT",
+    statKey: "home.service.offers.stat",
     accent: "emerald",
-    bullets: ["Code BIENVENUE", "Rachat et vente USDT", "Partenaires Turboexchange/Jones"],
+    bulletKeys: ["home.service.offers.bullet1", "home.service.offers.bullet2", "home.service.offers.bullet3"],
   },
   {
     id: "section-a-propos",
     to: "/a-propos",
-    eyebrow: "À propos",
-    title: "L’histoire et la mission de DYNAMIK.",
-    text: "Découvrez l’origine de DYNAMIK, sa mission et la vision portée par l’équipe.",
+    eyebrowKey: "home.service.about.eyebrow",
+    titleKey: "home.service.about.title",
+    textKey: "home.service.about.text",
     icon: Info,
-    stat: "2020 → 2025",
+    statKey: "home.service.about.stat",
     accent: "violet",
-    bullets: ["Histoire DYNAMIK SHOP", "Fondateurs", "Mission et vision"],
+    bulletKeys: ["home.service.about.bullet1", "home.service.about.bullet2", "home.service.about.bullet3"],
   },
   {
     id: "section-support",
     to: "/reclamations",
-    eyebrow: "Support",
-    title: "Réclamations et FAQ accessibles sans chercher.",
-    text: "Trouvez une réponse rapide ou envoyez une réclamation suivie directement sur WhatsApp.",
+    eyebrowKey: "home.service.support.eyebrow",
+    titleKey: "home.service.support.title",
+    textKey: "home.service.support.text",
     icon: MessageCircle,
-    stat: "24/7",
+    statKey: "home.service.support.stat",
     accent: "slate",
-    bullets: ["FAQ dédiée", "Formulaire réclamation", "Transmission WhatsApp"],
+    bulletKeys: ["home.service.support.bullet1", "home.service.support.bullet2", "home.service.support.bullet3"],
     secondaryTo: "/faq",
   },
 ];
@@ -224,21 +224,21 @@ const Index = () => {
                         <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${accent.icon}`}>
                           <Icon className="h-6 w-6" />
                         </div>
-                        <span className={`text-sm font-semibold uppercase tracking-[0.22em] ${accent.text}`}>{section.eyebrow}</span>
+                        <span className={`text-sm font-semibold uppercase tracking-[0.22em] ${accent.text}`}>{t(section.eyebrowKey)}</span>
                       </div>
 
                       <h3 className="max-w-3xl text-3xl font-semibold tracking-tight md:text-5xl">
-                        {section.title}
+                        {t(section.titleKey)}
                       </h3>
                       <p className="mt-4 max-w-2xl text-base leading-7 text-white/65 md:text-lg">
-                        {section.text}
+                        {t(section.textKey)}
                       </p>
 
                       <div className="mt-6 flex flex-wrap gap-3">
-                        {section.bullets.map((bullet) => (
-                          <span key={bullet} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/55 px-4 py-2 text-sm text-white/70">
+                        {section.bulletKeys.map((bulletKey) => (
+                          <span key={bulletKey} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/55 px-4 py-2 text-sm text-white/70">
                             <ShieldCheck className="h-4 w-4 text-emerald-300" />
-                            {bullet}
+                            {t(bulletKey)}
                           </span>
                         ))}
                       </div>
@@ -263,13 +263,13 @@ const Index = () => {
                         <div className="mb-12 flex items-center justify-between">
                           <div>
                             <p className="text-sm text-white/45">Service DYNAMIK</p>
-                            <p className="mt-1 text-xl font-semibold">{section.eyebrow}</p>
+                            <p className="mt-1 text-xl font-semibold">{t(section.eyebrowKey)}</p>
                           </div>
                           <WalletCards className={`h-8 w-8 ${accent.text}`} />
                         </div>
                         <div className="rounded-3xl bg-white/[0.07] p-5">
                           <p className="text-sm uppercase tracking-[0.24em] text-white/40">Repère utile</p>
-                          <p className={`mt-2 text-4xl font-semibold ${accent.text}`}>{section.stat}</p>
+                          <p className={`mt-2 text-4xl font-semibold ${accent.text}`}>{t(section.statKey)}</p>
                         </div>
                         <div className="mt-5 h-1 overflow-hidden rounded-full bg-white/10">
                           <div className="h-full w-2/3 rounded-full bg-gradient-to-r from-emerald-300 to-violet-300 transition-all duration-700 group-hover:w-full" />
